@@ -99,6 +99,6 @@ def main [] {
         let croissant_metadata = ($croissant_template | to json)
         stor insert --table-name "knowledge_sources" --data-record { name: $source_name, croissant_metadata: $croissant_metadata }
     }
-    rm --force "rc.db"
-    stor export --file-name "rc.db"
+    rm --force "robo_croissant.db"
+    stor export --file-name "robo_croissant.db"
 }
