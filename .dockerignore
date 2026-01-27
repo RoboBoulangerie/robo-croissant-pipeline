@@ -1,0 +1,9 @@
+# Exclude the biggest offenders first
+.venv/
+
+# Exclude Docker files (not needed in context)
+Dockerfile
+.dockerignore
+docker-compose*.yml
+docker-compose*.yaml
+

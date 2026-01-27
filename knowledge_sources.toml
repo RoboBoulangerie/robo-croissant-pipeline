@@ -1,0 +1,275 @@
+[[knowledge_sources]]
+name = "CTD"
+url = "http://ctdbase.org"
+enabled = true
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "Bindingdb"
+url = "https://www.bindingdb.org/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "CAMKP"
+url = "https://github.com/ExposuresProvider/cam-kp-api"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "CHEBI"
+url = "https://www.ebi.ac.uk/chebi/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "ClinicalTrials"
+url = "https://aact.ctti-clinicaltrials.org/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "COHD"
+url = "https://cohd.io/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "DrugCentral"
+url = "https://drugcentral.org/"
+enabled = true
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "DrugMechDB"
+url = "https://sulab.github.io/DrugMechDB/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "GTEX"
+url = "https://www.gtexportal.org/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "GWAS"
+url = "https://www.ebi.ac.uk/gwas/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "GenomeAlliance"
+url = "https://www.alliancegenome.org/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "GeneNames"
+url = "https://www.genenames.org/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "HMDB"
+url = "https://hmdb.ca/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "Hetio"
+url = "https://het.io/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "GOA"
+url = "https://www.ebi.ac.uk/GOA/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "Intact"
+url = "https://www.ebi.ac.uk/intact/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "Kinace"
+url = "https://github.com/GauravPandeyLab/KiNet"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "PantherDB"
+url = "http://pantherdb.org/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "Pharos"
+url = "https://pharos.nih.gov/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "Reactome"
+url = "https://reactome.org/"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "StringDB"
+url = "https://string-db.org"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "UberGraph"
+url = "https://github.com/INCATools/ubergraph"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
+
+[[knowledge_sources]]
+name = "GOAProteomes"
+url = "https://www.ebi.ac.uk/GOA/proteomes"
+enabled = false
+prompts = [
+    { "key" = "name", "prompt" = "What is the proper, concise, non-abbreviated name of %name%?  Output the answer as is." },
+    { "key" = "description", "prompt" = "What is the description of %name%?" },
+    { "key" = "version", "prompt" = "The version of %name% will be in the date format \"%B %Y\".  What is the current version of %name% and output the answer concisely." },
+    { "key" = "citation", "prompt" = "What is the citation string used in publications for \"%name%\"?" },
+    { "key" = "license", "prompt" = "What license is used?  The output should be a format name like, \"BSD License\" or \"Common Public License\"" }
+]
