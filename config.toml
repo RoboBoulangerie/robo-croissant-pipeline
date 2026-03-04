@@ -1,0 +1,72 @@
+croissant_metadata = """Using the Croissant Format Specification, produce the metadata from %name% in JSON.
+    Include \"distribution\" and \"recordSet\" metadata based on any available download information.
+    Answer directly and without any Markdown such as ```json```."""
+
+prompts = [
+    { "key" = "name", "prompt" = """In these web pages, what is the non-abbreviated, formal name?  Follow these rules for the output:
+      - Output should be in JSON format
+      - Output should include the name
+      - Output should include the url from where the answer is sourced and not a local file system path
+      - Answer directly and without using Markdown
+    """ },
+    { "key" = "description", "prompt" = """What is the formal description? Follow these rules for the output:
+      - Output should be in JSON format
+      - Output should include the description
+      - Output should include the url from where the answer is sourced and not a local file system path
+      - Answer directly and without using Markdown
+    """ },
+    { "key" = "version", "prompt" = """What is the version?  Follow these rules for the output:
+      - Output should be in JSON format
+      - Output should include the version
+      - Output should include the url from where the answer is sourced and not a local file system path
+      - Answer directly and without using Markdown
+    """ },
+    { "key" = "citation", "prompt" = """What is the citation string used for publications?  Follow these rules for the output:
+      - Output should be in JSON format
+      - Output should include the citation
+      - Output should include the url from where the answer is sourced and not a local file system path
+      - Answer directly and without using Markdown
+    """ },
+    { "key" = "license", "prompt" = """What license is used?  Follow these rules for the output:
+      - Output should be in JSON format
+      - Output should include the license
+      - Output should include the url from where the answer is sourced and not a local file system path
+      - Answer directly and without using Markdown
+    """ },
+    { "key" = "keywords", "prompt" = """What keywords are used?  Follow these rules for the output:
+      - Output should be in JSON format
+      - Output should include the keywords as a single csv string
+      - Output should include the url from where the answer is sourced and not a local file system path
+      - If the keywords output is a list, transform it into
+      - Answer directly and without using Markdown
+    """ }
+]
+
+[[knowledge_sources]]
+#Comparative Toxicogenomics Database (CTD)
+name = "CTD"
+url = "https://ctdbase.org"
+enabled = true
+depth = 3
+blacklist = "/(help|reports|documents|tools)/,.*\\.(obo|tgz),.*(type|jsessionid).*"
+
+[[knowledge_sources]]
+#The Nomenclature of Human and Vertebrate Genes	PAR-23-237	Yes	https://www.genenames.org/download/statistics-and-files/
+name = "HGNC"
+url = "https://www.genenames.org/"
+enabled = true
+depth = 2
+blacklist = "/(help|contact|martform|privacy-notice|biomart),/(cgi-bin|contact|data|rest|tools|help|news)/,/about/(guidelines|instructions-to-authors|meetings|naming-flowcharts|pjm|sab|specialist-advisors|species-list|team|workshops),/download/(archive|custom|gene-groups)"
+
+[[knowledge_sources]]
+#Childrens Allergy and Asthma Data Repository (CADRE)	PAR-23-079	yes	https://cadre.med.wisc.edu/data/
+name = "CADRE"
+url = "https://cadre.med.wisc.edu/"
+enabled = true
+depth = 2
+blacklist = "/(sites|research)"
+
+
+
+
+
