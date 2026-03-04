@@ -2,40 +2,30 @@
 
 def crawl_knowledge_source [
     source_url: string,
-    source_name: string
-] {
-    try {
-        let blocked_suffixes = [".xsd", ".gz", ".obo", ".ppt", ".tsv"]
-        let blocked_substrings = ["jsessionid", "?"]
-        spider --url $source_url -d 3 crawl -o | lines | parse "{url}" | where {|row|
-                let has_blocked_substring = ($blocked_substrings | any {|s| $row.url | str contains $s })
-                let has_blocked_suffix = ($blocked_suffixes | any {|ext| $row.url | str ends-with $ext })
-                (not $has_blocked_substring) and (not $has_blocked_suffix) and ($row.url != $source_url)} | get url | to text
-    } catch {|e| echo $e }
-}
-
-def select_relevant_urls [
-    source_url: string
-    source_name: string
-    formal_key: string
+    source_name: string,
+    depth: int,
+    blacklist: string,
     tmp_dir: string
 ] {
     try {
-        let urls = (crawl_knowledge_source $source_url $source_name)
-        # need to persist to fs for aichat
-        let dest_file = $"($tmp_dir)/($source_name)_urls.txt"
-        $urls | save -f $dest_file
-        let query = $"What are the most likely URLs in this list to find information regarding a formal \"($formal_key)\" for ($source_name)?  Output the results only using space separated values and limit the results to 2."
-        aichat -f $dest_file $query
+        mut blacklist_arg = ""
+        if ($blacklist | is-not-empty) {
+            spider --url $source_url -d $depth --blacklist-url $"($blacklist)" download -t $tmp_dir
+        } else {
+            spider --url $source_url -d $depth download -t $tmp_dir
+        }
+        let files = ls ...(glob ($tmp_dir)/**/*) | where type == file | get name
+        for f in $files {
+            open $f | tidy -wrap 3000 -quiet | str replace -a -r '<style[^>]*>[\s\S]*?<\/style>' '' | str replace -a -r '<script[^>]*>[\s\S]*?<\/script>' '' | str replace -a -r '<g[^>]*>[\s\S]*?<\/g>' '' | save -f $f
+        }
     } catch {|e| echo $e }
 }
 
-def url_flags_from_space_separated [urls_line: string] {
-    $urls_line | split row " " | where {|u| ($u | str length) > 0 } | each {|u| $" -f ($u)" } | str join
-}
-
-def render_prompt [prompt: string, source_name: string] {
-    $prompt | str replace "%name%" $source_name
+def crawl_croissant_spec [tmp_dir: string] {
+    try {
+        let source_url = "https://docs.mlcommons.org/croissant/docs/croissant-spec.html"
+        spider --url $source_url -d 3 download -t $tmp_dir
+    } catch {|e| echo $e }
 }
 
 def write_aichat_config [home_dir: string] {
@@ -68,37 +58,75 @@ def write_aichat_config [home_dir: string] {
 
 def main [] {
     stor reset
-    stor create --table-name "knowledge_sources" --columns { name: str, croissant_metadata: json }
+    stor create --table-name "knowledge_sources" --columns { name: str, url: str, croissant_metadata: jsonb}
+    stor create --table-name "knowledge_source_mappings" --columns { name: str, key: str, answer: str, url: str }
+
     let home_dir = $nu.home-path
     if not ($"($home_dir)/.config/aichat/config.yaml" | path exists) { (write_aichat_config home_dir) }
-    let tmp_dir = mktemp -d
-    mut enabled_sources = (open knowledge_sources.toml | get knowledge_sources | where {|source| $source.enabled == true})
+
+    let croissant_spec_tmp_dir = mktemp -d -p .
+    (crawl_croissant_spec $croissant_spec_tmp_dir)
+
+    rm --force "robo_croissant.db"
+
+    let config = open config.toml
+
+    let prompts = $config | get prompts
+    mut enabled_sources = ($config | get knowledge_sources | where {|source| $source.enabled == true})
+
     if ("RC_TARGETED_KNOWLEDGE_SOURCES" in $env) {
         let targeted_knowledge_sources = $env.RC_TARGETED_KNOWLEDGE_SOURCES | split row ","
         if (($targeted_knowledge_sources | length) > 0) { $enabled_sources = ($enabled_sources | where {|source| $source.name in $targeted_knowledge_sources }) }
     }
+
     for source in $enabled_sources {
+        let tmp_dir = mktemp -d -p .
+
         let source_name = $source.name
         let source_url = $source.url
+
+        mut source_blacklist = ""
+        if "blacklist" in $source {
+            $source_blacklist = $source.blacklist
+        }
+        #$source_blacklist | print
+
+        mut source_depth = 2
+        if "depth" in $source {
+            $source_depth = $source.depth
+        }
+
+        (crawl_knowledge_source $source_url $source_name $source_depth $source_blacklist $tmp_dir)
+
         mut results_table = (
-            $source.prompts | get key | each {|k| { $k: null } } | reduce {|it| merge $it}
+            $prompts | get key | each {|k| { $k: null } } | reduce {|it| merge $it}
         )
-        $results_table = ($results_table | upsert "url" $"($source.url)")
-        for prompt_spec in $source.prompts {
-            let formal_key = $prompt_spec.key
-            let selected_urls_line = (select_relevant_urls $source_url $source_name $formal_key $tmp_dir)
-            let url_flags = (url_flags_from_space_separated $selected_urls_line)
-            let prompt_text = (render_prompt $prompt_spec.prompt $source_name)
+
+        for p in $prompts {
             try {
-                let answer = aichat $"($url_flags) \"($prompt_text)\""
-                $results_table = ($results_table | update $"($formal_key)" $"($answer)")
+                let answer = aichat -f $tmp_dir $"($p.prompt)"
+                let key_answer =  $answer | query json $p.key
+                #$key_answer | print
+                let url_answer =  $answer | query json url
+                stor insert --table-name "knowledge_source_mappings" --data-record { name: $source_name, key: $p.key, answer: $key_answer, url: $url_answer }
             } catch {|e| echo $e }
         }
-        mut croissant_template = open "croissant_minimal.json"
-        $croissant_template = ($croissant_template | merge $results_table)
-        let croissant_metadata = ($croissant_template | to json)
-        stor insert --table-name "knowledge_sources" --data-record { name: $source_name, croissant_metadata: $croissant_metadata }
+
+        let croissant_metadata_prompt = $config | get croissant_metadata | str replace '%name%' $"($source.name)"
+        let cr_answer = aichat -f $tmp_dir -f $croissant_spec_tmp_dir $"($croissant_metadata_prompt)" | str replace '```json' '' | str replace '```' ''
+        #$cr_answer | print
+        mut cr_answer_json = $cr_answer | from json
+
+        let mapping_data = stor open | query db "select key, answer from knowledge_source_mappings" | reduce -f {} {|it, acc| $acc | upsert $it.key $it.answer }
+        #$mapping_data | print
+
+        $cr_answer_json = ($cr_answer_json | merge $mapping_data)
+        #$cr_answer_json | print
+
+        stor insert --table-name "knowledge_sources" --data-record { name: $source_name, url: $source_url, croissant_metadata: $cr_answer_json }
+
+        #rm --recursive $tmp_dir
     }
-    rm --force "robo_croissant.db"
-    stor export --file-name "robo_croissant.db"
+    #rm --recursive croissant_spec_tmp_dir
+    stor export --file-name "robo_croissant.db" | ignore
 }
