@@ -1,0 +1,225 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "sc": "https://schema.org/",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "dct": "http://purl.org/dc/terms/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform"
+  },
+  "@type": "sc:Dataset",
+  "name": "Children's Allergy and Asthma Data Repository",
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "description": "The Children’s Allergy and Asthma Data Repository (CADRE) is a centralized resource created to address a critical gap in asthma research: identifying the risk factors and biological mechanisms that lead to childhood asthma. By uniting data from various cohorts, CADRE empowers researchers to uncover insights that individual studies alone cannot provide. Birth cohort studies have…",
+  "url": "https://cadre.med.wisc.edu/",
+  "creator": {
+    "@type": "sc:Organization",
+    "name": "Board of Regents of the University of Wisconsin System",
+    "url": "https://www.wisc.edu"
+  },
+  "datePublished": "2025-10-07",
+  "inLanguage": "en-US",
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "CADRE_Core_Data_Elements_CSV",
+      "name": "CADRE Core Data Elements Spreadsheet",
+      "contentUrl": "https://cadre.med.wisc.edu/wp-content/uploads/sites/2407/2026/01/CADRE_Core_Data_Elements_2025_10_07.csv",
+      "encodingFormat": "text/csv",
+      "description": "Downloadable spreadsheet listing the 200 harmonized core data elements used most frequently in CREW and CADRE publications."
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "CADRE_Ancillary_Data_Elements_CSV",
+      "name": "CADRE Ancillary Data Elements Spreadsheet",
+      "contentUrl": "https://cadre.med.wisc.edu/wp-content/uploads/sites/2407/2026/01/CADRE_Ancillary_Data_Elements_2025_10_08.csv",
+      "encodingFormat": "text/csv",
+      "description": "Downloadable spreadsheet listing additional harmonized ancillary data elements."
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "CoreDataElementsRecordSet",
+      "name": "Core Data Elements",
+      "description": "Each record describes a core data element (variable) available in the CADRE repository, including its description, category, and response options.",
+      "key": {
+        "@id": "CoreDataElementsRecordSet/Data_element"
+      },
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "CoreDataElementsRecordSet/Data_element",
+          "name": "Data element",
+          "description": "Unique identifier for the data element.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CADRE_Core_Data_Elements_CSV"
+            },
+            "extract": {
+              "column": "Data element"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "CoreDataElementsRecordSet/Description",
+          "name": "Description",
+          "description": "Description of the data element.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CADRE_Core_Data_Elements_CSV"
+            },
+            "extract": {
+              "column": "Description"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "CoreDataElementsRecordSet/Category",
+          "name": "Category",
+          "description": "Category of the data element.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CADRE_Core_Data_Elements_CSV"
+            },
+            "extract": {
+              "column": "Category"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "CoreDataElementsRecordSet/Response_Options",
+          "name": "Response Options",
+          "description": "Possible response options for the data element.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CADRE_Core_Data_Elements_CSV"
+            },
+            "extract": {
+              "column": "Response Options"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "AncillaryDataElementsRecordSet",
+      "name": "Ancillary Data Elements",
+      "description": "Each record describes an ancillary data element (variable) available in the CADRE repository, including its description, category, and response options.",
+      "key": {
+        "@id": "AncillaryDataElementsRecordSet/Data_element"
+      },
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "AncillaryDataElementsRecordSet/Data_element",
+          "name": "Data element",
+          "description": "Unique identifier for the data element.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CADRE_Ancillary_Data_Elements_CSV"
+            },
+            "extract": {
+              "column": "Data element"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "AncillaryDataElementsRecordSet/Description",
+          "name": "Description",
+          "description": "Description of the data element.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CADRE_Ancillary_Data_Elements_CSV"
+            },
+            "extract": {
+              "column": "Description"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "AncillaryDataElementsRecordSet/Category",
+          "name": "Category",
+          "description": "Category of the data element.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CADRE_Ancillary_Data_Elements_CSV"
+            },
+            "extract": {
+              "column": "Category"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "AncillaryDataElementsRecordSet/Response_Options",
+          "name": "Response Options",
+          "description": "Possible response options for the data element.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CADRE_Ancillary_Data_Elements_CSV"
+            },
+            "extract": {
+              "column": "Response Options"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "version": "1.42.0",
+  "citation": "Children's Allergy and Asthma Data Repository (CADRE), University of Wisconsin–Madison. (2026). CADRE – Children's Allergy and Asthma Data Repository. Retrieved from https://cadre.med.wisc.edu/",
+  "license": "MIT License",
+  "keywords": "CADRE, Children's Allergy and Asthma Data Repository, Asthma, Childhood Asthma, Allergy, Data Repository, Research, Data Harmonization, Birth Cohorts, Risk Factors, Biological Mechanisms, Environmental Factors, Allergens, Pollutants, Viruses, Bacteria, Smoke Exposure, Animal Exposure, Dust Allergens, Clinical Outcomes, Eczema, Atopic Dermatitis, Wheeze, Allergic Rhinitis, Biomarkers, Eosinophils, IgE, SPT, Transcriptomics, Epigenomics, Metabolomics, Microbiomics, Dataset, Variables, Collaborative Studies, NIH, CREW, UW-Madison, Respiratory Infection, Glucose, Insulin, Newborn Metabolite Screening, Th2 Markers, Wheeze Phenotypes, Air Pollution, Diet, RSV Serology, Education, Demographics, Household Income, Insurance, Redlining, Child Opportunity Index"
+}

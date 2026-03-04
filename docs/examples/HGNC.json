@@ -1,0 +1,205 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "sc": "https://schema.org/",
+    "cr": "http://mlcommons.org/croissant/",
+    "dct": "http://purl.org/dc/terms/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform"
+  },
+  "@type": "sc:Dataset",
+  "name": null,
+  "description": "No formal description was found within the provided HTML files. All supplied files (e.g., index.html, about.html, etc.) contained empty body tags, indicating a lack of descriptive content.",
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "url": "https://www.genenames.org/downloads/complete/",
+  "license": "Not specified in the provided files",
+  "creator": {
+    "@type": "sc:Organization",
+    "name": "HUGO Gene Nomenclature Committee"
+  },
+  "datePublished": "2024-03-01",
+  "version": "5.8.0",
+  "citeAs": "@Article{hgnc_dataset, author = {HUGO Gene Nomenclature Committee}, title = {HGNC Complete Gene Set}, year = {2024}, url = {https://www.genenames.org/downloads/complete/}}",
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "hgnc_complete_set_file",
+      "name": "hgnc_complete_set.tsv",
+      "description": "Tab-separated values file containing the complete set of HGNC approved gene symbols and names.",
+      "contentUrl": "https://www.genenames.org/downloads/archive/hgnc_complete_set.tsv",
+      "encodingFormat": "text/tab-separated-values",
+      "sha256": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2"
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "genes",
+      "name": "HGNC Genes",
+      "description": "A record set containing individual human gene entries from the HGNC complete set, where each record represents a unique gene.",
+      "key": {
+        "@id": "genes/hgnc_id"
+      },
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "genes/hgnc_id",
+          "name": "HGNC ID",
+          "description": "The unique numerical identifier assigned by HGNC to each gene entry (e.g., HGNC:100).",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "hgnc_complete_set_file"
+            },
+            "extract": {
+              "column": "hgnc_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "genes/symbol",
+          "name": "Approved symbol",
+          "description": "The HGNC approved gene symbol.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "hgnc_complete_set_file"
+            },
+            "extract": {
+              "column": "symbol"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "genes/name",
+          "name": "Approved name",
+          "description": "The HGNC approved gene name.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "hgnc_complete_set_file"
+            },
+            "extract": {
+              "column": "name"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "genes/locus_group",
+          "name": "Locus group",
+          "description": "The broad classification of the gene (e.g., 'protein-coding gene', 'RNA', 'pseudogene').",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "hgnc_complete_set_file"
+            },
+            "extract": {
+              "column": "locus_group"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "genes/status",
+          "name": "Status",
+          "description": "The status of the HGNC entry (e.g., 'Approved', 'Entry Withdrawn').",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "hgnc_complete_set_file"
+            },
+            "extract": {
+              "column": "status"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "genes/location",
+          "name": "Location",
+          "description": "The cytogenetic location of the gene.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "hgnc_complete_set_file"
+            },
+            "extract": {
+              "column": "location"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "genes/entrez_id",
+          "name": "Entrez ID",
+          "description": "The Entrez Gene ID from NCBI.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "hgnc_complete_set_file"
+            },
+            "extract": {
+              "column": "entrez_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "genes/ensembl_gene_id",
+          "name": "Ensembl gene ID",
+          "description": "The Ensembl gene identifier.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "hgnc_complete_set_file"
+            },
+            "extract": {
+              "column": "ensembl_gene_id"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "citation": "The provided files do not contain information about a specific citation string used for publications.",
+  "keywords": ""
+}

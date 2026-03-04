@@ -1,0 +1,544 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "sc": "https://schema.org/",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "dct": "http://purl.org/dc/terms/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform"
+  },
+  "@type": "sc:Dataset",
+  "name": "Comparative Toxicogenomics Database",
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "description": "The Comparative Toxicogenomics Database (CTD) is a robust, publicly available database designed to advance the understanding of how environmental chemicals impact human health. It provides manually curated information on chemical–gene/protein interactions, chemical–disease, and gene–disease relationships. This data is integrated with functional and pathway information to help generate hypotheses about the molecular mechanisms underlying environmentally influenced diseases. CTD also includes ongoing projects for manual curation of exposome data and chemical–phenotype relationships to identify pre-disease biomarkers resulting from environmental exposures.",
+  "citeAs": "Davis AP, Wiegers TC, Sciaky D, Barkalow F, Strong M, Wyatt B, Wiegers J, McMorran R, Abrar S, Mattingly CJ Comparative Toxicogenomics Database’s 20th anniversary: update 2025. Nucleic Acids Res. 2024 Oct 10.",
+  "license": "The CTD data and software are provided for research and educational purposes only. Commercial use is prohibited without prior express written permission from MDI Biological Laboratory and NC State University. It is provided 'as is' without warranties. Use in publications or applications requires citation, hyperlinking to applicable CTD data pages, and notification to CTD regarding the use. NLM-derived data is subject to additional NLM terms.",
+  "url": "https://ctdbase.org/",
+  "creator": [
+    {
+      "@type": "sc:Person",
+      "name": "Carolyn J. Mattingly",
+      "email": "cjmattin@ncsu.edu",
+      "affiliation": {
+        "@type": "sc:Organization",
+        "name": "NC State University"
+      }
+    },
+    {
+      "@type": "sc:Person",
+      "name": "Thomas C. Wiegers",
+      "email": "tcwieger@ncsu.edu",
+      "affiliation": {
+        "@type": "sc:Organization",
+        "name": "NC State University"
+      }
+    },
+    {
+      "@type": "sc:Person",
+      "name": "Allan Peter Davis",
+      "email": "apdavis3@ncsu.edu",
+      "affiliation": {
+        "@type": "sc:Organization",
+        "name": "NC State University"
+      }
+    },
+    {
+      "@type": "sc:Organization",
+      "name": "NC State University"
+    },
+    {
+      "@type": "sc:Organization",
+      "name": "MDI Biological Laboratory"
+    }
+  ],
+  "datePublished": "2004-11-12",
+  "keywords": "Comparative Toxicogenomics Database, CTD, environmental chemicals, genes, diseases, PubMed, vertebrates, invertebrates, organisms, chemical-gene interactions, human health, Gene Ontology, molecular toxicology, pathways, comparative functional genomics, MDIBL, TGx",
+  "publisher": {
+    "@type": "sc:Organization",
+    "name": "NC State University"
+  },
+  "version": "18128M",
+  "dateCreated": "2004-11-12",
+  "dateModified": "2026-02-27",
+  "inLanguage": [
+    "en"
+  ],
+  "sameAs": "https://fairsharing.org/biodbcore-000173/",
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "CTD_chem_gene_ixns.csv.gz",
+      "contentUrl": "https://ctdbase.org/reports/CTD_chem_gene_ixns.csv.gz",
+      "encodingFormat": "application/gzip",
+      "contentSize": "40925440 B"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "CTD_chem_gene_ixns.tsv.gz",
+      "contentUrl": "https://ctdbase.org/reports/CTD_chem_gene_ixns.tsv.gz",
+      "encodingFormat": "application/gzip",
+      "contentSize": "40925440 B"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "CTD_chem_gene_ixns.xml.gz",
+      "contentUrl": "https://ctdbase.org/reports/CTD_chem_gene_ixns.xml.gz",
+      "encodingFormat": "application/gzip",
+      "contentSize": "49283072 B"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "CTD_chem_gene_ixns_structured.xml.gz",
+      "contentUrl": "https://ctdbase.org/reports/CTD_chem_gene_ixns_structured.xml.gz",
+      "encodingFormat": "application/gzip",
+      "contentSize": "139493581 B"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "CTD_chem_gene_ixns_structured.xsd",
+      "contentUrl": "https://ctdbase.org/reports/CTD_chem_gene_ixns_structured.xsd",
+      "encodingFormat": "application/xml",
+      "contentSize": "9216 B"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "CTD_chemicals.csv.gz",
+      "contentUrl": "https://ctdbase.org/reports/CTD_chemicals.csv.gz",
+      "encodingFormat": "application/gzip",
+      "contentSize": "10485760 B"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "CTD_chemicals.tsv.gz",
+      "contentUrl": "https://ctdbase.org/reports/CTD_chemicals.tsv.gz",
+      "encodingFormat": "application/gzip",
+      "contentSize": "10485760 B"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "CTD_chemicals.xml.gz",
+      "contentUrl": "https://ctdbase.org/reports/CTD_chemicals.xml.gz",
+      "encodingFormat": "application/gzip",
+      "contentSize": "11534336 B"
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "ChemicalGeneInteractions",
+      "name": "Chemical–gene interactions",
+      "description": "These files contain the current CTD data release: February 2026. For customized data sets, use our Batch Query. CTD data is provided without warranty, and its use is subject to certain terms. Commercial users should direct licensing-related questions here. CTD curates chemical–gene and –protein interactions in vertebrates and invertebrates using this hierarchical vocabulary of interaction types. More information.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalGeneInteractions/ChemicalName",
+          "name": "ChemicalName",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chem_gene_ixns.csv.gz"
+            },
+            "extract": {
+              "column": "ChemicalName"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalGeneInteractions/ChemicalID",
+          "name": "ChemicalID",
+          "description": "(MeSH identifier)",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chem_gene_ixns.csv.gz"
+            },
+            "extract": {
+              "column": "ChemicalID"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalGeneInteractions/CasRN",
+          "name": "CasRN",
+          "description": "(CAS Registry Number, if available)",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chem_gene_ixns.csv.gz"
+            },
+            "extract": {
+              "column": "CasRN"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalGeneInteractions/GeneSymbol",
+          "name": "GeneSymbol",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chem_gene_ixns.csv.gz"
+            },
+            "extract": {
+              "column": "GeneSymbol"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalGeneInteractions/GeneID",
+          "name": "GeneID",
+          "description": "(NCBI Gene identifier)",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chem_gene_ixns.csv.gz"
+            },
+            "extract": {
+              "column": "GeneID"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalGeneInteractions/GeneForms",
+          "name": "GeneForms",
+          "description": "('|'-delimited list)",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chem_gene_ixns.csv.gz"
+            },
+            "extract": {
+              "column": "GeneForms"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalGeneInteractions/Organism",
+          "name": "Organism",
+          "description": "(scientific name)",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chem_gene_ixns.csv.gz"
+            },
+            "extract": {
+              "column": "Organism"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalGeneInteractions/OrganismID",
+          "name": "OrganismID",
+          "description": "(NCBI Taxonomy identifier)",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chem_gene_ixns.csv.gz"
+            },
+            "extract": {
+              "column": "OrganismID"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalGeneInteractions/Interaction",
+          "name": "Interaction",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chem_gene_ixns.csv.gz"
+            },
+            "extract": {
+              "column": "Interaction"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalGeneInteractions/InteractionActions",
+          "name": "InteractionActions",
+          "description": "('|'-delimited list)",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chem_gene_ixns.csv.gz"
+            },
+            "extract": {
+              "column": "InteractionActions"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalGeneInteractions/PubMedIDs",
+          "name": "PubMedIDs",
+          "description": "('|'-delimited list)",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chem_gene_ixns.csv.gz"
+            },
+            "extract": {
+              "column": "PubMedIDs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "ChemicalVocabulary",
+      "name": "Chemical vocabulary",
+      "description": "Each chemical occurs in one or more nodes of this hierarchical vocabulary. More information. See also: Linking to CTD chemicals.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/ChemicalName",
+          "name": "ChemicalName",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "ChemicalName"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/ChemicalID",
+          "name": "ChemicalID",
+          "description": "(MeSH identifier)",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "ChemicalID"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/CasRN",
+          "name": "CasRN",
+          "description": "(CAS Registry Number, if available)",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "CasRN"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/PubChemCID",
+          "name": "PubChemCID",
+          "description": "(PubChem Compound, if available) New!",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "PubChemCID"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/PubChemSID",
+          "name": "PubChemSID",
+          "description": "(PubChem Substance, if available) New!",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "PubChemSID"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/DTXSID",
+          "name": "DTXSID",
+          "description": "(CompTox Chemicals Dashboard, if available) New!",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "DTXSID"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/InChIKey",
+          "name": "InChIKey",
+          "description": "(InChIKey, if available) New!",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "InChIKey"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/Definition",
+          "name": "Definition",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "Definition"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/ParentIDs",
+          "name": "ParentIDs",
+          "description": "(identifiers of the parent terms; '|'-delimited list)",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "ParentIDs"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/TreeNumbers",
+          "name": "TreeNumbers",
+          "description": "(identifiers of the chemical's nodes; '|'-delimited list)",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "TreeNumbers"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/ParentTreeNumbers",
+          "name": "ParentTreeNumbers",
+          "description": "(identifiers of the parent nodes; '|'-delimited list)",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "ParentTreeNumbers"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/MESHSynonyms",
+          "name": "MESHSynonyms",
+          "description": "('|'-delimited list)",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "MESHSynonyms"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "ChemicalVocabulary/CTDCuratedSynonyms",
+          "name": "CTDCuratedSynonyms",
+          "description": "('|'-delimited list) New!",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "fileObject": {
+              "@id": "CTD_chemicals.csv.gz"
+            },
+            "extract": {
+              "column": "CTDCuratedSynonyms"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "citation": "Davis AP, Wiegers TC, Sciaky D, Barkalow F, Strong M, Wyatt B, Wiegers J, McMorran R, Abrar S, Mattingly CJ Comparative Toxicogenomics Database’s 20th anniversary: update 2025. Nucleic Acids Res. 2024 Oct 10."
+}
