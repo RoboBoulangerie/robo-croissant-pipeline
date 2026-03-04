@@ -1,0 +1,343 @@
+[[knowledge_sources]]
+#BindingDB: An Open Knowledgebase of Protein-Small Molecule Interactions	PAR-20-097	yes	https://www.bindingdb.org/rwd/bind/chemsearch/marvin/Download.jsp
+name = "Bindingdb"
+url = "https://www.bindingdb.org/rwd/bind/index.jsp"
+enabled = false
+depth = 5
+blacklist = "/(rest|FAQ2|SearchTemplates|glossary|IiBSDFile|caveat_sequences|mybdb|user|validation_sets|Pathways|target|submit|specified|MonoNames|surflex|example|rct)/,data/sdf,dbsearch,.*\\.md5,HostGuest.tsv|BindingX.*,By.*"
+
+[[knowledge_sources]]
+#PhysioNet: A FAIR and sustainable data repository	PAR-23-237	Yes	https://physionet.org/about/
+name = "PhysioNet"
+url = "https://physionet.org"
+enabled = false
+blacklist = "/(challenge|content|mirrors|news|physiobank|physiotools|projects|settings|tutorials|users)/"
+
+[[knowledge_sources]]
+#The BRCA Exchange Knowledgebase for Clinical Cancer Genetics	PAR-23-237	Yes	https://brcaexchange.org/releases
+name = "BRCA Exchange"
+url = "https://brcaexchange.org/releases"
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#International Seizure and SUDEP Research Repository (InSSURR)	PAR-23-236	Yes
+name = "InSSURR"
+url = "https://sudepresearch.org/"
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#The Molecular Signatures Database: A knowledgebase for gene set based analysis of genomic data
+name = "MSigDB"
+url = "https://www.gsea-msigdb.org/gsea/msigdb/"
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#USC Facebase IV Craniofacial Development and Dysmorpholoy Data Management and Integration Hub (FaceBase IV)	PAR-23-237	Yes	https://www.facebase.org/chaise/recordset/#1/isa:dataset@sort(release_date::desc::,RID)@after(2024-02-27,3P-4VSA)
+name = "FaceBase"
+url = "https://www.facebase.org/"
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Metabolomics Workbench - National Metabolomics Data Repository	PAR-23-237	Yes	https://www.metabolomicsworkbench.org/databases/index.php
+name = "Metabolomics Workbench"
+url = "https://www.metabolomicsworkbench.org/databases/index.php"
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Alliance Central: A platform for sustainable development of next generation genome knowledgebases	PAR-23-237	yes	https://www.alliancegenome.org/downloads, https://www.alliancegenome.org/privacy-warranty-licensing
+name = "Alliance Central"
+url = "https://www.alliancegenome.org/"
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Archiving and Sharing Skeletal Phenotyping Data	PAR-23-236	unclear
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#The Musculoskeletal Knowledge Portal	PAR-23-236	yes	https://msk.hugeamp.org/datasets.html
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#The OAI Collaborative Osteoarthritis Research Enterprise (OAI CORE) Knowledgebase	PAR-23-236	yes
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#GeoSpace - GeoSpatial Knowledgebase for Exposomics	PAR-23-236	yes	https://www.gsbase.org
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#HIV Pharmacology Data Repository	PAR-23-079	?
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#ISIC-REPO; ISIC Skin Imaging Repository Enhancements for Promoting Interoperability and Utilization	PAR-23-079	yes
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#The Georgia Cystic Fibrosis Data Warehouse	PAR-23-079	maybe?
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Pennsieve: Impactful Multimodal Data Sharing for Epilepsy Research	PAR-23-079	yes	https://epilepsy.science
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#FlyBase: A Drosophila Genomic and Genetic Database	PAR-23-078	yes
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#From RRID to Resource Watch: A Knowledgebase of Biomedical Research Resources	PAR-20-097	unclear
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Exposome Correlation and Interpretation Database (ECID)	PAR-20-097	yes
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#UniProt: A Protein Sequence and Function Resource for Biomedical Science	PAR-20-097	yes	https://www.uniprot.org/help/license
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#i-AKC: Integrated AIRR Knowledge Commons	PAR-20-097	yes	https://airr-knowledge.org/repositories/
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+
+[[knowledge_sources]]
+#Creation of a knowledgebase of high quality assertions of the clinical actionability of somatic variants in cancer	PAR-20-097	yes	https://civicdb.org/releases/main
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#REDfly: The regulatory sequence resource for Drosophila and other insects	PAR-20-097	yes
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Establishing the PhenX Toolkit as a Biomedical Knowledgebase	PAR-20-097	yes	https://www.phenxtoolkit.org/resources/download
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#VIOLIN 2.0: Vaccine Information and Ontology LInked kNowledgebase	PAR-20-097	yes	https://violinet.org/introduction.php
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Knowledgebase of Escherichia coli Genome and Metabolism	PAR-20-097	yes	https://ecocyc.org/credits.shtml
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#PharmGKB	PAR-20-097	yes	https://www.clinpgx.org/downloads
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Virus Taxonomy: A Community Knowledgebase Supporting Virus Research	PAR-20-097	yes	https://ictv.global/taxonomy/history
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#African Genomics Data Hub Biomedical Knowledgebase	PAR-20-097	yes	https://afrigen-d.org/data-resources
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#BioPortal: An Expansive Knowledgebase of Biomedical Entities and Relations	PAR-20-097	yes	https://data.bioontology.org
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Strengthening community knowledge bases for genetic association studies and polygenic scores, the GWAS and PGS Catalogs	PAR-20-097	yes	https://www.pgscatalog.org/downloads/
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#The Human Disease Ontology: An integrated, mechanistic knowledge resource for biomedical research.	PAR-20-097	yes	https://disease-ontology.org/about/
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Reactome: An Open Knowledgebase of Human Pathways.	PAR-20-097
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#WormBase: a core data resource for C. elegans and other nematodes	PAR-20-097
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Gene Ontology Consortium and Knowledgebase	PAR-20-097
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#GlyGen growth and evolution into a central resource for glycans and glycoconjugates	PAR-20-097	yes
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Supporting Biomedical Discovery with the ROBOKOP Graph Knowledgebase.	PAR-20-097
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Enhancing the HemOnc Knowledgebase of Chemotherapy Drugs and Regimens	PAR-20-097
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Global proteomics mass spectrometry data sharing infrastructure	PAR-20-089
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Pan-Neurotrauma Data Commons	PAR-20-089
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Biological Magnetic Resonance Data Bank Base	PAR-20-089
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#An Imaging Repository for the Cerebrovascular Disease Knowledge Portal (iCDKP)	PAR-20-089
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
+
+[[knowledge_sources]]
+#Southern HIV and Alcohol Research Consortium Biomedical Data Repository	PAR-20-089
+name = ""
+url = ""
+enabled = false
+depth = 2
+blacklist = ""
