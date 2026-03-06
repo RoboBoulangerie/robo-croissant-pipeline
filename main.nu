@@ -52,8 +52,33 @@ def write_aichat_config [home_dir: string] {
             ]
         }
         mkdir $"($home_dir)/.config/aichat"
-        $config | to yaml | save -f /home/rc/.config/aichat/config.yaml
+        $config | to yaml | save -f $"($home_dir)/.config/aichat/config.yaml"
     } catch {|e| echo $e }
+}
+
+def clean_ai_json_text [raw: string] {
+    $raw
+    | str replace -a '```json' ''
+    | str replace -a '```' ''
+    | str trim
+}
+
+def parse_json_with_repair [raw: string] {
+    let cleaned = (clean_ai_json_text $raw)
+    try {
+        $cleaned | from json
+    } catch {
+        let repair_prompt = $"
+Convert the following text into strict valid RFC 8259 JSON.
+Return only JSON with no markdown code fences.
+Replace placeholders like `...` with valid JSON values.
+
+($cleaned)
+"
+        let repaired_raw = (aichat $"($repair_prompt)")
+        let repaired_text = (clean_ai_json_text $repaired_raw)
+        $repaired_text | from json
+    }
 }
 
 def main [] {
@@ -61,8 +86,8 @@ def main [] {
     stor create --table-name "knowledge_sources" --columns { name: str, url: str, croissant_metadata: jsonb}
     stor create --table-name "knowledge_source_mappings" --columns { name: str, key: str, answer: str, url: str }
 
-    let home_dir = $nu.home-path
-    if not ($"($home_dir)/.config/aichat/config.yaml" | path exists) { (write_aichat_config home_dir) }
+    let home_dir = $nu.home-dir
+#    if not ($"($home_dir)/.config/aichat/config.yaml" | path exists) { (write_aichat_config $home_dir) }
 
     let croissant_spec_tmp_dir = mktemp -d -p .
     (crawl_croissant_spec $croissant_spec_tmp_dir)
@@ -105,17 +130,18 @@ def main [] {
         for p in $prompts {
             try {
                 let answer = aichat -f $tmp_dir $"($p.prompt)"
-                let key_answer =  $answer | query json $p.key
+                let answer_json = (parse_json_with_repair $answer)
+                let key_answer =  $answer_json | get -o $p.key
                 #$key_answer | print
-                let url_answer =  $answer | query json url
+                let url_answer =  $answer_json | get -o url
                 stor insert --table-name "knowledge_source_mappings" --data-record { name: $source_name, key: $p.key, answer: $key_answer, url: $url_answer }
             } catch {|e| echo $e }
         }
 
         let croissant_metadata_prompt = $config | get croissant_metadata | str replace '%name%' $"($source.name)"
-        let cr_answer = aichat -f $tmp_dir -f $croissant_spec_tmp_dir $"($croissant_metadata_prompt)" | str replace '```json' '' | str replace '```' ''
+        let cr_answer = aichat -f $tmp_dir -f $croissant_spec_tmp_dir $"($croissant_metadata_prompt)"
         #$cr_answer | print
-        mut cr_answer_json = $cr_answer | from json
+        mut cr_answer_json = (parse_json_with_repair $cr_answer)
 
         let mapping_data = stor open | query db "select key, answer from knowledge_source_mappings" | reduce -f {} {|it, acc| $acc | upsert $it.key $it.answer }
         #$mapping_data | print

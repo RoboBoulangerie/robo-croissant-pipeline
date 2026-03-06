@@ -16,20 +16,23 @@ cargo install nu
 ```
 See https://www.nushell.sh/ for more information.
 
-### Install Nushell, AIChat, and Spider
+### Install and configure AIChat
 AIChat is an all-in-one LLM CLI tool featuring Shell Assistant, CMD & REPL Mode, RAG, AI Tools & Agents, and More.
 ```shell
 cargo install aichat
+```
+Once installed, call aichat, which will prompt you to create its configuration file
+```shell
+aichat hi
 ```
 See https://github.com/sigoden/aichat for more information.
 
 ### Install Spider
 Spider is a web crawler and scraper.
 ```shell
-cargo install spider
+cargo install spider_cli
 ```
 See https://github.com/spider-rs/spider for more information.
-
 
 ## Running Robo Croissant Pipeline
 ```shell
