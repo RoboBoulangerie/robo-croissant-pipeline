@@ -30,34 +30,6 @@ def crawl_croissant_spec [tmp_dir: string] {
     } catch {|e| print $e }
 }
 
-def write_aichat_config [home_dir: string] {
-    if not ($env.RC_MODEL) {
-        print "RC_MODEL environment variable must be set"
-        exit 1
-    }
-    if not ($env.RC_CLIENTS_TYPE) {
-        print "RC_CLIENTS_TYPE environment variable must be set"
-        exit 1
-    }
-    if not ($env.RC_CLIENTS_API_KEY) {
-        print "RC_CLIENTS_API_KEY environment variable must be set"
-        exit 1
-    }
-    try {
-        let config = {
-            "model": $env.MODEL
-            "clients": [
-                {
-                    "type": $env.CLIENTS_TYPE
-                    "api_key": $env.CLIENTS_API_KEY
-                }
-            ]
-        }
-        mkdir $"($home_dir)/.config/aichat"
-        $config | to yaml | save -f /home/rc/.config/aichat/config.yaml
-    } catch {|e| print $e }
-}
-
 def main [] {
     stor reset
     stor create --table-name "knowledge_sources" --columns { name: str, url: str, croissant_metadata: jsonb}
@@ -73,13 +45,7 @@ def main [] {
 
     let config = open config.toml
 
-#    let prompts = $config | get prompts
     mut enabled_sources = ($config | get knowledge_sources)
-
-    if ("RC_TARGETED_KNOWLEDGE_SOURCES" in $env) {
-        let targeted_knowledge_sources = $env.RC_TARGETED_KNOWLEDGE_SOURCES | split row ","
-        if (($targeted_knowledge_sources | length) > 0) { $enabled_sources = ($enabled_sources | where {|source| $source.name in $targeted_knowledge_sources }) }
-    }
 
     for source in $enabled_sources {
         print $source.name
