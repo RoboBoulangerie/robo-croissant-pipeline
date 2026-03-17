@@ -1,7 +1,4 @@
-# RoboCroissant Pipeline
-
-
-## Croissant Metadata Files:
+## Croissant Metadata files:
 
 - [CADRE](CADRE.json)
 - [CTD](CTD.json)
