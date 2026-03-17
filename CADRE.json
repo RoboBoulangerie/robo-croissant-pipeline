@@ -1,0 +1,221 @@
+[
+  {
+    "name": "CADRE",
+    "url": "https://cadre.med.wisc.edu/",
+    "croissant_metadata": {
+      "@context": {
+        "@language": "en",
+        "@vocab": "https://schema.org/",
+        "cr": "http://mlcommons.org/croissant/",
+        "sc": "https://schema.org/",
+        "dct": "http://purl.org/dc/terms/",
+        "citeAs": "cr:citeAs",
+        "column": "cr:column",
+        "conformsTo": "dct:conformsTo",
+        "data": {
+          "@id": "cr:data",
+          "@type": "@json"
+        },
+        "dataType": {
+          "@id": "cr:dataType",
+          "@type": "@vocab"
+        },
+        "extract": "cr:extract",
+        "field": "cr:field",
+        "fileProperty": "cr:fileProperty",
+        "fileObject": "cr:fileObject",
+        "fileSet": "cr:fileSet",
+        "format": "cr:format",
+        "includes": "cr:includes",
+        "isLiveDataset": "cr:isLiveDataset",
+        "jsonPath": "cr:jsonPath",
+        "key": "cr:key",
+        "recordSet": "cr:recordSet",
+        "source": "cr:source"
+      },
+      "@type": "sc:Dataset",
+      "name": "CADRE (Children's Allergy and Asthma Data Repository)",
+      "alternateName": "Children's Allergy and Asthma Data Repository",
+      "description": "The Children’s Allergy and Asthma Data Repository (CADRE) is a centralized resource created to address a critical gap in asthma research: identifying the risk factors and biological mechanisms that lead to childhood asthma. By uniting data from various cohorts, CADRE empowers researchers to uncover insights that individual studies alone cannot provide.",
+      "url": "https://cadre.med.wisc.edu/",
+      "conformsTo": "http://mlcommons.org/croissant/1.0",
+      "keywords": "asthma research, childhood asthma, allergy, birth cohort studies, data repository, biological mechanisms, risk factors",
+      "creator": [
+        {
+          "@type": "Person",
+          "name": "Jim Gern, MD",
+          "jobTitle": "Principal Investigator",
+          "affiliation": {
+            "@type": "Organization",
+            "name": "University of Wisconsin-Madison"
+          }
+        }
+      ],
+      "publisher": {
+        "@type": "Organization",
+        "name": "University of Wisconsin–Madison"
+      },
+      "funder": [
+        {
+          "@type": "Organization",
+          "name": "National Institute of Allergy and Infectious Diseases (NIAID)"
+        },
+        {
+          "@type": "Organization",
+          "name": "NIH Office of the Director"
+        }
+      ],
+      "distribution": [
+        {
+          "@type": "cr:FileObject",
+          "@id": "core-elements-file",
+          "name": "CADRE Core Data Elements",
+          "description": "Spreadsheet containing the 200 harmonized variables used most frequently in CREW and CADRE publications.",
+          "contentUrl": "https://cadre.med.wisc.edu/wp-content/uploads/sites/212/2026/01/CADRE_Core_Data_Elements_2025_10_07.csv",
+          "encodingFormat": "text/csv"
+        },
+        {
+          "@type": "cr:FileObject",
+          "@id": "ancillary-elements-file",
+          "name": "CADRE Ancillary Data Elements",
+          "description": "Spreadsheet containing additional harmonized variables that have been used less frequently.",
+          "contentUrl": "https://cadre.med.wisc.edu/wp-content/uploads/sites/212/2026/01/CADRE_Ancillary_Data_Elements_2025_10_08.csv",
+          "encodingFormat": "text/csv"
+        }
+      ],
+      "recordSet": [
+        {
+          "@type": "cr:RecordSet",
+          "@id": "core-variable-definitions",
+          "name": "Core Variable Definitions",
+          "description": "Definitions for the most frequently used variables in the CADRE repository.",
+          "field": [
+            {
+              "@type": "cr:Field",
+              "@id": "core-variable-definitions/data-element",
+              "name": "Data element",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "core-elements-file"
+                },
+                "extract": {
+                  "column": "Data element"
+                }
+              }
+            },
+            {
+              "@type": "cr:Field",
+              "@id": "core-variable-definitions/description",
+              "name": "Description",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "core-elements-file"
+                },
+                "extract": {
+                  "column": "Description"
+                }
+              }
+            },
+            {
+              "@type": "cr:Field",
+              "@id": "core-variable-definitions/category",
+              "name": "Category",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "core-elements-file"
+                },
+                "extract": {
+                  "column": "Category"
+                }
+              }
+            },
+            {
+              "@type": "cr:Field",
+              "@id": "core-variable-definitions/response-options",
+              "name": "Response Options",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "core-elements-file"
+                },
+                "extract": {
+                  "column": "Response Options"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "@type": "cr:RecordSet",
+          "@id": "ancillary-variable-definitions",
+          "name": "Ancillary Variable Definitions",
+          "description": "Definitions for secondary harmonized variables in the CADRE repository.",
+          "field": [
+            {
+              "@type": "cr:Field",
+              "@id": "ancillary-variable-definitions/data-element",
+              "name": "Data element",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "ancillary-elements-file"
+                },
+                "extract": {
+                  "column": "Data element"
+                }
+              }
+            },
+            {
+              "@type": "cr:Field",
+              "@id": "ancillary-variable-definitions/description",
+              "name": "Description",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "ancillary-elements-file"
+                },
+                "extract": {
+                  "column": "Description"
+                }
+              }
+            },
+            {
+              "@type": "cr:Field",
+              "@id": "ancillary-variable-definitions/category",
+              "name": "Category",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "ancillary-elements-file"
+                },
+                "extract": {
+                  "column": "Category"
+                }
+              }
+            },
+            {
+              "@type": "cr:Field",
+              "@id": "ancillary-variable-definitions/response-options",
+              "name": "Response Options",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "ancillary-elements-file"
+                },
+                "extract": {
+                  "column": "Response Options"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "version": "Data Elements version 2025_10_07 (Core) and 2025_10_08 (Ancillary)",
+      "citation": "not mentioned",
+      "license": "© 2026 Board of Regents of the University of Wisconsin System"
+    }
+  }
+]

@@ -1,0 +1,219 @@
+[
+  {
+    "name": "HGNC",
+    "url": "https://www.genenames.org/",
+    "croissant_metadata": {
+      "@context": {
+        "@language": "en",
+        "@vocab": "https://schema.org/",
+        "sc": "https://schema.org/",
+        "cr": "http://mlcommons.org/croissant/",
+        "rai": "http://mlcommons.org/croissant/RAI/",
+        "dct": "http://purl.org/dc/terms/",
+        "citeAs": "cr:citeAs",
+        "column": "cr:column",
+        "conformsTo": "dct:conformsTo",
+        "data": {
+          "@id": "cr:data",
+          "@type": "@json"
+        },
+        "dataType": {
+          "@id": "cr:dataType",
+          "@type": "@vocab"
+        },
+        "extract": "cr:extract",
+        "field": "cr:field",
+        "fileProperty": "cr:fileProperty",
+        "fileObject": "cr:fileObject",
+        "fileSet": "cr:fileSet",
+        "format": "cr:format",
+        "includes": "cr:includes",
+        "isLiveDataset": "cr:isLiveDataset",
+        "jsonPath": "cr:jsonPath",
+        "key": "cr:key",
+        "recordSet": "cr:recordSet",
+        "references": "cr:references",
+        "source": "cr:source",
+        "subField": "cr:subField",
+        "transform": "cr:transform"
+      },
+      "@type": "sc:Dataset",
+      "name": "HUGO Gene Nomenclature Committee (HGNC)",
+      "description": "The HGNC is responsible for approving unique symbols and names for human loci, including protein coding genes, ncRNA genes and pseudogenes, to allow unambiguous scientific communication.",
+      "conformsTo": "http://mlcommons.org/croissant/1.0",
+      "url": "https://www.genenames.org/",
+      "license": "Creative Commons Public Domain (CC0) License",
+      "creator": {
+        "@type": "sc:Organization",
+        "name": "HUGO Gene Nomenclature Committee",
+        "url": "https://www.genenames.org/"
+      },
+      "publisher": {
+        "@type": "sc:Organization",
+        "name": "University of Cambridge & EMBL-EBI"
+      },
+      "citeAs": "@article{seal2023genenames, title={Genenames.org: the HGNC resources in 2023}, author={Seal, Ruth L and Braschi, Bryony and Gray, Kristian and Jones, Tamsin EM and Tweedie, Susan and Haim-Vilmovsky, Liora and Bruford, Elspeth A}, journal={Nucleic Acids Research}, volume={51}, number={D1}, pages={D1003--D1009}, year={2023}, publisher={Oxford University Press}}",
+      "keywords": "human gene nomenclature, approved gene symbols, gene names, gene families, protein-coding genes, ncRNA genes, pseudogenes, locus types",
+      "isLiveDataset": true,
+      "datePublished": "2026-03-13",
+      "distribution": [
+        {
+          "@type": "cr:FileObject",
+          "@id": "hgnc_complete_set_json",
+          "name": "HGNC Complete Set (JSON)",
+          "contentUrl": "https://storage.googleapis.com/public-download-files/hgnc/json/json/hgnc_complete_set.json",
+          "encodingFormat": "application/json",
+          "description": "Complete HGNC approved dataset in JSON format."
+        },
+        {
+          "@type": "cr:FileObject",
+          "@id": "hgnc_complete_set_tsv",
+          "name": "HGNC Complete Set (TSV)",
+          "contentUrl": "https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/hgnc_complete_set.txt",
+          "encodingFormat": "text/tab-separated-values",
+          "description": "Complete HGNC approved dataset in tab-delimited text format."
+        },
+        {
+          "@type": "cr:FileObject",
+          "@id": "withdrawn_set_json",
+          "name": "Withdrawn Symbols (JSON)",
+          "contentUrl": "https://storage.googleapis.com/public-download-files/hgnc/json/json/withdrawn.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "cr:FileObject",
+          "@id": "hgnc_owl",
+          "name": "HGNC Ontology (OWL)",
+          "contentUrl": "https://storage.googleapis.com/public-download-files/hgnc/owl/owl/hgnc.owl",
+          "encodingFormat": "application/rdf+xml",
+          "description": "Semantic web representation of HGNC genes organized by locus type and gene group."
+        }
+      ],
+      "recordSet": [
+        {
+          "@type": "cr:RecordSet",
+          "@id": "genes",
+          "name": "Approved Gene Symbols",
+          "description": "Records representing human genes with approved nomenclature.",
+          "key": "genes/hgnc_id",
+          "field": [
+            {
+              "@id": "genes/hgnc_id",
+              "@type": "cr:Field",
+              "description": "A unique ID provided by the HGNC.",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "hgnc_complete_set_json"
+                },
+                "extract": {
+                  "jsonPath": "$.response.docs[*].hgnc_id"
+                }
+              }
+            },
+            {
+              "@id": "genes/symbol",
+              "@type": "cr:Field",
+              "description": "The HGNC approved gene symbol.",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "hgnc_complete_set_json"
+                },
+                "extract": {
+                  "jsonPath": "$.response.docs[*].symbol"
+                }
+              }
+            },
+            {
+              "@id": "genes/name",
+              "@type": "cr:Field",
+              "description": "HGNC approved name for the gene.",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "hgnc_complete_set_json"
+                },
+                "extract": {
+                  "jsonPath": "$.response.docs[*].name"
+                }
+              }
+            },
+            {
+              "@id": "genes/locus_group",
+              "@type": "cr:Field",
+              "description": "A group name for the locus type (e.g. protein-coding gene, non-coding RNA).",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "hgnc_complete_set_json"
+                },
+                "extract": {
+                  "jsonPath": "$.response.docs[*].locus_group"
+                }
+              }
+            },
+            {
+              "@id": "genes/locus_type",
+              "@type": "cr:Field",
+              "description": "The locus type (e.g. gene with protein product, RNA, pseudogene).",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "hgnc_complete_set_json"
+                },
+                "extract": {
+                  "jsonPath": "$.response.docs[*].locus_type"
+                }
+              }
+            },
+            {
+              "@id": "genes/location",
+              "@type": "cr:Field",
+              "description": "Chromosomal location.",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "hgnc_complete_set_json"
+                },
+                "extract": {
+                  "jsonPath": "$.response.docs[*].location"
+                }
+              }
+            },
+            {
+              "@id": "genes/ensembl_gene_id",
+              "@type": "cr:Field",
+              "description": "Ensembl gene ID.",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "hgnc_complete_set_json"
+                },
+                "extract": {
+                  "jsonPath": "$.response.docs[*].ensembl_gene_id"
+                }
+              }
+            },
+            {
+              "@id": "genes/entrez_id",
+              "@type": "cr:Field",
+              "description": "Entrez gene ID.",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "hgnc_complete_set_json"
+                },
+                "extract": {
+                  "jsonPath": "$.response.docs[*].entrez_id"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "version": "Last updated: 2026-03-13",
+      "citation": "Seal RL, Braschi B, Gray K, Jones TEM, Tweedie S, Haim-Vilmovsky L, Bruford EA. Genenames.org: the HGNC resources in 2023. Nucleic Acids Res. 2023 Jan 6;51(D1):D1003-D1009. DOI: 10.1093/nar/gkac888; RRID:SCR_002827"
+    }
+  }
+]

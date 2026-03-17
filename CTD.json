@@ -1,0 +1,280 @@
+[
+  {
+    "name": "CTD",
+    "url": "https://ctdbase.org",
+    "croissant_metadata": {
+      "@context": {
+        "@language": "en",
+        "@vocab": "https://schema.org/",
+        "sc": "https://schema.org/",
+        "cr": "http://mlcommons.org/croissant/",
+        "rai": "http://mlcommons.org/croissant/RAI/",
+        "dct": "http://purl.org/dc/terms/",
+        "citeAs": "cr:citeAs",
+        "column": "cr:column",
+        "conformsTo": "dct:conformsTo",
+        "data": {
+          "@id": "cr:data",
+          "@type": "@json"
+        },
+        "dataType": {
+          "@id": "cr:dataType",
+          "@type": "@vocab"
+        },
+        "extract": "cr:extract",
+        "field": "cr:field",
+        "fileProperty": "cr:fileProperty",
+        "fileObject": "cr:fileObject",
+        "fileSet": "cr:fileSet",
+        "format": "cr:format",
+        "includes": "cr:includes",
+        "isLiveDataset": "cr:isLiveDataset",
+        "jsonPath": "cr:jsonPath",
+        "key": "cr:key",
+        "md5": "cr:md5",
+        "parentField": "cr:parentField",
+        "path": "cr:path",
+        "recordSet": "cr:recordSet",
+        "references": "cr:references",
+        "regex": "cr:regex",
+        "repeated": "cr:repeated",
+        "replace": "cr:replace",
+        "separator": "cr:separator",
+        "source": "cr:source",
+        "subField": "cr:subField",
+        "transform": "cr:transform"
+      },
+      "@type": "sc:Dataset",
+      "name": "Comparative Toxicogenomics Database",
+      "description": "The Comparative Toxicogenomics Database (CTD) illuminates how environmental chemicals affect human health.",
+      "url": "https://ctdbase.org/",
+      "conformsTo": "http://mlcommons.org/croissant/1.0",
+      "citeAs": "Davis AP, Wiegers TC, Sciaky D, Barkalow F, Strong M, Wyatt B, Wiegers J, McMorran R, Abrar S, Mattingly CJ. Comparative Toxicogenomics Database’s 20th anniversary: update 2025. Nucleic Acids Res. 2024 Oct 10. PMID: 39385618.",
+      "license": "Research and educational use only. Medical treatment decisions should not be made based on the information in CTD. Any reproduction or use for commercial purpose is prohibited without the prior express written permission of the MDI Biological Laboratory and NC State University.",
+      "version": "February 2026",
+      "datePublished": "2026-02-27",
+      "publisher": {
+        "@type": "Organization",
+        "name": "North Carolina State University"
+      },
+      "distribution": [
+        {
+          "@type": "cr:FileObject",
+          "@id": "chem_gene_ixns_file",
+          "name": "Chemical–gene interactions",
+          "contentUrl": "https://ctdbase.org/reports/CTD_chem_gene_ixns.csv.gz",
+          "encodingFormat": "text/csv",
+          "description": "Curated cross-species chemical–gene and protein interactions."
+        },
+        {
+          "@type": "cr:FileObject",
+          "@id": "chem_disease_file",
+          "name": "Aggregate Chemical–disease associations",
+          "contentUrl": "https://ctdbase.org/reports/CTD_chemicals_diseases.csv.gz",
+          "encodingFormat": "text/csv",
+          "description": "Curated and inferred chemical–disease associations."
+        },
+        {
+          "@type": "cr:FileObject",
+          "@id": "gene_disease_file",
+          "name": "Aggregate Gene–disease associations",
+          "contentUrl": "https://ctdbase.org/reports/CTD_genes_diseases.csv.gz",
+          "encodingFormat": "text/csv",
+          "description": "Curated and inferred gene–disease associations."
+        },
+        {
+          "@type": "cr:FileObject",
+          "@id": "chem_vocab_file",
+          "name": "Chemical vocabulary",
+          "contentUrl": "https://ctdbase.org/reports/CTD_chemicals.csv.gz",
+          "encodingFormat": "text/csv",
+          "description": "Hierarchical chemical vocabulary including MeSH IDs and synonyms."
+        }
+      ],
+      "recordSet": [
+        {
+          "@type": "cr:RecordSet",
+          "@id": "ChemicalGeneInteractions",
+          "name": "Chemical–gene interactions",
+          "description": "Interaction records between chemicals and genes.",
+          "field": [
+            {
+              "@id": "ChemicalName",
+              "name": "ChemicalName",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_gene_ixns_file"
+                },
+                "extract": {
+                  "column": "ChemicalName"
+                }
+              }
+            },
+            {
+              "@id": "ChemicalID",
+              "name": "ChemicalID",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_gene_ixns_file"
+                },
+                "extract": {
+                  "column": "ChemicalID"
+                }
+              }
+            },
+            {
+              "@id": "GeneSymbol",
+              "name": "GeneSymbol",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_gene_ixns_file"
+                },
+                "extract": {
+                  "column": "GeneSymbol"
+                }
+              }
+            },
+            {
+              "@id": "GeneID",
+              "name": "GeneID",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_gene_ixns_file"
+                },
+                "extract": {
+                  "column": "GeneID"
+                }
+              }
+            },
+            {
+              "@id": "OrganismID",
+              "name": "OrganismID",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_gene_ixns_file"
+                },
+                "extract": {
+                  "column": "OrganismID"
+                }
+              }
+            },
+            {
+              "@id": "InteractionActions",
+              "name": "InteractionActions",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_gene_ixns_file"
+                },
+                "extract": {
+                  "column": "InteractionActions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "@type": "cr:RecordSet",
+          "@id": "ChemicalDiseaseAssociations",
+          "name": "Chemical–disease associations",
+          "description": "Inference and curated associations between chemicals and diseases.",
+          "field": [
+            {
+              "@id": "ChemName",
+              "name": "ChemicalName",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_disease_file"
+                },
+                "extract": {
+                  "column": "ChemicalName"
+                }
+              }
+            },
+            {
+              "@id": "DiseaseID",
+              "name": "DiseaseID",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_disease_file"
+                },
+                "extract": {
+                  "column": "DiseaseID"
+                }
+              }
+            },
+            {
+              "@id": "InferenceScore",
+              "name": "InferenceScore",
+              "dataType": "sc:Float",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_disease_file"
+                },
+                "extract": {
+                  "column": "InferenceScore"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "@type": "cr:RecordSet",
+          "@id": "ChemicalVocabulary",
+          "name": "Chemical vocabulary",
+          "description": "MeSH and curated chemical metadata.",
+          "field": [
+            {
+              "@id": "Vocab_ChemicalID",
+              "name": "ChemicalID",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_vocab_file"
+                },
+                "extract": {
+                  "column": "ChemicalID"
+                }
+              }
+            },
+            {
+              "@id": "CasRN",
+              "name": "CasRN",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_vocab_file"
+                },
+                "extract": {
+                  "column": "CasRN"
+                }
+              }
+            },
+            {
+              "@id": "InChIKey",
+              "name": "InChIKey",
+              "dataType": "sc:Text",
+              "source": {
+                "fileObject": {
+                  "@id": "chem_vocab_file"
+                },
+                "extract": {
+                  "column": "InChIKey"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "citation": "Davis AP, Wiegers TC, Sciaky D, Barkalow F, Strong M, Wyatt B, Wiegers J, McMorran R, Abrar S, Mattingly CJ Comparative Toxicogenomics Database’s 20th anniversary: update 2025. Nucleic Acids Res. 2024 Oct 10.",
+      "keywords": "Comparative Toxicogenomics Database, CTD, environmental chemicals, genes, diseases, PubMed, vertebrates, invertebrates, organisms, chemical-gene interactions, human health, Gene Ontology, molecular toxicology, pathways, comparative functional genomics, MDIBL, TGx"
+    }
+  }
+]

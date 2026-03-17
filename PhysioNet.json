@@ -1,0 +1,201 @@
+[
+  {
+    "name": "PhysioNet",
+    "url": "https://physionet.org/about/",
+    "croissant_metadata": {
+      "@context": {
+        "@language": "en",
+        "@vocab": "https://schema.org/",
+        "cr": "http://mlcommons.org/croissant/",
+        "sc": "https://schema.org/",
+        "dct": "http://purl.org/dc/terms/",
+        "citeAs": "cr:citeAs",
+        "column": "cr:column",
+        "conformsTo": "dct:conformsTo",
+        "data": {
+          "@id": "cr:data",
+          "@type": "@json"
+        },
+        "dataType": {
+          "@id": "cr:dataType",
+          "@type": "@vocab"
+        },
+        "extract": "cr:extract",
+        "field": "cr:field",
+        "fileProperty": "cr:fileProperty",
+        "fileObject": "cr:fileObject",
+        "fileSet": "cr:fileSet",
+        "format": "cr:format",
+        "includes": "cr:includes",
+        "isLiveDataset": "cr:isLiveDataset",
+        "jsonPath": "cr:jsonPath",
+        "key": "cr:key",
+        "parentField": "cr:parentField",
+        "path": "cr:path",
+        "recordSet": "cr:recordSet",
+        "references": "cr:references",
+        "regex": "cr:regex",
+        "repeated": "cr:repeated",
+        "source": "cr:source",
+        "subField": "cr:subField",
+        "transform": "cr:transform"
+      },
+      "@type": "sc:Dataset",
+      "name": "PhysioNet",
+      "description": "PhysioNet is the moniker of the Research Resource for Complex Physiologic Signals, which conducts and catalyzes biomedical research and education by offering free access to large collections of physiological and clinical data and related open-source software.",
+      "conformsTo": "http://mlcommons.org/croissant/1.0",
+      "url": "https://physionet.org/",
+      "citeAs": "Goldberger AL, Amaral LAN, Glass L, Hausdorff JM, Ivanov PCh, Mark RG, Mietus JE, Moody GB, Peng C-K, Stanley HE. PhysioBank, PhysioToolkit, and PhysioNet: Components of a New Research Resource for Complex Physiologic Signals. Circulation 101(23):e215-e220; 2000 (June 13).",
+      "creator": {
+        "@type": "sc:Organization",
+        "name": "MIT Laboratory for Computational Physiology",
+        "url": "https://lcp.mit.edu/"
+      },
+      "publisher": {
+        "@type": "sc:Organization",
+        "name": "MIT Laboratory for Computational Physiology"
+      },
+      "keywords": "physiologic signals, health data, biomedical research, open-source software, PhysioBank, PhysioToolkit, ECG, EEG, critical care, nonlinear dynamics",
+      "license": "PhysioNet Credentialed Health Data License 1.5.0, PhysioNet Restricted Health Data License 1.5.0, ODC Attribution License v1.0, Creative Commons Attribution 4.0, GNU GPL version 3, MIT License",
+      "distribution": [
+        {
+          "@type": "cr:FileObject",
+          "@id": "vitaldb-resource",
+          "name": "VitalDB 1.0.0",
+          "contentUrl": "https://physionet.org/content/vitaldb/1.0.0/",
+          "encodingFormat": "text/html",
+          "description": "VitalDB, a high-fidelity multi-parameter vital signs database in surgical patients"
+        },
+        {
+          "@type": "cr:FileObject",
+          "@id": "mimic-iv-resource",
+          "name": "MIMIC-IV 2.2",
+          "contentUrl": "https://physionet.org/content/mimiciv/2.2/",
+          "encodingFormat": "text/html",
+          "description": "Large database of de-identified health information from patients admitted to BIDMC"
+        },
+        {
+          "@type": "cr:FileObject",
+          "@id": "mimic-cxr-resource",
+          "name": "MIMIC-CXR 2.0.0",
+          "contentUrl": "https://physionet.org/content/mimic-cxr/2.0.0/",
+          "encodingFormat": "text/html",
+          "description": "Chest radiographs in DICOM format with associated free-text reports"
+        },
+        {
+          "@type": "cr:FileObject",
+          "@id": "preflight-tool",
+          "name": "PhysioNet Preflight Validation Tool",
+          "contentUrl": "https://github.com/MIT-LCP/physionet/",
+          "encodingFormat": "application/x-python",
+          "description": "Validation tool for datasets prior to upload"
+        }
+      ],
+      "recordSet": [
+        {
+          "@type": "cr:RecordSet",
+          "@id": "featured-items",
+          "name": "Featured Resources",
+          "description": "A collection of databases featured on the PhysioNet main portal.",
+          "field": [
+            {
+              "@id": "featured-items/name",
+              "@type": "cr:Field",
+              "name": "Name",
+              "description": "Title of the dataset or resource.",
+              "dataType": "sc:Text"
+            },
+            {
+              "@id": "featured-items/version",
+              "@type": "cr:Field",
+              "name": "Version",
+              "description": "Semantic versioning of the resource.",
+              "dataType": "sc:Text"
+            },
+            {
+              "@id": "featured-items/access-policy",
+              "@type": "cr:Field",
+              "name": "Access Policy",
+              "description": "Accessibility level (Open, Restricted, or Credentialed).",
+              "dataType": "sc:Text"
+            }
+          ],
+          "data": [
+            {
+              "featured-items/name": "VitalDB",
+              "featured-items/version": "1.0.0",
+              "featured-items/access-policy": "Open Access"
+            },
+            {
+              "featured-items/name": "MIMIC-IV",
+              "featured-items/version": "2.2",
+              "featured-items/access-policy": "Credentialed Access"
+            },
+            {
+              "featured-items/name": "MIMIC-CXR Database",
+              "featured-items/version": "2.0.0",
+              "featured-items/access-policy": "Credentialed Access"
+            }
+          ]
+        },
+        {
+          "@type": "cr:RecordSet",
+          "@id": "wfdb-structure",
+          "name": "Standard WFDB Structure",
+          "description": "Metadata structure for high time-resolution data like ECG/EEG.",
+          "field": [
+            {
+              "@id": "wfdb-structure/header-file",
+              "@type": "cr:Field",
+              "name": "Header File",
+              "description": "WFDB .hea file containing signal metadata.",
+              "dataType": "sc:Text"
+            },
+            {
+              "@id": "wfdb-structure/data-file",
+              "@type": "cr:Field",
+              "name": "Data File",
+              "description": "WFDB .dat file containing raw signal samples.",
+              "dataType": "sc:ImageObject"
+            },
+            {
+              "@id": "wfdb-structure/records-index",
+              "@type": "cr:Field",
+              "name": "RECORDS",
+              "description": "Index file listing all waveform records.",
+              "dataType": "sc:Text"
+            }
+          ]
+        },
+        {
+          "@type": "cr:RecordSet",
+          "@id": "author-metadata",
+          "name": "Project Metadata Guidelines",
+          "description": "Required fields for submitting data to PhysioNet.",
+          "field": [
+            {
+              "@id": "author-metadata/abstract",
+              "@type": "cr:Field",
+              "name": "Abstract",
+              "dataType": "sc:Text"
+            },
+            {
+              "@id": "author-metadata/methods",
+              "@type": "cr:Field",
+              "name": "Methods",
+              "dataType": "sc:Text"
+            },
+            {
+              "@id": "author-metadata/ethics",
+              "@type": "cr:Field",
+              "name": "Ethics Statement",
+              "dataType": "sc:Text"
+            }
+          ]
+        }
+      ],
+      "version": "1.5.0",
+      "citation": "Goldberger AL, Amaral LAN, Glass L, Hausdorff JM, Ivanov PCh, Mark RG, Mietus JE, Moody GB, Peng C-K, Stanley HE. PhysioBank, PhysioToolkit, and PhysioNet: Components of a New Research Resource for Complex Physiologic Signals. Circulation 101(23):e215-e220 [Circulation Electronic Pages; http://circ.ahajournals.org/content/101/23/e215.full]; 2000 (June 13)."
+    }
+  }
+]
