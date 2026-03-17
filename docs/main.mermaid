@@ -1,0 +1,47 @@
+graph TD
+    Start((Start: main)) --> InitDB[Initialize 'stor' tables:<br/>knowledge_sources & mappings]
+    
+    InitDB --> CheckConfig{aichat config exists?}
+    CheckConfig -- No --> WriteConfig[write_aichat_config]
+    CheckConfig -- Yes --> SpecCrawl[crawl_croissant_spec]
+    
+    WriteConfig --> SpecCrawl
+    
+    SpecCrawl --> Prep[rm robo_croissant.db<br/>open config.toml]
+    
+    Prep --> FilterSources{RC_TARGETED_KNOWLEDGE_SOURCES<br/>defined?}
+    FilterSources -- Yes --> ApplyFilter[Filter enabled_sources]
+    FilterSources -- No --> LoopSources
+    
+    ApplyFilter --> LoopSources
+    
+    subgraph SourceLoop [For Each Knowledge Source]
+        LoopSources --> MkTmp[Create tmp_dir]
+        MkTmp --> CrawlSource[crawl_knowledge_source]
+        
+        subgraph CrawlDetails [crawl_knowledge_source]
+            CrawlSource --> Spider[Run 'spider' download]
+            Spider --> FileList[Get file list]
+            FileList --> CleanHTML[Clean HTML: tidy | htmlq]
+            CleanHTML --> SaveClean[Overwrite files with cleaned HTML]
+        end
+        
+        SaveClean --> Prompt1[aichat: Extract Persistent Fields]
+        Prompt1 --> StoreMappings[Insert keys/answers into<br/>knowledge_source_mappings]
+        
+        StoreMappings --> Prompt2[aichat: Extract Croissant Metadata<br/>using source & spec files]
+        Prompt2 --> MergeData[Merge AI metadata with<br/>DB mapping data]
+        
+        MergeData --> StoreSource[Insert final record into<br/>knowledge_sources]
+    end
+    
+    StoreSource --> CheckNext{More sources?}
+    CheckNext -- Yes --> LoopSources
+    CheckNext -- No --> Export[stor export to robo_croissant.db]
+    
+    Export --> End((End))
+
+    %% Error Handling
+    subgraph ErrorHandling [Try/Catch]
+        TryBlock[Try Logic] -- Error --> PrintError[Print error to console]
+    end
