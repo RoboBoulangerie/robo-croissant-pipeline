@@ -30,13 +30,38 @@ def crawl_croissant_spec [tmp_dir: string] {
     } catch {|e| print $e }
 }
 
+def clean_ai_json_text [raw: string] {
+    $raw
+    | str replace -a '```json' ''
+    | str replace -a '```' ''
+    | str trim
+}
+
+def parse_json_with_repair [raw: string] {
+    let cleaned = (clean_ai_json_text $raw)
+    try {
+        $cleaned | from json
+    } catch {
+        let repair_prompt = $"
+Convert the following text into strict valid RFC 8259 JSON.
+Return only JSON with no markdown code fences.
+Replace placeholders like `...` with valid JSON values.
+
+($cleaned)
+"
+        let repaired_raw = (aichat $"($repair_prompt)")
+        let repaired_text = (clean_ai_json_text $repaired_raw)
+        $repaired_text | from json
+    }
+}
+
 def main [] {
     stor reset
     stor create --table-name "knowledge_sources" --columns { name: str, url: str, croissant_metadata: jsonb}
     stor create --table-name "knowledge_source_mappings" --columns { source_name: str, key: str, answer: str, url: str }
 
-    let home_dir = $nu.home-path
-    if not ($"($home_dir)/.config/aichat/config.yaml" | path exists) { (write_aichat_config home_dir) }
+    let home_dir = $nu.home-dir
+#    if not ($"($home_dir)/.config/aichat/config.yaml" | path exists) { (write_aichat_config $home_dir) }
 
     let croissant_spec_tmp_dir = mktemp -d -p .
     (crawl_croissant_spec $croissant_spec_tmp_dir)
@@ -79,8 +104,9 @@ def main [] {
 
         let croissant_metadata_prompt = $config | get croissant_metadata_prompt | str replace '%name%' $"($source.name)"
         let cr_answer = aichat -f $tmp_dir -f $croissant_spec_tmp_dir $"($croissant_metadata_prompt)" | str replace '```json' '' | str replace '```' ''
+        
         #$cr_answer | print
-        mut cr_answer_json = $cr_answer | from json
+        mut cr_answer_json = (parse_json_with_repair $cr_answer)
 
         let mapping_data = stor open | query db "select key, answer from knowledge_source_mappings" | reduce -f {} {|it, acc| $acc | upsert $it.key $it.answer }
         #$mapping_data | print
