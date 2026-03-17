@@ -16,44 +16,18 @@ def crawl_knowledge_source [
         }
         let files = ls ...(glob ($tmp_dir)/**/*) | where type == file | get name
         for f in $files {
-            open $f | tidy -wrap 3000 -quiet | str replace -a -r '<style[^>]*>[\s\S]*?<\/style>' '' | str replace -a -r '<script[^>]*>[\s\S]*?<\/script>' '' | str replace -a -r '<g[^>]*>[\s\S]*?<\/g>' '' | save -f $f
+            #print $f
+            let cleaned_html = open $f | tidy -wrap 3000 -indent -q --custom-tags blocklevel | htmlq -wp --remove-nodes "script,style,link"
+            echo $cleaned_html | save -f $f
         }
-    } catch {|e| echo $e }
+    } catch {|e| print $e }
 }
 
 def crawl_croissant_spec [tmp_dir: string] {
     try {
         let source_url = "https://docs.mlcommons.org/croissant/docs/croissant-spec.html"
         spider --url $source_url -d 3 download -t $tmp_dir
-    } catch {|e| echo $e }
-}
-
-def write_aichat_config [home_dir: string] {
-    if not ($env.RC_MODEL) {
-        echo "RC_MODEL environment variable must be set"
-        exit 1
-    }
-    if not ($env.RC_CLIENTS_TYPE) {
-        echo "RC_CLIENTS_TYPE environment variable must be set"
-        exit 1
-    }
-    if not ($env.RC_CLIENTS_API_KEY) {
-        echo "RC_CLIENTS_API_KEY environment variable must be set"
-        exit 1
-    }
-    try {
-        let config = {
-            "model": $env.MODEL
-            "clients": [
-                {
-                    "type": $env.CLIENTS_TYPE
-                    "api_key": $env.CLIENTS_API_KEY
-                }
-            ]
-        }
-        mkdir $"($home_dir)/.config/aichat"
-        $config | to yaml | save -f $"($home_dir)/.config/aichat/config.yaml"
-    } catch {|e| echo $e }
+    } catch {|e| print $e }
 }
 
 def clean_ai_json_text [raw: string] {
@@ -84,7 +58,7 @@ Replace placeholders like `...` with valid JSON values.
 def main [] {
     stor reset
     stor create --table-name "knowledge_sources" --columns { name: str, url: str, croissant_metadata: jsonb}
-    stor create --table-name "knowledge_source_mappings" --columns { name: str, key: str, answer: str, url: str }
+    stor create --table-name "knowledge_source_mappings" --columns { source_name: str, key: str, answer: str, url: str }
 
     let home_dir = $nu.home-dir
 #    if not ($"($home_dir)/.config/aichat/config.yaml" | path exists) { (write_aichat_config $home_dir) }
@@ -96,15 +70,10 @@ def main [] {
 
     let config = open config.toml
 
-    let prompts = $config | get prompts
-    mut enabled_sources = ($config | get knowledge_sources | where {|source| $source.enabled == true})
-
-    if ("RC_TARGETED_KNOWLEDGE_SOURCES" in $env) {
-        let targeted_knowledge_sources = $env.RC_TARGETED_KNOWLEDGE_SOURCES | split row ","
-        if (($targeted_knowledge_sources | length) > 0) { $enabled_sources = ($enabled_sources | where {|source| $source.name in $targeted_knowledge_sources }) }
-    }
+    mut enabled_sources = ($config | get knowledge_sources)
 
     for source in $enabled_sources {
+        print $source.name
         let tmp_dir = mktemp -d -p .
 
         let source_name = $source.name
@@ -123,23 +92,19 @@ def main [] {
 
         (crawl_knowledge_source $source_url $source_name $source_depth $source_blacklist $tmp_dir)
 
-        mut results_table = (
-            $prompts | get key | each {|k| { $k: null } } | reduce {|it| merge $it}
-        )
+        #break
 
-        for p in $prompts {
+        let persistent_fields_prompt = $config | get persistent_fields_prompt
+        let persistent_fields_response = aichat -f $tmp_dir $"($persistent_fields_prompt)" | str replace '```json' '' | str replace '```' '' | from json
+        for pfr in $persistent_fields_response {
             try {
-                let answer = aichat -f $tmp_dir $"($p.prompt)"
-                let answer_json = (parse_json_with_repair $answer)
-                let key_answer =  $answer_json | get -o $p.key
-                #$key_answer | print
-                let url_answer =  $answer_json | get -o url
-                stor insert --table-name "knowledge_source_mappings" --data-record { name: $source_name, key: $p.key, answer: $key_answer, url: $url_answer }
-            } catch {|e| echo $e }
+                stor insert --table-name "knowledge_source_mappings" --data-record { source_name: $source_name, key: $pfr.key, answer: $pfr.value, url: $pfr.url }
+            } catch {|e| print $e }
         }
 
-        let croissant_metadata_prompt = $config | get croissant_metadata | str replace '%name%' $"($source.name)"
-        let cr_answer = aichat -f $tmp_dir -f $croissant_spec_tmp_dir $"($croissant_metadata_prompt)"
+        let croissant_metadata_prompt = $config | get croissant_metadata_prompt | str replace '%name%' $"($source.name)"
+        let cr_answer = aichat -f $tmp_dir -f $croissant_spec_tmp_dir $"($croissant_metadata_prompt)" | str replace '```json' '' | str replace '```' ''
+        
         #$cr_answer | print
         mut cr_answer_json = (parse_json_with_repair $cr_answer)
 

@@ -1,72 +1,233 @@
-croissant_metadata = """Using the Croissant Format Specification, produce the metadata from %name% in JSON.
-    Include \"distribution\" and \"recordSet\" metadata based on any available download information.
-    Answer directly and without any Markdown such as ```json```."""
+croissant_metadata_prompt = """Using the Croissant Format Specification, create an as complete Croissant Metadata JSON file as possible from %name%.
+    Include \"distribution\" and \"recordSet\" metadata based on any available download information.  Answer directly and without any Markdown."""
 
-prompts = [
-    { "key" = "name", "prompt" = """In these web pages, what is the non-abbreviated, formal name?  Follow these rules for the output:
+persistent_fields_prompt = """In these web pages, identify the following:
+    - name
+    - description
+    - version
+    - citation
+    - license
+    - keywords
+
+Follow these rules for the output:
       - Output should be in JSON format
-      - Output should include the name
       - Output should include the url from where the answer is sourced and not a local file system path
       - Answer directly and without using Markdown
-    """ },
-    { "key" = "description", "prompt" = """What is the formal description? Follow these rules for the output:
-      - Output should be in JSON format
-      - Output should include the description
-      - Output should include the url from where the answer is sourced and not a local file system path
-      - Answer directly and without using Markdown
-    """ },
-    { "key" = "version", "prompt" = """What is the version?  Follow these rules for the output:
-      - Output should be in JSON format
-      - Output should include the version
-      - Output should include the url from where the answer is sourced and not a local file system path
-      - Answer directly and without using Markdown
-    """ },
-    { "key" = "citation", "prompt" = """What is the citation string used for publications?  Follow these rules for the output:
-      - Output should be in JSON format
-      - Output should include the citation
-      - Output should include the url from where the answer is sourced and not a local file system path
-      - Answer directly and without using Markdown
-    """ },
-    { "key" = "license", "prompt" = """What license is used?  Follow these rules for the output:
-      - Output should be in JSON format
-      - Output should include the license
-      - Output should include the url from where the answer is sourced and not a local file system path
-      - Answer directly and without using Markdown
-    """ },
-    { "key" = "keywords", "prompt" = """What keywords are used?  Follow these rules for the output:
-      - Output should be in JSON format
-      - Output should include the keywords as a single csv string
-      - Output should include the url from where the answer is sourced and not a local file system path
-      - If the keywords output is a list, transform it into
-      - Answer directly and without using Markdown
-    """ }
-]
+
+Here is an sample output:
+[
+{ "key": "sample_name_1", "value": "sample_value_1", "url": "sample_url_1" },
+{ "key": "sample_name_2", "value": "sample_value_2", "url": "sample_url_2" }
+]"""
+
 
 [[knowledge_sources]]
-#Comparative Toxicogenomics Database (CTD)
 name = "CTD"
 url = "https://ctdbase.org"
-enabled = true
 depth = 3
 blacklist = "/(help|reports|documents|tools)/,.*\\.(obo|tgz),.*(type|jsessionid).*"
 
 [[knowledge_sources]]
-#The Nomenclature of Human and Vertebrate Genes	PAR-23-237	Yes	https://www.genenames.org/download/statistics-and-files/
 name = "HGNC"
 url = "https://www.genenames.org/"
-enabled = true
 depth = 2
 blacklist = "/(help|contact|martform|privacy-notice|biomart),/(cgi-bin|contact|data|rest|tools|help|news)/,/about/(guidelines|instructions-to-authors|meetings|naming-flowcharts|pjm|sab|specialist-advisors|species-list|team|workshops),/download/(archive|custom|gene-groups)"
 
 [[knowledge_sources]]
-#Childrens Allergy and Asthma Data Repository (CADRE)	PAR-23-079	yes	https://cadre.med.wisc.edu/data/
 name = "CADRE"
 url = "https://cadre.med.wisc.edu/"
-enabled = true
 depth = 2
 blacklist = "/(sites|research)"
 
+[[knowledge_sources]]
+name = "PhysioNet"
+url = "https://physionet.org/about/"
+depth = 2
+blacklist = "(reset-password|register|news|login)"
 
-
-
+#[[knowledge_sources]]
+#name = "The BRCA Exchange Knowledgebase for Clinical Cancer Genetics"
+#url = "https://brcaexchange.org/releases"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "The Molecular Signatures Database: A knowledgebase for gene set based analysis of genomic data"
+#url = "https://www.gsea-msigdb.org/gsea/msigdb/"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "USC Facebase IV Craniofacial Development and Dysmorpholoy Data Management and Integration Hub (FaceBase IV)"
+#url = "https://www.facebase.org/chaise/recordset/#1/isa:dataset@sort(release_date::desc::,RID)@after(2024-02-27,3P-4VSA)"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Metabolomics Workbench - National Metabolomics Data Repository"
+#url = "https://www.metabolomicsworkbench.org/databases/index.php"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "The Nomenclature of Human and Vertebrate Genes"
+#url = "https://www.genenames.org/download/statistics-and-files/"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Alliance Central: A platform for sustainable development of next generation genome knowledgebases"
+#url = "https://www.alliancegenome.org/downloads, https://www.alliancegenome.org/privacy-warranty-licensing"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "The Musculoskeletal Knowledge Portal"
+#url = "https://msk.hugeamp.org/datasets.html"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "GeoSpace - GeoSpatial Knowledgebase for Exposomics"
+#url = "https://www.gsbase.org"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Childrens Allergy and Asthma Data Repository (CADRE)"
+#url = "https://cadre.med.wisc.edu/data/"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Pennsieve: Impactful Multimodal Data Sharing for Epilepsy Research"
+#url = "https://epilepsy.science"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "UniProt: A Protein Sequence and Function Resource for Biomedical Science"
+#url = "https://www.uniprot.org/help/license"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "i-AKC: Integrated AIRR Knowledge Commons"
+#url = "https://airr-knowledge.org/repositories/"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "BindingDB: An Open Knowledgebase of Protein-Small Molecule Interactions"
+#url = "https://www.bindingdb.org/rwd/bind/chemsearch/marvin/Download.jsp"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Creation of a knowledgebase of high quality assertions of the clinical actionability of somatic variants in cancer"
+#url = "https://civicdb.org/releases/main"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Establishing the PhenX Toolkit as a Biomedical Knowledgebase"
+#url = "https://www.phenxtoolkit.org/resources/download"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "VIOLIN 2.0: Vaccine Information and Ontology LInked kNowledgebase"
+#url = "https://violinet.org/introduction.php"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Knowledgebase of Escherichia coli Genome and Metabolism"
+#url = "https://ecocyc.org/credits.shtml"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "PharmGKB"
+#url = "https://www.clinpgx.org/downloads"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Virus Taxonomy: A Community Knowledgebase Supporting Virus Research"
+#url = "https://ictv.global/taxonomy/history"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "African Genomics Data Hub Biomedical Knowledgebase"
+#url = "https://afrigen-d.org/data-resources"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "BioPortal: An Expansive Knowledgebase of Biomedical Entities and Relations"
+#url = "https://data.bioontology.org"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Strengthening community knowledge bases for genetic association studies and polygenic scores, the GWAS and PGS Catalogs"
+#url = "https://www.pgscatalog.org/downloads/"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "The Human Disease Ontology: An integrated, mechanistic knowledge resource for biomedical research."
+#url = "https://disease-ontology.org/about/"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Reactome: An Open Knowledgebase of Human Pathways."
+#url = "https://reactome.org/download-data"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "WormBase: a core data resource for C. elegans and other nematodes"
+#url = "https://wormbase.org/about/userguide#3--10"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Gene Ontology Consortium and Knowledgebase"
+#url = "https://www.geneontology.org/docs/download-ontology/"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Supporting Biomedical Discovery with the ROBOKOP Graph Knowledgebase."
+#url = "https://www.glygen.org/license/"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Global proteomics mass spectrometry data sharing infrastructure"
+#url = "https://massive.ucsd.edu/ProteoSAFe/datasets.jsp#%7B%22query%22%3A%7B%7D%2C%22table_sort_history%22%3A%22createdMillis_dsc%22%7D"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Biological Magnetic Resonance Data Bank Base"
+#url = "https://bmrb.io/data_library/released.shtml"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "An Imaging Repository for the Cerebrovascular Disease Knowledge Portal (iCDKP)"
+#url = "https://cd.hugeamp.org/downloads.html"
+#depth = 2
+#blacklist = ""
+#
+#[[knowledge_sources]]
+#name = "Southern HIV and Alcohol Research Consortium Biomedical Data Repository"
+#url = "https://sharc-research.org/research/data/sharc-concepts-system/"
+#depth = 2
+#blacklist = ""
 

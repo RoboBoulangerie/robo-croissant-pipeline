@@ -30,7 +30,7 @@ See https://github.com/sigoden/aichat for more information.
 ### Install Spider
 Spider is a web crawler and scraper.
 ```shell
-cargo install spider_cli
+cargo install -F chrome -F regex spider_cli
 ```
 See https://github.com/spider-rs/spider for more information.
 
