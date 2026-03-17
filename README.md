@@ -1,4 +1,4 @@
-# Welcome to Robo Croissant Pipeline
+# Welcome to RoboCroissant Pipeline
 
 ## Getting started
 
@@ -34,9 +34,20 @@ cargo install -F chrome -F regex spider_cli
 ```
 See https://github.com/spider-rs/spider for more information.
 
-## Running Robo Croissant Pipeline
+## Running RoboCroissant Pipeline
+This will produce a Sqlite3 database file called `robo_croissant.db` and is the database intended to be used for the RoboCroissant Dashboard.
 ```shell
 nu main.nu
 ```
 
-This will produce a Sqlite3 database file called `robo_croissant.db`.  This is the main database for the Robo Croissant Web Application.
+## Extracting the Croissant Metadata JSON 
+From within Nushell, issue the follow:
+```shell
+let kb_names = open config.toml | get knowledge_sources | get name
+for x in $kb_names { open robo_croissant.db | get knowledge_sources | where name == $x | save -f $"($x).json" }
+```
+
+
+
+
+
