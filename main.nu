@@ -30,15 +30,15 @@ def crawl_croissant_spec [tmp_dir: string] {
     } catch {|e| print $e }
 }
 
-def clean_ai_json_text [raw: string] {
-    $raw
+def clean_json_text [] {
+    $in
     | str replace -a '```json' ''
     | str replace -a '```' ''
     | str trim
 }
 
 def parse_json_with_repair [raw: string] {
-    let cleaned = (clean_ai_json_text $raw)
+    let cleaned = $raw | clean_json_text
     try {
         $cleaned | from json
     } catch {
@@ -60,7 +60,7 @@ def main [] {
     stor create --table-name "knowledge_sources" --columns { name: str, url: str, croissant_metadata: jsonb}
     stor create --table-name "knowledge_source_mappings" --columns { source_name: str, key: str, answer: str, url: str }
 
-    let home_dir = $nu.home-dir
+#    let home_dir = $env.HOME
 #    if not ($"($home_dir)/.config/aichat/config.yaml" | path exists) { (write_aichat_config $home_dir) }
 
     let croissant_spec_tmp_dir = mktemp -d -p .
@@ -95,7 +95,7 @@ def main [] {
         #break
 
         let persistent_fields_prompt = $config | get persistent_fields_prompt
-        let persistent_fields_response = aichat -f $tmp_dir $"($persistent_fields_prompt)" | str replace '```json' '' | str replace '```' '' | from json
+        let persistent_fields_response = aichat -f $tmp_dir $"($persistent_fields_prompt)" | clean_json_text | from json
         for pfr in $persistent_fields_response {
             try {
                 stor insert --table-name "knowledge_source_mappings" --data-record { source_name: $source_name, key: $pfr.key, answer: $pfr.value, url: $pfr.url }
@@ -103,9 +103,9 @@ def main [] {
         }
 
         let croissant_metadata_prompt = $config | get croissant_metadata_prompt | str replace '%name%' $"($source.name)"
-        let cr_answer = aichat -f $tmp_dir -f $croissant_spec_tmp_dir $"($croissant_metadata_prompt)" | str replace '```json' '' | str replace '```' ''
+        let cr_answer = aichat -f $tmp_dir -f $croissant_spec_tmp_dir $"($croissant_metadata_prompt)" | clean_json_text
         
-        #$cr_answer | print
+        $cr_answer | print
         mut cr_answer_json = (parse_json_with_repair $cr_answer)
 
         let mapping_data = stor open | query db "select key, answer from knowledge_source_mappings" | reduce -f {} {|it, acc| $acc | upsert $it.key $it.answer }
