@@ -58,7 +58,7 @@ Replace placeholders like `...` with valid JSON values.
 def main [] {
     stor reset
     stor create --table-name "knowledge_sources" --columns { name: str, url: str, croissant_metadata: jsonb}
-    stor create --table-name "knowledge_source_mappings" --columns { source_name: str, key: str, answer: str, url: str }
+    stor create --table-name "knowledge_source_mappings" --columns { source_name: str, key: str, answer: jsonb }
 
 #    let home_dir = $env.HOME
 #    if not ($"($home_dir)/.config/aichat/config.yaml" | path exists) { (write_aichat_config $home_dir) }
@@ -98,7 +98,7 @@ def main [] {
         let persistent_fields_response = aichat -f $tmp_dir $"($persistent_fields_prompt)" | clean_json_text | from json
         for pfr in $persistent_fields_response {
             try {
-                stor insert --table-name "knowledge_source_mappings" --data-record { source_name: $source_name, key: $pfr.key, answer: $pfr.value, url: $pfr.url }
+                stor insert --table-name "knowledge_source_mappings" --data-record { source_name: $source_name, key: $pfr.key, answer: $pfr.value }
             } catch {|e| print $e }
         }
 
