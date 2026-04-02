@@ -1,0 +1,31 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "azure-cognitive-services/gpt-5.3-codex",
+  "autoupdate": true,
+  "provider": {
+    "azure": {
+      "options": {
+        "apiKey": ",
+        "baseURL": "https://robo-croissant.services.ai.azure.com/openai",
+        "resourceName": "robo-croissant"
+      },
+      "models": {
+        "gpt-5.4-mini": {
+          "name": "gpt-5.4-mini"
+        }
+      }
+    },
+    "azure-cognitive-services": {
+      "options": {
+        "apiKey": "",
+        "baseURL": "https://robo-croissant.cognitiveservices.azure.com/openai",
+        "resourceName": "robo-croissant"
+      },
+      "models": {
+        "gpt-5.3-codex": {
+          "name": "gpt-5.3-codex"
+        }
+      }
+    }
+  }
+}
