@@ -63,6 +63,8 @@ def main [] {
 #    let home_dir = $env.HOME
 #    if not ($"($home_dir)/.config/aichat/config.yaml" | path exists) { (write_aichat_config $home_dir) }
 
+    $env.AZURE_RESOURCE_NAME = "robo-croissant"
+
     let croissant_spec_tmp_dir = mktemp -d -p .
     (crawl_croissant_spec $croissant_spec_tmp_dir)
 
@@ -94,16 +96,18 @@ def main [] {
 
         #break
 
-        let persistent_fields_prompt = $config | get persistent_fields_prompt
-        let persistent_fields_response = aichat -f $tmp_dir $"($persistent_fields_prompt)" | clean_json_text | from json
+        let persistent_fields_prompt = $config | get persistent_fields_prompt | str replace '%path%' $"($tmp_dir)"
+        #let persistent_fields_response = aichat -f $tmp_dir $"($persistent_fields_prompt)" | clean_json_text | from json
+        let persistent_fields_response = opencode run $"($persistent_fields_prompt)" | clean_json_text | from json
         for pfr in $persistent_fields_response {
             try {
                 stor insert --table-name "knowledge_source_mappings" --data-record { source_name: $source_name, key: $pfr.key, answer: $pfr.value, url: $pfr.url }
             } catch {|e| print $e }
         }
 
-        let croissant_metadata_prompt = $config | get croissant_metadata_prompt | str replace '%name%' $"($source.name)"
-        let cr_answer = aichat -f $tmp_dir -f $croissant_spec_tmp_dir $"($croissant_metadata_prompt)" | clean_json_text
+        let croissant_metadata_prompt = $config | get croissant_metadata_prompt | str replace '%path%' $"($croissant_spec_tmp_dir)" | str replace '%name%' $"($source.name)"
+        #let cr_answer = aichat -f $tmp_dir -f $croissant_spec_tmp_dir $"($croissant_metadata_prompt)" | clean_json_text
+        let cr_answer = opencode run $"($croissant_metadata_prompt)" | clean_json_text
         
         $cr_answer | print
         mut cr_answer_json = (parse_json_with_repair $cr_answer)
