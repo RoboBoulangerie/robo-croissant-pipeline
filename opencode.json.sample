@@ -1,29 +1,64 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "azure-cognitive-services/gpt-5.3-codex",
+  "plugin": ["opencode-gemini-auth@latest"],
+  "model": "azure-cognitive-services/gpt-5.4",
   "autoupdate": true,
   "provider": {
     "azure": {
       "options": {
-        "apiKey": ",
-        "baseURL": "https://robo-croissant.services.ai.azure.com/openai",
-        "resourceName": "robo-croissant"
+        "apiKey": "",
+        "baseURL": "https://<resourceName>.services.ai.azure.com/openai",
+        "resourceName": "<resourceName>"
       },
       "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        },
         "gpt-5.4-mini": {
           "name": "gpt-5.4-mini"
+        },
+        "gpt-5.3-codex": {
+          "name": "gpt-5.3-codex"
         }
       }
     },
     "azure-cognitive-services": {
       "options": {
         "apiKey": "",
-        "baseURL": "https://robo-croissant.cognitiveservices.azure.com/openai",
-        "resourceName": "robo-croissant"
+        "baseURL": "https://<resourceName>.cognitiveservices.azure.com/openai",
+        "resourceName": "<resourceName>"
       },
       "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        },
+        "gpt-5.4-mini": {
+          "name": "gpt-5.4-mini"
+        },
         "gpt-5.3-codex": {
           "name": "gpt-5.3-codex"
+        }
+      }
+    },
+    "google": {
+      "options": {
+        "apiKey": ""
+      },
+      "models": {
+        "gemini-2.5-flash": {
+          "options": {
+            "thinkingConfig": {
+              "thinkingBudget": 8192,
+              "includeThoughts": false
+            }
+          }
+        },
+        "gemini-3.1-flash-lite-preview": {
+          "options": {
+            "thinkingConfig": {
+              "includeThoughts": false
+            }
+          }
         }
       }
     }
