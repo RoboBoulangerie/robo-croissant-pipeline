@@ -1,5 +1,16 @@
 croissant_metadata_prompt = """Using the Croissant Format Specification, create an as complete Croissant Metadata JSON file as possible from %name%.
-    Include \"distribution\" and \"recordSet\" metadata based on any available download information.  Answer directly and without any Markdown."""
+    Include \"distribution\" and \"recordSet\" metadata based on any available download information.  Answer directly and without any Markdown.
+
+    For every leaf field value in the JSON, wrap it in a provenance envelope instead of emitting the raw value. The envelope format is:
+    { \"value\": <original value>, \"source_url\": \"<the crawled URL this value came from>\", \"confidence\": <0.0-1.0> }
+
+    Rules:
+    - Apply the envelope to every leaf value (strings, numbers, booleans, and array elements that are scalars).
+    - Do not wrap objects or arrays themselves — only their leaf contents.
+    - Do NOT wrap any field whose key starts with @, including @context, @type, @id, @language, @vocab, and any other JSON-LD keywords. These must always remain flat.
+    - Keep the overall Croissant JSON structure identical; only the leaf values change shape.
+    - Set source_url to the specific page URL the information came from, not a local file path.
+    - Set confidence between 0.0 and 1.0 reflecting how clearly the value was stated in the source."""
 
 persistent_fields_prompt = """In these web pages, identify the following:
     - name
@@ -11,13 +22,14 @@ persistent_fields_prompt = """In these web pages, identify the following:
 
 Follow these rules for the output:
       - Output should be in JSON format
-      - Output should include the url from where the answer is sourced and not a local file system path
       - Answer directly and without using Markdown
+      - For each field, the value must be a provenance envelope: { "value": <the actual value>, "source_url": "<the crawled URL this came from, not a local file path>", "confidence": <0.0-1.0> }
+      - Set confidence between 0.0 and 1.0 reflecting how clearly the value was stated in the source
 
-Here is an sample output:
+Here is a sample output:
 [
-{ "key": "sample_name_1", "value": "sample_value_1", "url": "sample_url_1" },
-{ "key": "sample_name_2", "value": "sample_value_2", "url": "sample_url_2" }
+{ "key": "name", "value": { "value": "Example Dataset", "source_url": "https://example.org/about", "confidence": 0.97 } },
+{ "key": "description", "value": { "value": "A dataset about ...", "source_url": "https://example.org/about", "confidence": 0.85 } }
 ]"""
 
 
