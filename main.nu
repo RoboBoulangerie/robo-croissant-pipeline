@@ -25,7 +25,9 @@ def crawl_knowledge_source [
 
 def crawl_croissant_spec [tmp_dir: string] {
     try {
-        let source_url = "https://docs.mlcommons.org/croissant/docs/croissant-spec.html"
+        # this is 1.0
+        # let source_url = "https://docs.mlcommons.org/croissant/docs/croissant-spec.html"
+        let source_url = "https://docs.mlcommons.org/croissant/docs/croissant-spec-1.1.html"
         spider --url $source_url -d 3 download -t $tmp_dir
     } catch {|e| print $e }
 }
