@@ -1,25 +1,26 @@
-croissant_metadata_prompt = """Using the Croissant Format Specification, create an as complete Croissant Metadata JSON file as possible from %name%.
-    Include \"distribution\" and \"recordSet\" metadata based on any available download information.  Answer directly and without any Markdown."""
+croissant_metadata_prompt = """Review the Croissant Format Specification from %path%/**/*, create an as complete Croissant Metadata JSON file as possible from %name%.
+    Include \"distribution\" and \"recordSet\" metadata based on a complete list of available files to download.  Answer directly and without any Markdown."""
 
-persistent_fields_prompt = """In these web pages, identify the following:
-    - name
-    - description
-    - version
-    - citation
-    - license
-    - keywords
+persistent_fields_prompt = """Review the files in %path%/**/*, identify the following:
+    - name: string
+    - description: string
+    - version: string
+    - citation: string
+    - license: string
+    - keywords: array of strings
 
 Follow these rules for the output:
-      - Output should be in JSON format
+      - Output should be in strict RFC 8259 JSON format
       - Output should include the url from where the answer is sourced and not a local file system path
       - Answer directly and without using Markdown
 
 Here is an sample output:
 [
 { "key": "sample_name_1", "value": "sample_value_1", "url": "sample_url_1" },
-{ "key": "sample_name_2", "value": "sample_value_2", "url": "sample_url_2" }
+{ "key": "sample_name_2", "value": ["sample_value_2a", "sample_value_2b"], "url": "sample_url_2" }
 ]"""
 
+# WORKING
 
 [[knowledge_sources]]
 name = "CTD"
@@ -44,6 +45,8 @@ name = "PhysioNet"
 url = "https://physionet.org/about/"
 depth = 2
 blacklist = "(reset-password|register|news|login)"
+
+# TODO
 
 #[[knowledge_sources]]
 #name = "The BRCA Exchange Knowledgebase for Clinical Cancer Genetics"
@@ -90,12 +93,6 @@ blacklist = "(reset-password|register|news|login)"
 #[[knowledge_sources]]
 #name = "GeoSpace - GeoSpatial Knowledgebase for Exposomics"
 #url = "https://www.gsbase.org"
-#depth = 2
-#blacklist = ""
-#
-#[[knowledge_sources]]
-#name = "Childrens Allergy and Asthma Data Repository (CADRE)"
-#url = "https://cadre.med.wisc.edu/data/"
 #depth = 2
 #blacklist = ""
 #
