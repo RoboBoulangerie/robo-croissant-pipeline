@@ -10,10 +10,17 @@ def main [
     mut enabled_sources = ($config | get knowledge_sources | where $it.name == $"($source_name)")
 
     let source_url = $enabled_sources | get url | get 0
-    let depth = $enabled_sources | get depth | get 0
-    let blacklist = $enabled_sources | get blacklist | get 0
+    mut depth = 2
+    if ($enabled_sources | columns | any { |c| $c == "depth" }) {
+        $depth = $enabled_sources | get depth | get 0
+    }
+    mut blacklist = ""
+    if ($enabled_sources | columns | any { |c| $c == "blacklist" }) {
+        $blacklist = $enabled_sources | get blacklist | get 0
+    }
 
     try {
+
         mut blacklist_arg = ""
         if ($blacklist | is-not-empty) {
             spider --url $source_url -d $depth --blacklist-url $"($blacklist)" download -t $tmp_dir
