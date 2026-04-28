@@ -23,9 +23,9 @@ def main [
 
         mut blacklist_arg = ""
         if ($blacklist | is-not-empty) {
-            spider --url $source_url -d $depth --blacklist-url $"($blacklist)" download -t $tmp_dir
+            spider --url $source_url --headless --delay 10000 -d $depth --blacklist-url $"($blacklist)" download -t $tmp_dir
         } else {
-            spider --url $source_url -d $depth download -t $tmp_dir
+            spider --url $source_url --headless --delay 10000 -d $depth download -t $tmp_dir
         }
         let files = ls ...(glob ($tmp_dir)/**/*) | where type == file | get name
         for f in $files {
