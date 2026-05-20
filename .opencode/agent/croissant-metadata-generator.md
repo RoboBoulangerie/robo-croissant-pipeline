@@ -1,55 +1,12 @@
 ---
 name: croissant-metadata-generator
-version: 1.0.0
-description: >-
-  Use this agent when you need to create or update MLCommons Croissant metadata
-  files for the `knowledge_sources` entry selected by the `RCP_KB_NAME`
-  environment variable from `config.toml`.
-
-
-  <example>
-
-  Context: The user has just added new `knowledge_sources` entries for a dataset
-  and wants matching Croissant metadata generated immediately.
-
-  user: "I added two new knowledge_sources entries in config.toml. Please
-  generate Croissant metadata files for them."
-
-  assistant: "I’ll use the Task tool to launch the croissant-metadata-generator
-  agent to parse config.toml and produce compliant Croissant metadata files."
-
-  <commentary>
-
-  Since the user explicitly needs Croissant metadata generated from config.toml
-  knowledge_sources entries, use the croissant-metadata-generator agent.
-
-  </commentary>
-
-  </example>
-
-
-  <example>
-
-  Context: The user asks for a release readiness pass after updating sources,
-  and metadata generation should be done proactively as part of that workflow.
-
-  user: "Can you prep this dataset config for release?"
-
-  assistant: "I’m going to use the Task tool to launch the
-  croissant-metadata-generator agent to proactively generate/update Croissant
-  metadata files from knowledge_sources entries as part of release prep."
-
-  <commentary>
-
-  Because release prep implies complete, structured metadata artifacts,
-  proactively invoke the croissant-metadata-generator agent even if the user did
-  not explicitly say ‘generate Croissant files’.
-
-  </commentary>
-
-  </example>
+version: 1.0.1
+temperature: 0.1
+description: Main agent for generating Croissant Metadata JSON-LD files.
 mode: all
 ---
+
+Before starting, refer to the `.opencode/agent/subagent/master-planner.md` file for a high-level overview of the agent's role and responsibilities.
 
 # Objective
 
@@ -59,29 +16,27 @@ complete list of available files to download.
 
 # Input
 
-The `config.toml` file contains a list of `knowledge_sources` entries. Each entry contains a `name` and a `url`.
+The `knowledge_bases.toml` file contains a list of `` entries. Each entry contains a `name` and a `url`.
 
-The environment variable `RCP_KB_NAME` must be set to the exact `name` of the `knowledge_sources` entry to process.
-Use `RCP_KB_NAME` to look up exactly one matching entry in `config.toml`, and use that selected entry's `name` and
+The environment variable `RCP_KB_NAME` must be set to the exact `name` of the `knowledge_bases` entry to process.
+Use `RCP_KB_NAME` to look up exactly one matching entry in `knowledge_bases.toml`, and use that selected entry's `name` and
 `url` values as variables in later instructions.
 
-If `RCP_KB_NAME` is missing, empty, or does not match any `knowledge_sources.name` value, stop and tell the user to
-set `RCP_KB_NAME` to a valid configured source name.
+If `RCP_KB_NAME` is missing or empty or does not match any `knowledge_bases.name` value, stop the agent and tell the user to set `RCP_KB_NAME` to a valid configured source name.
 
-If multiple `knowledge_sources` entries share the same `name`, stop and tell the user to make the names unique before
-running the agent.
+If multiple `knowledge_bases` entries share the same `name`, stop and tell the user to make the names unique before running the agent.
 
 # Steps
 
-Resolve the target `knowledge_sources` entry from `config.toml` using `RCP_KB_NAME`, then perform the following steps
+Resolve the target `knowledge_bases` entry from `knowledge_bases.toml` using `RCP_KB_NAME`, then perform the following steps
 for that single selected entry only.
 
 ## Step 1: resolve target knowledge source
 
 - Read `RCP_KB_NAME` from the environment.
-- Find the single `knowledge_sources` entry in `config.toml` whose `name` exactly matches `RCP_KB_NAME`.
+- Find the single `knowledge_bases` entry in `knowledge_bases.toml` whose `name` exactly matches `RCP_KB_NAME`.
 - Treat that matched record as the only source to process.
-- Do not iterate over all `knowledge_sources` entries.
+- Do not iterate over all `knowledge_bases` entries.
 
 ## Step 2: check requirements
 
@@ -90,27 +45,24 @@ for that single selected entry only.
 
 ## Step 3: initialization
 
-Create a directory structure following this format: `outputs/{name}/{run}`
+Create a directory structure following this format: `outputs/{name}/{run}/{tmp_dir}`.
 
 - **`{name}`**
-    - sourced from `name` in the `knowledge_sources` entry
+  - sourced from `name` in the `knowledge_bases` entries
 - **`{run}`**
   - an integer (1, 2, 3, …) that increments with each new invocation; determine it by listing `outputs/{name}` and
     taking one more than the highest existing integer subdirectory, or `1` if none exist
-
-## Step 4: crawl
-
-Create a new temporary directory from within the `outputs/{name}/{run}/{tmp_dir}`.
-
-- **`{tmp_dir}`** 
+- **`{tmp_dir}`**
   - a temp directory that is created using the following command: !`mktemp -d -p`
 
-Use the `url` value from the `knowledge_sources` entry to crawl and download the url into the `outputs/{name}/{run}/{tmp_dir}` directory.  Use the tool !`nu ./bin/crawl.nu {name} ./outputs/{name}/{run}/{tmp_dir}` to crawl and download the site.  
+## Step 4: Download and parse html
 
-If crawling fails, for any reason, print that reason and halt the agent execution.  Otherwise, review the files in `outputs/{name}/{run}/{tmp_dir}`, identify the following:
+Download the pages using the `url` value from the `knowledge_bases.name` entry and write the HTML output to the `outputs/{name}/{run}/{tmp_dir}` directory.  Be sure to include all pagination, writing those files to an incrementing output.  For example, if a file is called `datasets.html`, but has JavaScript enabled pagination indicated by a "Next" and/or "Previous" buttons, then write the paginated pages out page by page called 'datasets_page_001.html', 'datasets_page_002.html', and so on. 
+
+Review the files in `outputs/{name}/{run}/{tmp_dir}`, identify the following:
   - name
     - The datatype is a string
-    - The value should be a longer, unabbreviated version of the `knowledge_sources` `name` entry.
+    - The value should be a longer, unabbreviated version of the `knowledge_bases` `name` entry.
   - description
     - The datatype is a string.
   - version
@@ -159,15 +111,112 @@ should exclude html-type files and should be limited to files with the following
   - csv
   - xml
   - obo
-  - pdf
   - rdf
   - gz
   - tgz
   - zip
+  - pdf
+  - parquet
 
-## Step 6: validate croissant metadata
+For each downloadable file, attempt to extract header information of that file to satisfy how a Croissant Metadata "recordSet" can be structured.  For example, if a '.tsv' file has a header, sample the first 10 lines to determine datatype and name of the column to build out the "recordSet" fields.  
 
-Run the official validator tool using the following command: !`.venv/bin/mlcroissant`.  This command expects a "validate" argument, a '--jsonld' flag and the generated found in `outputs/{name}/{run}/croissant.json` file.  An example usage of this command would look like: `.venv/bin/mlcroissant validate --jsonld output/CTD/1/croissant.json`
+## Step 6: Generate JSON paths file
+
+After generating the `outputs/{name}/{run}/{tmp_dir}/croissant.json` file, generate a TSV file called `croissant_paths.tsv` in the `outputs/{name}/{run}` directory.   
+
+Use these rules for `croissant_paths.tsv`:
+  - The first column, named 'path', in this file is the leaf-only JSON path for every element in the `croissant.json` file, with one path per line.  
+    - derive the paths from the final `croissant.json` exactly as written
+    - include only leaf paths whose values are scalars such as strings, numbers, booleans, or null
+    - do not include container-only paths for objects or arrays
+    - start each path with `$`
+    - use `[index]` for array positions
+    - use `.key` for simple identifier keys and `["key"]` when the key contains characters that require quoting
+    - do not apply any additional filtering unless a later instruction explicitly requires it
+    - exclude any linked element, those with a key starting with '@'
+    - exclude the 'dct:provenance' element
+  - The second column, named 'url', must be the URL where the value from this path is derived.  
+  - The third column, named 'confidence', must be a confidence score.  The value ranges from 0.0 to 1.0 and indicates how confident the agent is in reconciling the value from the actual URL.  
+
+## Step 7: Envelop with "source_url" and "confidence"
+
+For each element in the `outputs/{name}/{run}/{tmp_dir}/croissant.json` file, that is also not a linked element (elements starting with the '@' character), convert the element into a JSON object and add a "source_url" and "confidence" fields.  The original value should be stored as a "value" field in the JSON object.  The "source_url" should derive from a URL that contains that data's parent key.  The "confidence" score is a double datatype, ranging from 0.0 to 1.0, indicating how confident the agent is in reconciling the value from the "source_url".  
+
+For example, the following "RecordSet" does not include the "source_url" and "confidence" elements:
+```json
+{ 
+  "@type": "cr:RecordSet", 
+  "@id": "anatomy", 
+  "description": { 
+    "value": "Anatomy vocabulary derived from MeSH, UBERON, and Cell Ontology terms with synonyms and identifiers." 
+  }
+}
+```
+
+And instead should be written as:
+```json
+{
+  "@type": "cr:RecordSet",
+  "@id": "anatomy",
+  "description": {
+    "value": "Anatomy vocabulary derived from MeSH, UBERON, and Cell Ontology terms with synonyms and identifiers.",
+    "source_url": "https://ctdbase.org/downloads/#allanatomy",
+    "confidence": 1.0
+  }
+}
+```
+
+Here is another example where two elements that do not include the "source_url" and "confidence" elements:
+```json
+{
+  "name": "Comparative Toxicogenomics Database",
+  "description": "CTD is a public database that aims to advance understanding about how environmental exposures affect human health."
+}
+```
+
+And instead should be written as:
+```json
+{
+  "name": {
+    "value": "Comparative Toxicogenomics Database",
+    "source_url": "https://ctdbase.org/about/",
+    "confidence": 1.0
+  },
+  "description": {
+    "value": "CTD is a public database that aims to advance understanding about how environmental exposures affect human health.",
+    "source_url": "https://ctdbase.org/about/",
+    "confidence": 1.0
+  }
+}
+```
+
+For array based elements, the "value" element should contain the array and not add "source_url" and "confidence" elements to each value within the array.  So, the following array based JSON:
+```json
+{ "keywords": ["Chemicals","Genes","Diseases"] }
+```
+
+Should be written as:
+```json
+{
+  "keywords": {
+    "value": ["Chemicals","Genes","Diseases"],
+    "source_url": "https://ctdbase.org/",
+    "confidence": 0.84 
+  }  
+}
+```
+
+The "value" element is not a JSON-LD element, meaning do not prefix it with a '@' character.
+
+The output of these tranformations should be written to a new file called `croissant_wrapped.json` into the `outputs/{name}/{run}/{tmp_dir}/` directory.
+
+## Step 8: validate croissant metadata
+
+Run the official validator tool using the following command: !`.venv/bin/mlcroissant`.  The `mlcroissant` command expects a 'validate' subcommand, a '--jsonld' flag, and the generated found in `outputs/{name}/{run}/croissant_wrapped.json` file.
+
+Here is an example usage of the `mlcroissant` command: `.venv/bin/mlcroissant validate --jsonld output/CTD/1/croissant_wrapped.json`.  
+
+Do not include the `--help` flag to infer the arguments for the `mlcroissant` command.
 
 Review the standard output from the `mlcroissant` command and perform the following:
  - **On errors**
@@ -179,7 +228,7 @@ Review the standard output from the `mlcroissant` command and perform the follow
  - **Content validation** 
    - After the structural validator passes, re-fetch the source page for each of these fields and compare the Croissant value character-by-character against the live page text:
      - `citeAs` 
-       - re-fetch the citations/FAQ/about page and confirm the full author list, exact title, journal, volume, pages, and year match what is on the page
+       - re-fetch the citations, FAQ, or about pages to confirm the full author list, exact title, journal, volume, pages, and year match what is on the page
      - `license`
        - re-fetch the license/terms page and confirm the license URL or verbatim policy text matches
      - `name` and `description` 
@@ -187,15 +236,17 @@ Review the standard output from the `mlcroissant` command and perform the follow
      - `conditionsOfAccess`
        - re-fetch the terms page and confirm any quoted policy language is verbatim
 
-For each field, fetch the source URL, find the relevant sentence or paragraph, and ask: "Does the Croissant value match the source text exactly, or has it been paraphrased, reformatted, or partially rewritten?" If there is any divergence, correct the Croissant value to match the source exactly.
+For each field fetch the source URL, then find the relevant sentence or paragraph, and ask: "Does the Croissant value match the source text exactly, or has it been paraphrased, reformatted, or partially rewritten?" If there is any divergence, correct the Croissant value to match the source exactly.
 
-## Step 7:
+## Step 9: Add output to robo_croissant.db
 
 Use the !`./bin/add_kb_to_db.nu` script to add the output files to a SQLite database.  The arguments to that tool
-should include the `{name}`, the generated `outputs/{name}/{run}/croissant.json` metadata file, and the generated
-`outputs/{name}/{run}/persistant_fields.json` file.  Here is an example of the full command to run:
-`./bin/add_kb_to_db.nu CTD ./outputs/CTD/1/croissant.json ./outputs/CTD/1/persistent_fields.json`
+should include the `{name}`, the `outputs/{name}/{run}/croissant_wrapped.json` metadata file, and the `outputs/{name}/{run}/persistent_fields.json` file.  
 
-## Step 8:
+Here is an example of the full command to run: 
+`./bin/add_kb_to_db.nu CTD ./outputs/CTD/1/croissant_wrapped.json ./outputs/CTD/1/persistent_fields.json`
+
+## Step 10: Summarize
 
 Write a summary of the agent's work to a text file called `summary.txt` in the `outputs/{name}/{run}` directory.
+Include the generated artifact paths for `croissant.json`, `croissant_paths.txt`, `croissant_wrapped.json`, and `persistent_fields.json`.
