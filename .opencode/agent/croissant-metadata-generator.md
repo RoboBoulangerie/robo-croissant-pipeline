@@ -129,92 +129,19 @@ Use these rules for `croissant_paths.tsv`:
     - derive the paths from the final `croissant.json` exactly as written
     - include only leaf paths whose values are scalars such as strings, numbers, booleans, or null
     - do not include container-only paths for objects or arrays
-    - start each path with `$`
     - use `[index]` for array positions
-    - use `.key` for simple identifier keys and `["key"]` when the key contains characters that require quoting
+    - use `key` for simple identifier keys and `"key"` when the key contains characters that require quoting
     - do not apply any additional filtering unless a later instruction explicitly requires it
     - exclude any linked element, those with a key starting with '@'
     - exclude the 'dct:provenance' element
   - The second column, named 'url', must be the URL where the value from this path is derived.  
   - The third column, named 'confidence', must be a confidence score.  The value ranges from 0.0 to 1.0 and indicates how confident the agent is in reconciling the value from the actual URL.  
 
-## Step 7: Envelop with "source_url" and "confidence"
+## Step 7: validate croissant metadata
 
-For each element in the `outputs/{name}/{run}/{tmp_dir}/croissant.json` file, that is also not a linked element (elements starting with the '@' character), convert the element into a JSON object and add a "source_url" and "confidence" fields.  The original value should be stored as a "value" field in the JSON object.  The "source_url" should derive from a URL that contains that data's parent key.  The "confidence" score is a double datatype, ranging from 0.0 to 1.0, indicating how confident the agent is in reconciling the value from the "source_url".  
+Run the official validator tool using the following command: !`.venv/bin/mlcroissant`.  The `mlcroissant` command expects a 'validate' subcommand, a '--jsonld' flag, and the generated found in `outputs/{name}/{run}/croissant.json` file.
 
-For example, the following "RecordSet" does not include the "source_url" and "confidence" elements:
-```json
-{ 
-  "@type": "cr:RecordSet", 
-  "@id": "anatomy", 
-  "description": { 
-    "value": "Anatomy vocabulary derived from MeSH, UBERON, and Cell Ontology terms with synonyms and identifiers." 
-  }
-}
-```
-
-And instead should be written as:
-```json
-{
-  "@type": "cr:RecordSet",
-  "@id": "anatomy",
-  "description": {
-    "value": "Anatomy vocabulary derived from MeSH, UBERON, and Cell Ontology terms with synonyms and identifiers.",
-    "source_url": "https://ctdbase.org/downloads/#allanatomy",
-    "confidence": 1.0
-  }
-}
-```
-
-Here is another example where two elements that do not include the "source_url" and "confidence" elements:
-```json
-{
-  "name": "Comparative Toxicogenomics Database",
-  "description": "CTD is a public database that aims to advance understanding about how environmental exposures affect human health."
-}
-```
-
-And instead should be written as:
-```json
-{
-  "name": {
-    "value": "Comparative Toxicogenomics Database",
-    "source_url": "https://ctdbase.org/about/",
-    "confidence": 1.0
-  },
-  "description": {
-    "value": "CTD is a public database that aims to advance understanding about how environmental exposures affect human health.",
-    "source_url": "https://ctdbase.org/about/",
-    "confidence": 1.0
-  }
-}
-```
-
-For array based elements, the "value" element should contain the array and not add "source_url" and "confidence" elements to each value within the array.  So, the following array based JSON:
-```json
-{ "keywords": ["Chemicals","Genes","Diseases"] }
-```
-
-Should be written as:
-```json
-{
-  "keywords": {
-    "value": ["Chemicals","Genes","Diseases"],
-    "source_url": "https://ctdbase.org/",
-    "confidence": 0.84 
-  }  
-}
-```
-
-The "value" element is not a JSON-LD element, meaning do not prefix it with a '@' character.
-
-The output of these tranformations should be written to a new file called `croissant_wrapped.json` into the `outputs/{name}/{run}/{tmp_dir}/` directory.
-
-## Step 8: validate croissant metadata
-
-Run the official validator tool using the following command: !`.venv/bin/mlcroissant`.  The `mlcroissant` command expects a 'validate' subcommand, a '--jsonld' flag, and the generated found in `outputs/{name}/{run}/croissant_wrapped.json` file.
-
-Here is an example usage of the `mlcroissant` command: `.venv/bin/mlcroissant validate --jsonld output/CTD/1/croissant_wrapped.json`.  
+Here is an example usage of the `mlcroissant` command: `.venv/bin/mlcroissant validate --jsonld output/CTD/1/croissant.json`.  
 
 Do not include the `--help` flag to infer the arguments for the `mlcroissant` command.
 
@@ -238,15 +165,15 @@ Review the standard output from the `mlcroissant` command and perform the follow
 
 For each field fetch the source URL, then find the relevant sentence or paragraph, and ask: "Does the Croissant value match the source text exactly, or has it been paraphrased, reformatted, or partially rewritten?" If there is any divergence, correct the Croissant value to match the source exactly.
 
-## Step 9: Add output to robo_croissant.db
+## Step 8: Add output to robo_croissant.db
 
 Use the !`./bin/add_kb_to_db.nu` script to add the output files to a SQLite database.  The arguments to that tool
-should include the `{name}`, the `outputs/{name}/{run}/croissant_wrapped.json` metadata file, and the `outputs/{name}/{run}/persistent_fields.json` file.  
+should include the `{name}`, the `outputs/{name}/{run}/croissant.json` metadata file, and the `outputs/{name}/{run}/persistent_fields.json` file.  
 
 Here is an example of the full command to run: 
-`./bin/add_kb_to_db.nu CTD ./outputs/CTD/1/croissant_wrapped.json ./outputs/CTD/1/persistent_fields.json`
+`./bin/add_kb_to_db.nu CTD ./outputs/CTD/1/croissant.json ./outputs/CTD/1/persistent_fields.json`
 
-## Step 10: Summarize
+## Step 9: Summarize
 
 Write a summary of the agent's work to a text file called `summary.txt` in the `outputs/{name}/{run}` directory.
-Include the generated artifact paths for `croissant.json`, `croissant_paths.txt`, `croissant_wrapped.json`, and `persistent_fields.json`.
+Include the generated artifact paths for `croissant.json`, `croissant_paths.tsv`, and `persistent_fields.json`.
