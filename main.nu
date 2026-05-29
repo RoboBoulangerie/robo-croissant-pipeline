@@ -1,6 +1,6 @@
 #!/usr/bin/env nu
 
-def crawl_knowledge_source [
+def crawl_knowledge_base [
     source_url: string,
     source_name: string,
     depth: int,
@@ -59,8 +59,8 @@ Replace placeholders like `...` with valid JSON values.
 
 def main [] {
     stor reset
-    stor create --table-name "knowledge_sources" --columns { name: str, url: str, croissant_metadata: jsonb}
-    stor create --table-name "knowledge_source_mappings" --columns { source_name: str, key: str, answer: jsonb }
+    stor create --table-name "knowledge_bases" --columns { name: str, url: str, croissant_metadata: jsonb}
+    stor create --table-name "knowledge_base_mappings" --columns { source_name: str, key: str, answer: jsonb }
 
 #    let home_dir = $env.HOME
 #    if not ($"($home_dir)/.config/aichat/config.yaml" | path exists) { (write_aichat_config $home_dir) }
@@ -72,9 +72,9 @@ def main [] {
 
     rm --force "robo_croissant.db"
 
-    let config = open config.toml
+    let knowledge_bases = open knowledge_bases.toml
 
-    mut enabled_sources = ($config | get knowledge_sources)
+    mut enabled_sources = ($knowledge_bases | get knowledge_bases)
 
     for source in $enabled_sources {
         print $source.name
@@ -94,7 +94,7 @@ def main [] {
             $source_depth = $source.depth
         }
 
-        (crawl_knowledge_source $source_url $source_name $source_depth $source_blacklist $tmp_dir)
+        (crawl_knowledge_base $source_url $source_name $source_depth $source_blacklist $tmp_dir)
 
         #break
 
@@ -103,7 +103,7 @@ def main [] {
         let persistent_fields_response = opencode run $"($persistent_fields_prompt)" | clean_json_text | from json
         for pfr in $persistent_fields_response {
             try {
-                stor insert --table-name "knowledge_source_mappings" --data-record { source_name: $source_name, key: $pfr.key, answer: $pfr.value }
+                stor insert --table-name "knowledge_base_mappings" --data-record { source_name: $source_name, key: $pfr.key, answer: $pfr.value }
             } catch {|e| print $e }
         }
 
@@ -114,13 +114,13 @@ def main [] {
         $cr_answer | print
         mut cr_answer_json = (parse_json_with_repair $cr_answer)
 
-        let mapping_data = stor open | query db "select key, answer from knowledge_source_mappings" | reduce -f {} {|it, acc| $acc | upsert $it.key $it.answer }
+        let mapping_data = stor open | query db "select key, answer from knowledge_base_mappings" | reduce -f {} {|it, acc| $acc | upsert $it.key $it.answer }
         #$mapping_data | print
 
         $cr_answer_json = ($cr_answer_json | merge $mapping_data)
         #$cr_answer_json | print
 
-        stor insert --table-name "knowledge_sources" --data-record { name: $source_name, url: $source_url, croissant_metadata: $cr_answer_json }
+        stor insert --table-name "knowledge_bases" --data-record { name: $source_name, url: $source_url, croissant_metadata: $cr_answer_json }
 
         #rm --recursive $tmp_dir
     }
