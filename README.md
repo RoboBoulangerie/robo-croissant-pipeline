@@ -43,8 +43,8 @@ nu main.nu
 ## Extracting the Croissant Metadata JSON 
 From within Nushell, issue the follow:
 ```shell
-let kb_names = open config.toml | get knowledge_sources | get name
-for x in $kb_names { open robo_croissant.db | get knowledge_sources | where name == $x | save -f $"($x).json" }
+let kb_names = open knowledge_bases.toml | get knowledge_bases.name
+for x in $kb_names { open robo_croissant.db | get knowledge_bases | where name == $x | save -f $"($x).json" }
 ```
 
 The current list of generated Croissant Metadata JSON files can be found [here](https://roboboulangerie.github.io/robo-croissant-pipeline/).
