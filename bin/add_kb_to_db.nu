@@ -1,16 +1,15 @@
 #!/usr/bin/env nu
 
 def main [source_name: string, cr_metadata_json: path, cr_mappings: path] {
-    stor import -f "robo_croissant.db"
+    stor import -f "robo_croissant.db" | ignore
     rm --force "robo_croissant.db"
-    let source_url = open config.toml | get knowledge_sources | where $it.name == $"($source_name)" | get url | get 0
+    let source_url = open knowledge_bases.toml | get knowledge_bases | where $it.name == $"($source_name)" | get url | get 0
+    let croissant_metadata_json = (open $cr_metadata_json | to json)
+    stor insert --table-name "knowledge_bases" --data-record { name: $source_name, url: $source_url, croissant_metadata: $croissant_metadata_json }
     for pfr in (open $cr_mappings) {
         try {
-            stor insert --table-name "knowledge_source_mappings" --data-record { source_name: $source_name, key: $pfr.key, answer: $pfr.value, url: $pfr.url }
+            stor insert --table-name "kb_links" --data-record { kb_name: $source_name, path: $pfr.path, value: $pfr.value, url: $pfr.url, confidence: $pfr.confidence }
         } catch {|e| print $e }
     }
-    let mapping_data = stor open | query db "select key, answer from knowledge_source_mappings" | reduce -f {} {|it, acc| $acc | upsert $it.key $it.answer }
-    let cr_answer_json = (open $cr_metadata_json | merge $mapping_data)
-    stor insert --table-name "knowledge_sources" --data-record { name: $source_name, url: $source_url, croissant_metadata: $cr_answer_json }
     stor export --file-name "robo_croissant.db" | ignore
 }
