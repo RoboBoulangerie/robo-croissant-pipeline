@@ -1,0 +1,222 @@
+[[knowledge_bases]]
+name = "BRCA Exchange"
+url = "https://brcaexchange.org/"
+enabled = true
+
+[[knowledge_bases]]
+name = "CADRE"
+url = "https://cadre.med.wisc.edu/data/"
+enabled = true
+depth = 2
+blacklist = "/(sites|research)"
+
+[[knowledge_bases]]
+name = "CIViC"
+url = "https://www.civicdb.org/welcome"
+enabled = true
+
+[[knowledge_bases]]
+name = "Disease Ontology"
+url = "https://disease-ontology.org/downloads"
+enabled = true
+
+[[knowledge_bases]]
+name = "PhysioNet"
+url = "https://physionet.org/"
+enabled = false
+depth = 2
+blacklist = "(reset-password|register|news|login)"
+
+[[knowledge_bases]]
+name = "Reactome"
+url = "https://reactome.org/download-data"
+enabled = true
+
+[[knowledge_bases]]
+name = "BindingDB"
+url = "https://www.bindingdb.org/rwd/bind/chemsearch/marvin/Download.jsp"
+enabled = false
+
+[[knowledge_bases]]
+name = "PharmGKB"
+url = "https://www.pharmgkb.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "HGNC"
+url = "https://www.genenames.org/download/"
+enabled = true
+depth = 2
+blacklist = "/(help|contact|martform|privacy-notice|biomart),/(cgi-bin|contact|data|rest|tools|help|news)/,/about/(guidelines|instructions-to-authors|meetings|naming-flowcharts|pjm|sab|specialist-advisors|species-list|team|workshops),/download/(archive|custom|gene-groups)"
+
+[[knowledge_bases]]
+name = "Gene Ontology"
+url = "https://www.geneontology.org/docs/download-ontology/"
+enabled = true
+
+[[knowledge_bases]]
+name = "PGS Catalog"
+url = "https://www.pgscatalog.org/"
+enabled = true
+
+[[knowledge_bases]]
+name = "PhenX Toolkit"
+url = "https://www.phenxtoolkit.org/resources/download"
+enabled = true
+
+[[knowledge_bases]]
+name = "FlyBase"
+url = "https://flybase.org/"
+enabled = true
+
+[[knowledge_bases]]
+name = "CTD"
+url = "https://ctdbase.org/downloads/"
+enabled = true
+depth = 3
+blacklist = "/(help|reports|documents|tools)/,.*\\.(obo|tgz),.*(type|jsessionid).*"
+
+[[knowledge_bases]]
+name = "Afrigen-D"
+url = "https://afrigen-d.org/data-resources/"
+enabled = false
+
+[[knowledge_bases]]
+name = "i-AKC"
+url = "https://airr-knowledge.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "BMRB"
+url = "https://bmrb.io/"
+enabled = false
+
+[[knowledge_bases]]
+name = "iCDKP"
+url = "https://cd.hugeamp.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "BioPortal"
+url = "https://bioportal.bioontology.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "EcoCyc"
+url = "https://ecocyc.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "Pennsieve"
+url = "https://discover.pennsieve.io/"
+enabled = false
+
+[[knowledge_bases]]
+name = "ICTV"
+url = "https://ictv.global/about/taxonomy"
+enabled = false
+
+[[knowledge_bases]]
+name = "MassIVE"
+url = "https://massive.ucsd.edu/ProteoSAFe/static/massive.jsp"
+enabled = false
+
+[[knowledge_bases]]
+name = "MSK Knowledge Portal"
+url = "https://msk.hugeamp.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "SHARC"
+url = "https://sharc-research.org/research/data/"
+enabled = false
+
+[[knowledge_bases]]
+name = "VIOLIN"
+url = "https://violinet.org/download/"
+enabled = false
+
+[[knowledge_bases]]
+name = "Alliance of Genome Resources"
+url = "https://www.alliancegenome.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "FaceBase"
+url = "https://www.facebase.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "ROBOKOP"
+url = "https://robokop.renci.org/graphs"
+enabled = false
+
+[[knowledge_bases]]
+name = "GeoSpace"
+url = "https://www.gsbase.org/about"
+enabled = false
+
+[[knowledge_bases]]
+name = "MSigDB"
+url = "https://www.gsea-msigdb.org/gsea/msigdb/"
+enabled = false
+
+[[knowledge_bases]]
+name = "Metabolomics Workbench"
+url = "https://www.metabolomicsworkbench.org/data/index.php"
+enabled = false
+
+[[knowledge_bases]]
+name = "UniProt"
+url = "https://www.uniprot.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "InSSURR"
+url = "https://sudepresearch.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "OAI CORE"
+url = "https://nda.nih.gov/oai"
+enabled = false
+
+[[knowledge_bases]]
+name = "PDR"
+url = "https://pdr.renci.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "ISIC Archive"
+url = "https://www.isic-archive.com/"
+enabled = false
+
+[[knowledge_bases]]
+name = "GACFDW"
+url = "https://github.com/The-CRIC-at-Emory/GACFDW"
+enabled = false
+
+[[knowledge_bases]]
+name = "ECID"
+url = "https://github.com/idslme"
+enabled = false
+
+[[knowledge_bases]]
+name = "REDfly"
+url = "http://redfly.ccr.buffalo.edu/about"
+enabled = false
+
+[[knowledge_bases]]
+name = "GlyGen"
+url = "https://www.glygen.org/"
+enabled = false
+
+[[knowledge_bases]]
+name = "HemOnc.org"
+url = "https://hemonc.org/wiki/Main_Page"
+enabled = false
+
+[[knowledge_bases]]
+name = "ODC-SCI"
+url = "https://odc-sci.org/"
+enabled = false
