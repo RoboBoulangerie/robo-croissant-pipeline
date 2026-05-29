@@ -55,53 +55,7 @@ Create a directory structure following this format: `outputs/{name}/{run}/{tmp_d
 - **`{tmp_dir}`**
   - a temp directory that is created using the following command: !`mktemp -d -p`
 
-## Step 4: Download and parse html
-
-Download the pages using the `url` value from the `knowledge_bases.name` entry and write the HTML output to the `outputs/{name}/{run}/{tmp_dir}` directory.  Be sure to include all pagination, writing those files to an incrementing output.  For example, if a file is called `datasets.html`, but has JavaScript enabled pagination indicated by a "Next" and/or "Previous" buttons, then write the paginated pages out page by page called 'datasets_page_001.html', 'datasets_page_002.html', and so on. 
-
-Review the files in `outputs/{name}/{run}/{tmp_dir}`, identify the following:
-  - name
-    - The datatype is a string
-    - The value should be a longer, unabbreviated version of the `knowledge_bases` `name` entry.
-  - description
-    - The datatype is a string.
-  - version
-    - The datatype is a string.
-    - The value could be a date, a SemVer value, or a revision.  If not provided or found, answer with 'Not Provided'.
-  - citeAs
-    - The datatype is a string.
-  - license
-    - The datatype is a string.
-    - The preferred value should be url to a known license.  For example, the GNU General Public License can be found at https://www.gnu.org/licenses/gpl-3.0.html
-  - keywords
-    - The datatype is a string array.
-  - dateModified
-    - The datatype is a string.
-    - The format should be yyyy-MM-dd.
-  - datePublished
-    - The datatype is a string.
-    - The format should be yyyy-MM-dd.
-  - dateCreated
-    - The datatype is a string.
-    - The format should be yyyy-MM-dd.
-
-If any of the above values cannot be found or satisfied, provide a reason in the `dct:provenance` field in the croissant metadata file.
-
-Write the above fields to a new JSON file called `persistent_fields.json` in the `outputs/{name}/{run}` directory 
-using the following rules:
-  - Output should be in strict RFC 8259 JSON format
-  - Add a field called `url` that is a reference to the specific page or URL the information came from, not a local file path
-  - Add a field called `confidence` that is a score with a range between 0.0 and 1.0 reflecting how clearly the value was stated in the source.
-
-Here is a sample output:
-```
-[
-{ "key": "name", "value": "Comparative Toxicogenomics Database (CTD)", "url": "https://ctdbase.org/", "confidence": 0.97 },
-{ "key": "keywords", "value": ["environmental chemicals", "genes", "diseases"], "url": "https://ctdbase.org/", "confidence": 0.32 }
-]
-```
-
-## Step 5: generate croissant metadata file
+## Step 4: generate croissant metadata file
 
 Review the files in `outputs/{name}/{run}/{tmp_dir}` and generate a file called `croissant.json` in the
 `outputs/{name}/{run}` directory that is an as complete Croissant Metadata JSON file as possible. Include 
@@ -118,24 +72,40 @@ should exclude html-type files and should be limited to files with the following
   - pdf
   - parquet
 
-For each downloadable file, attempt to extract header information of that file to satisfy how a Croissant Metadata "recordSet" can be structured.  For example, if a '.tsv' file has a header, sample the first 10 lines to determine datatype and name of the column to build out the "recordSet" fields.  
+For each downloadable file, attempt to extract header information of that file to satisfy how a Croissant Metadata "recordSet" can be structured.  For example, if a '.tsv' file has a header, sample the first 10 lines to determine the column name and datatype to build out the "recordSet" fields.  
+
+If any of the values cannot be found or satisfied, provide a reason in the `dct:provenance` field in the croissant metadata file.
 
 ## Step 6: Generate JSON paths file
 
-After generating the `outputs/{name}/{run}/{tmp_dir}/croissant.json` file, generate a TSV file called `croissant_paths.tsv` in the `outputs/{name}/{run}` directory.   
+After generating the `outputs/{name}/{run}/{tmp_dir}/croissant.json` file, generate a TSV file called `persistent_fields.json` in the `outputs/{name}/{run}` directory.   
 
-Use these rules for `croissant_paths.tsv`:
-  - The first column, named 'path', in this file is the leaf-only JSON path for every element in the `croissant.json` file, with one path per line.  
-    - derive the paths from the final `croissant.json` exactly as written
-    - include only leaf paths whose values are scalars such as strings, numbers, booleans, or null
-    - do not include container-only paths for objects or arrays
-    - use `[index]` for array positions
-    - use `key` for simple identifier keys and `"key"` when the key contains characters that require quoting
-    - do not apply any additional filtering unless a later instruction explicitly requires it
-    - exclude any linked element, those with a key starting with '@'
-    - exclude the 'dct:provenance' element
-  - The second column, named 'url', must be the URL where the value from this path is derived.  
-  - The third column, named 'confidence', must be a confidence score.  The value ranges from 0.0 to 1.0 and indicates how confident the agent is in reconciling the value from the actual URL.  
+Use the following rules to produce the `persistent_fields.json` file:
+  - Output should be in strict RFC 8259 JSON format
+  - Each entry in the output should be a JSON object with the following fields:
+    - `path` 
+      - derive the paths from the final `croissant.json` exactly as written
+      - include only leaf paths whose values are scalars such as strings, numbers, booleans, or null
+      - do not include container-only paths for objects or arrays
+      - use `[index]` for array positions
+      - use `key` for simple identifier keys and `"key"` when the key contains characters that require quoting
+      - do not apply any additional filtering unless a later instruction explicitly requires it
+      - exclude any linked element, those with a key starting with '@'
+      - exclude the 'dct:provenance' element
+    - `value`
+      - a string or array of strings derived from the final `croissant.json` exactly as written
+    - `url`
+      - a reference to the specific page or URL the information came from, not a local file path
+    - `confidence` 
+      - a score with a range between 0.0 and 1.0 reflecting how confident the agent is in reconciling the value from the actual URL.
+
+Here is a sample output:
+```
+[
+{ "path": "name", "value": "Comparative Toxicogenomics Database (CTD)", "url": "https://ctdbase.org/", "confidence": 0.97 },
+{ "path": "keywords", "value": ["environmental chemicals", "genes", "diseases"], "url": "https://ctdbase.org/", "confidence": 0.32 }
+]
+```
 
 ## Step 7: validate croissant metadata
 
@@ -176,4 +146,4 @@ Here is an example of the full command to run:
 ## Step 9: Summarize
 
 Write a summary of the agent's work to a text file called `summary.txt` in the `outputs/{name}/{run}` directory.
-Include the generated artifact paths for `croissant.json`, `croissant_paths.tsv`, and `persistent_fields.json`.
+Include the generated artifact paths for `croissant.json`, and `persistent_fields.json`.
