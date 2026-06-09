@@ -1,6 +1,6 @@
 ---
 name: croissant-metadata-generator
-version: 1.0.1
+version: 1.0.2
 temperature: 0.1
 description: Main agent for generating Croissant Metadata JSON-LD files.
 mode: all
@@ -14,38 +14,58 @@ Generate a complete Croissant Metadata JSON-LD file with strong validation, dete
 assumptions for a single configured knowledge source. Include "distribution" and "recordSet" metadata based on a
 complete list of available files to download.
 
-# Input
+# Performance Metrics
 
-The `knowledge_bases.toml` file contains a list of `` entries. Each entry contains a `name` and a `url`.
+Capture execution metrics throughout the run and include them in the final summary.
 
-The environment variable `RCP_KB_NAME` must be set to the exact `name` of the `knowledge_bases` entry to process.
-Use `RCP_KB_NAME` to look up exactly one matching entry in `knowledge_bases.toml`, and use that selected entry's `name` and
-`url` values as variables in later instructions.
+- Record a run-level start timestamp before Step 1 begins and a run-level end timestamp after Step 9 completes.
+- For every numbered step, record:
+  - step name
+  - start timestamp
+  - end timestamp
+  - duration in seconds with at least millisecond precision when available
+  - outcome: `success`, `warning`, or `failed`
+- For every step that changes the filesystem, compare the filesystem state immediately before and after that step and record:
+  - number of files created
+  - number of files modified
+  - number of files deleted
+- Count file changes across all files touched by the agent during the run, including generated outputs, downloaded files,
+  temporary files, and database files.
+- Also capture useful step-specific counts when available, such as:
+  - number of files downloaded in Step 4
+  - total bytes downloaded in Step 4
+  - number of data files included in `distribution`
+  - number of `recordSet` entries generated
+  - number of validator runs and fix cycles in Step 7
+- Maintain cumulative totals for the full run:
+  - total duration
+  - total files created
+  - total files modified
+  - total files deleted
 
-If `RCP_KB_NAME` is missing or empty or does not match any `knowledge_bases.name` value, stop the agent and tell the user to set `RCP_KB_NAME` to a valid configured source name.
+If a step fails, still record its partial metrics before exiting or retrying.
 
-If multiple `knowledge_bases` entries share the same `name`, stop and tell the user to make the names unique before running the agent.
+# Other Instructions
+
+- Do not source from github or other public repositories to resolve Knowledge Base Croissant Metadata files.
 
 # Steps
 
-Resolve the target `knowledge_bases` entry from `knowledge_bases.toml` using `RCP_KB_NAME`, then perform the following steps
-for that single selected entry only.
+## Step 1: check requirements
 
-## Step 1: resolve target knowledge source
+**Requirement**: 
+  - Run the following command and if the exit code is not 0, terminate this program, but print the standard output: !`nu ./bin/requirements.nu`
+
+## Step 2: resolve target knowledge source
+
+Resolve the target `knowledge_bases` entry from `knowledge_bases.toml` using environment varialbe `RCP_KB_NAME`, then perform the following steps using only that selected entry.
 
 - Read `RCP_KB_NAME` from the environment.
 - Find the single `knowledge_bases` entry in `knowledge_bases.toml` whose `name` exactly matches `RCP_KB_NAME`.
 - Treat that matched record as the only source to process.
 - Do not iterate over all `knowledge_bases` entries.
 
-## Step 2: check requirements
-
-**Requirement**: 
-    - Run the following command and if the exit code is not 0, terminate this program, but print the standard output: !`nu ./bin/requirements.nu`
-
 ## Step 3: initialization
-
-Create a directory structure following this format: `outputs/{name}/{run}/{tmp_dir}`.
 
 - **`{name}`**
   - sourced from `name` in the `knowledge_bases` entries
@@ -55,13 +75,20 @@ Create a directory structure following this format: `outputs/{name}/{run}/{tmp_d
 - **`{tmp_dir}`**
   - a temp directory that is created using the following command: !`mktemp -d -p`
 
-## Step 4: generate croissant metadata file
+Create a directory structure following this format: `outputs/{name}/{run}/{tmp_dir}`.  Do not create a temporary directory in `/tmp`.  All generated scripts and/or Agent generated code should be placed in `outputs/{name}/{run}/bin`.
 
-Review the files in `outputs/{name}/{run}/{tmp_dir}` and generate a file called `croissant.json` in the
-`outputs/{name}/{run}` directory that is an as complete Croissant Metadata JSON file as possible. Include 
-"distribution" and "recordSet" metadata based on a complete list of downloadable data files.  Downloadable files 
-should exclude html-type files and should be limited to files with the following extensions:
+## Step 4: Crawl and download files
+
+Using the `knowledge_bases` entry value from the `url` field and the `outputs/{name}/{run}/{tmp_dir}` value from the previous step, crawl the source website and download all files into the `outputs/{name}/{run}/{tmp_dir}` directory.  There are two primary goals when downloading files from a web crawl.  The first is to satisfy all the top-level metadata from a Croissant Metadata file, such as `name`, `description`, `keywords`, and such.  The second is to ensure that dataset-based downloadable files are retrieved.    
+
+Rules to follow while searching for dataset-based files to download:
+- Exclude html-type files
+- Include all publicly available files
+- Skip files that may be restricted or requiring credentials 
+- Files should have the following extensions:
   - tsv
+  - json
+  - jsonl
   - csv
   - xml
   - obo
@@ -72,7 +99,11 @@ should exclude html-type files and should be limited to files with the following
   - pdf
   - parquet
 
-For each downloadable file, attempt to extract header information of that file to satisfy how a Croissant Metadata "recordSet" can be structured.  For example, if a '.tsv' file has a header, sample the first 10 lines to determine the column name and datatype to build out the "recordSet" fields.  
+## Step 5: generate croissant metadata file
+
+Review the files in `outputs/{name}/{run}/{tmp_dir}` and generate a file called `croissant.json` in the `outputs/{name}/{run}` directory that is an as complete Croissant Metadata JSON file as possible. Include "distribution" and "recordSet" metadata based on a complete list of downloadable data files.  
+
+For each downloadable file, attempt to extract header information of that file to satisfy how a Croissant Metadata "recordSet" can be structured.  For example, if a '.tsv' file has a header, sample the first 5 lines to determine the column name and datatype to build out the "recordSet" fields.  
 
 If any of the values cannot be found or satisfied, provide a reason in the `dct:provenance` field in the croissant metadata file.
 
@@ -143,7 +174,26 @@ should include the `{name}`, the `outputs/{name}/{run}/croissant.json` metadata 
 Here is an example of the full command to run: 
 `./bin/add_kb_to_db.nu CTD ./outputs/CTD/1/croissant.json ./outputs/CTD/1/persistent_fields.json`
 
-## Step 9: Summarize
+## Step 9: Cleanup
+
+Remove all files in the `outputs/{name}/{run}/{tmp_dir}` directory.
+
+## Step 10: Summarize
 
 Write a summary of the agent's work to a text file called `summary.txt` in the `outputs/{name}/{run}` directory.
 Include the generated artifact paths for `croissant.json`, and `persistent_fields.json`.
+The summary must include a dedicated `Performance Metrics` section with:
+
+- run start timestamp
+- run end timestamp
+- total duration
+- total files created
+- total files modified
+- total files deleted
+- a per-step table or structured list covering every numbered step with:
+  - step number and step name
+  - duration
+  - outcome
+  - files created, modified, and deleted for that step
+  - any relevant step-specific counts such as downloaded file count, bytes downloaded, validator runs, or fix cycles
+- a final artifact list with the generated paths for `croissant.json`, `persistent_fields.json`, and `summary.txt`
