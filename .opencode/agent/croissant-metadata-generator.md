@@ -1,6 +1,6 @@
 ---
 name: croissant-metadata-generator
-version: 1.0.2
+version: 1.0.4
 temperature: 0.1
 description: Main agent for generating Croissant Metadata JSON-LD files.
 mode: all
@@ -79,25 +79,159 @@ Create a directory structure following this format: `outputs/{name}/{run}/{tmp_d
 
 ## Step 4: Crawl and download files
 
-Using the `knowledge_bases` entry value from the `url` field and the `outputs/{name}/{run}/{tmp_dir}` value from the previous step, crawl the source website and download all files into the `outputs/{name}/{run}/{tmp_dir}` directory.  There are two primary goals when downloading files from a web crawl.  The first is to satisfy all the top-level metadata from a Croissant Metadata file, such as `name`, `description`, `keywords`, and such.  The second is to ensure that dataset-based downloadable files are retrieved.    
+Using the `knowledge_bases` entry value from the `url` field and the `outputs/{name}/{run}/{tmp_dir}` value from the previous step, crawl the source website and download all relevant files into the `outputs/{name}/{run}/{tmp_dir}` directory.
 
-Rules to follow while searching for dataset-based files to download:
-- Exclude html-type files
-- Include all publicly available files
-- Skip files that may be restricted or requiring credentials 
-- Files should have the following extensions:
-  - tsv
-  - json
-  - jsonl
-  - csv
-  - xml
-  - obo
-  - rdf
-  - gz
-  - tgz
-  - zip
-  - pdf
-  - parquet
+There are two primary goals when downloading files from a web crawl:
+
+1. satisfy the top-level metadata needed for a Croissant Metadata file, such as `name`, `description`, `keywords`, license, citation, and access conditions
+2. retrieve the complete set of publicly available dataset-like and knowledge-graph-like downloadable assets that should be represented in `distribution` and used to derive `recordSet` metadata
+
+### Crawl scope and traversal rules
+
+- Treat the configured `url` as a discovery root, not as the only page to inspect.
+- Recursively traverse all publicly accessible descendant pages and container pages that are in scope for that knowledge source.
+- If the configured `url` is a listing page, index page, catalog page, release page, graph registry page, dataset registry page, or directory-style page, continue traversing into its child pages until no new in-scope dataset or knowledge graph assets are discovered.
+- When a root page contains multiple sibling graph, dataset, release, version, or export branches, traverse all of them, not just the first matching branch.
+- Do not stop at one level of depth. Continue descending through nested paths such as version folders, `latest`, `current`, `release`, `releases`, `archive`, `downloads`, `files`, `data`, `dumps`, `exports`, `graphs`, `kg`, `knowledge-graph`, `ontology`, or similarly named subpaths when they appear relevant.
+- Treat human-readable index pages and machine-generated directory listings as navigational containers to be explored, not as terminal pages.
+- Stay within the same source scope by default:
+  - prefer descendant paths on the same host and under the same root path prefix as the configured `url`
+  - also allow direct download links on trusted linked download hosts or CDNs when those links are clearly presented by an in-scope source page as official downloadable assets
+- Skip pages or files that require authentication, credentials, tokens, or other access restrictions.
+
+### What to include
+
+Include all publicly available downloadable assets that are clearly any of the following:
+
+- datasets
+- dataset releases
+- data dumps
+- exports
+- graphs
+- archives containing datasets
+- knowledge graph releases
+- graph serializations
+- ontology or terminology releases
+- machine-readable data bundles
+- database snapshots
+- structured documentation files that materially support dataset interpretation, such as PDFs describing schemas, releases, or usage
+
+Do not restrict discovery to a narrow extension allowlist. Include files that are clearly dataset-like, graph-like, ontology-like, archival, or otherwise machine-readable release artifacts.
+
+Files should preferentially include, but are not limited to, the following extensions:
+
+- tsv
+- tab
+- txt
+- csv
+- json
+- jsonl
+- ndjson
+- xml
+- rdf
+- owl
+- obo
+- ttl
+- nt
+- nq
+- trig
+- n3
+- hdt
+- graphml
+- gml
+- xgmml
+- gpml
+- sif
+- gaf
+- gpad
+- gpi
+- assoc
+- parquet
+- avro
+- orc
+- feather
+- arrow
+- sqlite
+- db
+- duckdb
+- h5
+- hdf5
+- biom
+- fasta
+- fa
+- fna
+- fsa
+- fastq
+- gff
+- gff3
+- gtf
+- bed
+- vcf
+- bcf
+- sam
+- bam
+- maf
+- gz
+- bgz
+- bz2
+- xz
+- zst
+- zip
+- tar
+- tgz
+- 7z
+- pdf
+
+Also include files whose URLs, anchor text, surrounding page text, or HTTP headers strongly indicate that they are downloadable datasets, graph releases, ontology exports, or release bundles even when the filename extension is missing, unconventional, or hidden behind query parameters.
+
+### Discovery heuristics
+
+While crawling, prioritize following links and pages whose URLs, titles, or nearby text suggest any of the following:
+
+- download
+- files
+- data
+- export
+- details
+- dump
+- archive
+- release
+- releases
+- version
+- latest
+- current
+- graph
+- graphs
+- kg
+- knowledge graph
+- ontology
+- rdf
+- ttl
+- obo
+- owl
+- api export
+- bulk download
+- snapshot
+- artifacts
+
+If a page appears to be a container for multiple graph or dataset families, enumerate each family and traverse each branch to its downloadable leaf assets.
+
+### Download completeness requirement
+
+The download set for Step 4 should be as complete as reasonably possible for the configured knowledge source's public data holdings that are discoverable from the configured root URL and its in-scope descendant pages.
+
+For Croissant generation:
+
+- include each discovered downloadable data or graph asset in `distribution`
+- use the full discovered set, not a partial subset
+- derive `recordSet` metadata where possible from the downloaded files themselves
+- if a branch appears to contain relevant public data but cannot be fully traversed or downloaded, record the limitation and reason in `dct:provenance`
+
+### Exclusions
+
+- Exclude HTML pages from `distribution`, though they may still be fetched for metadata discovery.
+- Exclude restricted, credential-gated, or explicitly unavailable files.
+- Exclude irrelevant binaries or assets that are not dataset-like, graph-like, documentation-like, or otherwise useful for Croissant metadata generation.
 
 ## Step 5: generate croissant metadata file
 
