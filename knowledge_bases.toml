@@ -1,222 +1,530 @@
 [[knowledge_bases]]
 name = "BRCA Exchange"
+title = "The BRCA Exchange Knowledgebase for Clinical Cancer Genetics"
 url = "https://brcaexchange.org/"
+grant_number = "CA302705"
+pi = "Melissa Suzanne Cline"
+announcement_number = "PAR-23-237"
+notes = """https://brcaexchange.org/releases
+the data is presented nicely, finding a license is not straight forward. do not see one on their source code page. """
 enabled = true
 
 [[knowledge_bases]]
 name = "CADRE"
+title = "Childrens Allergy and Asthma Data Repository (CADRE)"
 url = "https://cadre.med.wisc.edu/data/"
-enabled = true
 depth = 2
 blacklist = "/(sites|research)"
+grant_number = "AI179612"
+pi = "James E. Gern"
+announcement_number = "PAR-23-079"
+notes = """https://cadre.med.wisc.edu/data/
+limited access, there is a data dictionary but no direct download and there is also not a great section on citations or license"""
+enabled = true
 
 [[knowledge_bases]]
 name = "CIViC"
+title = "Creation of a knowledgebase of high quality assertions of the clinical actionability of somatic variants in cancer"
 url = "https://www.civicdb.org/welcome"
+grant_number = "CA275783"
+pi = "Malachi Griffith"
+announcement_number = "PAR-20-097"
+notes = """https://civicdb.org/releases/main
+I have always thought that the CiVIC site is really easy to use and navigate, and very easy to find what you are looking for, including the data available, citations, and license. """
 enabled = true
 
 [[knowledge_bases]]
 name = "Disease Ontology"
+title = "The Human Disease Ontology: An integrated, mechanistic knowledge resource for biomedical research."
 url = "https://disease-ontology.org/downloads"
+source_url = "https://disease-ontology.org/"
+grant_number = "HG012557"
+pi = "Lynn Marie Schriml"
+announcement_number = "PAR-20-097"
+notes = """https://disease-ontology.org/about/
+pretty straightforward source, they have downloads on their GitHub page, they have a license in their about section. """
 enabled = true
 
 [[knowledge_bases]]
 name = "PhysioNet"
+title = "PhysioNet: A FAIR and sustainable data repository"
 url = "https://physionet.org/"
-enabled = false
 depth = 2
 blacklist = "(reset-password|register|news|login)"
+grant_number = "EB037545"
+pi = "Thomas Heldt"
+announcement_number = "PAR-23-237"
+notes = """https://physionet.org/about/
+Overall impression: well organized 3 main types: studies with ECG-like results, Software, and tutorials. Each is listed on a main page with links to additional details. https://physionet.org/content/cded/1.0.1/ """
+enabled = false
 
 [[knowledge_bases]]
 name = "Reactome"
+title = "Reactome: An Open Knowledgebase of Human Pathways."
 url = "https://reactome.org/download-data"
+source_url = "https://reactome.org/?ref=blog.opentargets.org"
+grant_number = "HG012198"
+pi = "Lincoln D. Stein"
+announcement_number = "PAR-20-097"
+notes = """https://reactome.org/download-data
+pretty straightforward, they have a citations section and a licensing section. another example of a source with licenses for data, software, but also includes s separate one for illustrations"""
 enabled = true
 
 [[knowledge_bases]]
 name = "BindingDB"
+title = "BindingDB: An Open Knowledgebase of Protein-Small Molecule Interactions"
 url = "https://www.bindingdb.org/rwd/bind/chemsearch/marvin/Download.jsp"
-enabled = false
+#source_url = "https://www.bindingdb.org/rwd/bind/index.jsp"
+grant_number = "GM144232"
+pi = "Michael K. Gilson"
+announcement_number = "PAR-20-097"
+notes = """https://www.bindingdb.org/rwd/bind/chemsearch/marvin/Download.jsp
+binding db has a lot of different datasets as well. They definitely have citations but i do not see a license they also have a set of tools that they produce. """
+enabled = true
 
 [[knowledge_bases]]
-name = "PharmGKB"
-url = "https://www.pharmgkb.org/"
-enabled = false
+name = "ClinPGx"
+title = "PharmGKB"
+url = "https://www.clinpgx.org/downloads"
+#source_url = "https://www.pharmgkb.org/"
+grant_number = "HG010615"
+pi = "Teri Ellen Klein"
+announcement_number = "PAR-20-097"
+notes = """https://www.clinpgx.org/downloads
+yes, very cleanly laid out website. really like this one as an example. """
+enabled = true
 
 [[knowledge_bases]]
 name = "HGNC"
+title = "The Nomenclature of Human and Vertebrate Genes"
 url = "https://www.genenames.org/download/"
-enabled = true
+#source_url = "https://www.genenames.org/"
 depth = 2
 blacklist = "/(help|contact|martform|privacy-notice|biomart),/(cgi-bin|contact|data|rest|tools|help|news)/,/about/(guidelines|instructions-to-authors|meetings|naming-flowcharts|pjm|sab|specialist-advisors|species-list|team|workshops),/download/(archive|custom|gene-groups)"
+grant_number = "HG003345"
+pi = "Elspeth Bruford"
+announcement_number = "PAR-23-237"
+notes = """https://www.genenames.org/download/statistics-and-files/
+Two subprojects (PGNC, VGNC) do we want to croissaint those too? lots of data but well organized and easy to find, license and citations are in the normal places. """
+has_crawler_blockers = "yes"
+enabled = true
 
 [[knowledge_bases]]
 name = "Gene Ontology"
+title = "Gene Ontology Consortium and Knowledgebase"
 url = "https://www.geneontology.org/docs/download-ontology/"
+#source_url = "https://www.geneontology.org/"
+grant_number = "HG012212"
+pi = "Paul D. Thomas"
+announcement_number = "PAR-20-097"
+notes = """https://www.geneontology.org/docs/download-ontology/
+yes, they have 3 components, ontology, annotations, and Go-Cams. This could be tricky because its three datasets in one source. they have citation and licensing information available. they have software that is licensed under a separate statement. """
 enabled = true
 
 [[knowledge_bases]]
 name = "PGS Catalog"
+title = "Strengthening community knowledge bases for genetic association studies and polygenic scores, the GWAS and PGS Catalogs"
 url = "https://www.pgscatalog.org/"
+grant_number = "HG012542"
+pi = "Helen Parkinson"
+announcement_number = "PAR-20-097"
+notes = """https://www.pgscatalog.org/downloads/
+This one is a bit tricky, the data is straightforward, but to get to the license, you have to go through EMBL (Because this is part of EMBL). It is there, but requires following some links to get there. """
 enabled = true
 
 [[knowledge_bases]]
 name = "PhenX Toolkit"
+title = "Establishing the PhenX Toolkit as a Biomedical Knowledgebase"
 url = "https://www.phenxtoolkit.org/resources/download"
+#source_url = "https://www.phenxtoolkit.org/"
+grant_number = "HG012556"
+pi = "Carol Marie Hamilton"
+announcement_number = "PAR-20-097"
+notes = """https://www.phenxtoolkit.org/resources/download
+they have clear documentation and produce data and tools. """
 enabled = true
 
 [[knowledge_bases]]
 name = "FlyBase"
+title = "FlyBase: A Drosophila Genomic and Genetic Database"
 url = "https://flybase.org/"
+grant_number = "HG013300"
+pi = "Norbert Perrimon"
+announcement_number = "PAR-23-078"
+notes = "this is also part of Alliance. Maybe we should discuss the \"depth\" to which we want to expand each source. using ROBOKOP terms, if it is an aggregator, do we want to go to each source and get each license? Or do we want to just get the top level? "
 enabled = true
 
 [[knowledge_bases]]
 name = "CTD"
+title = "Comparative Toxicogenomics Database (CTD)"
 url = "https://ctdbase.org/downloads/"
-enabled = true
+#source_url = "https://ctdbase.org/"
 depth = 3
 blacklist = "/(help|reports|documents|tools)/,.*\\.(obo|tgz),.*(type|jsessionid).*"
+grant_number = "ES033155"
+pi = "Carolyn J. Mattingly"
+announcement_number = "PAR-20-097"
+notes = "we know them, their license is complicated and they have lots of different datasets within CTD"
+has_crawler_blockers = "captcha protected"
+enabled = true
 
 [[knowledge_bases]]
 name = "Afrigen-D"
+title = "African Genomics Data Hub Biomedical Knowledgebase"
 url = "https://afrigen-d.org/data-resources/"
+#source_url = "https://afrigen-d.org/"
+grant_number = "HG012750"
+pi = "Nicola Mulder"
+announcement_number = "PAR-20-097"
+notes = """https://afrigen-d.org/data-resources
+this one could be challenging. They have several different data sets and they each have their own website/documentation. initial scanning I did not see anything license information. """
 enabled = false
 
+# Merged by name/title because the two files use different URLs for the same resource.
 [[knowledge_bases]]
 name = "i-AKC"
-url = "https://airr-knowledge.org/"
+title = "i-AKC: Integrated AIRR Knowledge Commons"
+url = "https://vdjserver.org/community/"
+#source_url = "https://airr-knowledge.org/"
+grant_number = "AI177622"
+pi = "Lindsay G. Cowell"
+announcement_number = "PAR-20-097"
+notes = """https://airr-knowledge.org/repositories/
+Again a lot of data coming from several repositories. it seems like they do merge these but not sure where the merged structure is. these are the types of data they have: Repertoire data from the AIRR Data Commons, which contains >10,000 repertoires with billions of AIRs
+AIR germline allele, genotype, haplotype, and population genetic data from the Open Germline Receptor Database and VDJbase
+AIR specificity data from the Immune Epitope Database and Immune Receptor Antigen Database. """
 enabled = false
 
 [[knowledge_bases]]
 name = "BMRB"
-url = "https://bmrb.io/"
+title = "Biological Magnetic Resonance Data Bank Base"
+url = "https://bmrb.io/data_library/released.shtml"
+#source_url = "https://bmrb.io/"
+grant_number = "GM150793"
+pi = "Jeffrey C. Hoch"
+announcement_number = "PAR-20-089"
+notes = """https://bmrb.io/data_library/released.shtml
+This is the type of repo that has studies deposit individual files. They are not combined in any way that I can determine. There is a citation section but I did not see a license."""
 enabled = false
 
 [[knowledge_bases]]
 name = "iCDKP"
+title = "An Imaging Repository for the Cerebrovascular Disease Knowledge Portal (iCDKP)"
 url = "https://cd.hugeamp.org/"
+grant_number = "NS132940"
+pi = "Jonathan Rosand"
+announcement_number = "PAR-20-089"
+notes = """https://cd.hugeamp.org/downloads.html
+again, this is the type of repo that hosts data from publications. PIs choose to deposit their data here and each file is separate, no combined source. there is a citation listed but no license"""
 enabled = false
 
 [[knowledge_bases]]
 name = "BioPortal"
-url = "https://bioportal.bioontology.org/"
-enabled = false
+title = "BioPortal: An Expansive Knowledgebase of Biomedical Entities and Relations"
+url = "https://bioportal.bioontology.org/ontologies"
+grant_number = "GM143402"
+pi = "Mark A. Musen"
+announcement_number = "PAR-20-097"
+notes = """https://data.bioontology.org
+I did not see a license for their data. Their GitHub page has a license, but not one I have ever seen before; it looks to be custom. """
+enabled = true
 
 [[knowledge_bases]]
 name = "EcoCyc"
+title = "Knowledgebase of Escherichia coli Genome and Metabolism"
 url = "https://ecocyc.org/"
+grant_number = "GM150703"
+pi = "Peter D. Karp"
+announcement_number = "PAR-20-097"
+notes = """https://ecocyc.org/credits.shtml
+part of a larger set of resources (BioCyc) but this one looks like it focuses on just EcoCyc (will need to confirm). Pretty well documented, licenses is a bit buried in "credits" section. there really is a rough organization to all of this but it is very rough. """
 enabled = false
 
 [[knowledge_bases]]
 name = "Pennsieve"
-url = "https://discover.pennsieve.io/"
+title = "Pennsieve: Impactful Multimodal Data Sharing for Epilepsy Research"
+url = "https://discover.pennsieve.io/datasets"
+grant_number = "NS134536"
+pi = "Joost B. Wagenaar"
+announcement_number = "PAR-23-079"
+notes = """https://epilepsy.science/data?type=dataset
+this one is a bit confusing. it is a collection of data sets but sorta a software? the grant specifically mentions epilespy so maybe we focus on that component? Data is Requester payer. """
 enabled = false
 
 [[knowledge_bases]]
 name = "ICTV"
-url = "https://ictv.global/about/taxonomy"
-enabled = false
+title = "Virus Taxonomy: A Community Knowledgebase Supporting Virus Research"
+#url = "https://ictv.global/about/taxonomy"
+url = "https://zenodo.org/communities/ictv/records?q=&f=resource_type%3Adataset&l=list&p=1&s=10&sort=newest"
+#source_url = "https://ictv.global/"
+grant_number = "AI162625"
+pi = "Elliot J. Lefkowitz"
+announcement_number = "PAR-20-097"
+notes = """https://ictv.global/taxonomy/history
+yes, pretty well laid out regarding their data and license. """
+enabled = true
 
 [[knowledge_bases]]
 name = "MassIVE"
+title = "Global proteomics mass spectrometry data sharing infrastructure"
 url = "https://massive.ucsd.edu/ProteoSAFe/static/massive.jsp"
+grant_number = "GM148372"
+pi = "Nuno Bandeira"
+announcement_number = "PAR-20-089"
+notes = """https://massive.ucsd.edu/ProteoSAFe/datasets.jsp#%7B%22query%22%3A%7B%7D%2C%22table_sort_history%22%3A%22createdMillis_dsc%22%7D
+they have data and workflows for users to access. to use the workflows you have to have an account. i did not see a license page or a citations page """
 enabled = false
 
 [[knowledge_bases]]
 name = "MSK Knowledge Portal"
-url = "https://msk.hugeamp.org/"
+title = "The Musculoskeletal Knowledge Portal"
+url = "https://msk.hugeamp.org/downloads.html"
+grant_number = "AR085003"
+pi = "Noel P. Burtt"
+announcement_number = "PAR-23-236"
+notes = """https://msk.hugeamp.org/datasets.html
+they have datasets from individual groups, less of a unified source. they also have tools/software they produce. again, it might be that we have to track down the license for each study.
+GBs of data per study.
+"""
 enabled = false
 
 [[knowledge_bases]]
 name = "SHARC"
+title = "Southern HIV and Alcohol Research Consortium Biomedical Data Repository"
 url = "https://sharc-research.org/research/data/"
+#source_url = "https://sharc-research.org/"
+grant_number = "AA029959"
+pi = "Samuel S. Wu"
+announcement_number = "PAR-20-089"
+notes = """https://sharc-research.org/research/data/sharc-concepts-system/
+data access is restricted and behind a registration and IRB approval process. I do not see one citation or licnses, there are several studies in this cohort"""
 enabled = false
 
 [[knowledge_bases]]
 name = "VIOLIN"
-url = "https://violinet.org/download/"
-enabled = false
+title = "VIOLIN 2.0: Vaccine Information and Ontology LInked kNowledgebase"
+#url = "https://violinet.org/download/"
+url = "https://raw.githubusercontent.com/vaccineontology/VO/refs/heads/master/vo.owl"
+#source_url = "https://violinet.org/"
+grant_number = "AI171008"
+pi = "Yongqun He"
+announcement_number = "PAR-20-097"
+notes = """https://violinet.org/introduction.php
+very old website, they have LOTS of different products, did not see an obvious license statement or anything close to that. maybe be per-product"""
+enabled = true
 
 [[knowledge_bases]]
 name = "Alliance of Genome Resources"
-url = "https://www.alliancegenome.org/"
-enabled = false
+title = "Alliance Central: A platform for sustainable development of next generation genome knowledgebases"
+#url = "https://www.alliancegenome.org/"
+url = "https://www.alliancegenome.org/downloads"
+grant_number = "HG010859"
+pi = "Paul Warren Sternberg"
+announcement_number = "PAR-23-237"
+notes = """https://www.alliancegenome.org/downloads, https://www.alliancegenome.org/privacy-warranty-licensing
+lots of data, many species, they also have an extensive ontology structure and information about those. license and software, etc are relatively easy to find, could be an interesting file to format, it could be that the components are split by species. """
+enabled = true
 
 [[knowledge_bases]]
 name = "FaceBase"
-url = "https://www.facebase.org/"
+title = "USC Facebase IV Craniofacial Development and Dysmorpholoy Data Management and Integration Hub (FaceBase IV)"
+url = "https://www.facebase.org/chaise/recordset/#1/isa:dataset@sort(release_date::desc::,RID)"
+#source_url = "https://www.facebase.org/"
+grant_number = "DE034163"
+pi = "Carl Kesselman"
+announcement_number = "PAR-23-237"
+notes = """https://www.facebase.org/chaise/recordset/#1/isa:dataset@sort(release_date::desc::,RID)@after(2024-02-27,3P-4VSA)
+yes, organized more by PI and deposit rather than one collected database. we might have to tack down a license per source in that case. i did not see a licence for the overall FaceBase"""
 enabled = false
 
 [[knowledge_bases]]
 name = "ROBOKOP"
+title = "Supporting Biomedical Discovery with the ROBOKOP Graph Knowledgebase."
 url = "https://robokop.renci.org/graphs"
-enabled = false
+grant_number = "ES035214"
+pi = "Alexander Tropsha"
+announcement_number = "PAR-20-097"
+notes = """https://www.glygen.org/license/
+they have an API where you can get the data but I did not see anywhere where you can download the whole dataset. also, it seems to be that each sequence/gylcan is its own file which could make this more complicated. the have a good license representation. There license plus the licenses of underlying sources. """
+enabled = true
 
 [[knowledge_bases]]
 name = "GeoSpace"
-url = "https://www.gsbase.org/about"
+title = "GeoSpace - GeoSpatial Knowledgebase for Exposomics"
+url = "https://zenodo.org/communities/geospace/records?q=&f=resource_type%3Adataset&f=access_status%3Aopen&l=list&p=1&s=10&sort=newest"
+#url = "https://www.gsbase.org/about"
+grant_number = "ES036917"
+pi = "Itai Kloog"
+announcement_number = "PAR-23-236"
+notes = """https://www.gsbase.org
+three components, GSEDB, GSDIR, GSES, each are slightly different. GSDIR, GSES are still "underdevelopment" """
 enabled = false
 
 [[knowledge_bases]]
 name = "MSigDB"
+title = "The Molecular Signatures Database: A knowledgebase for gene set based analysis of genomic data"
 url = "https://www.gsea-msigdb.org/gsea/msigdb/"
-enabled = false
+grant_number = "CA295532"
+pi = "Jill P. Mesirov"
+announcement_number = "PAR-23-237"
+notes = """https://www.gsea-msigdb.org/gsea/msigdb/
+Over all impression: very clear, license is up front, data is easy to access"""
+enabled = true
 
 [[knowledge_bases]]
 name = "Metabolomics Workbench"
+title = "Metabolomics Workbench - National Metabolomics Data Repository"
 url = "https://www.metabolomicsworkbench.org/data/index.php"
+grant_number = "DK141185"
+pi = "Shankar Subramaniam"
+announcement_number = "PAR-23-237"
+notes = """https://www.metabolomicsworkbench.org/databases/index.php
+Three main products, metabolite database, metabolome gene/protein, refmat. Each is slightly different.  There license, citations, terms of use is a bit scattered but in the usual places."""
 enabled = false
 
 [[knowledge_bases]]
 name = "UniProt"
-url = "https://www.uniprot.org/"
-enabled = false
+title = "UniProt: A Protein Sequence and Function Resource for Biomedical Science"
+url = "https://www.uniprot.org/help"
+grant_number = "HG007822"
+pi = "Alex Bateman"
+announcement_number = "PAR-20-097"
+notes = """https://www.uniprot.org/help/license
+uniprot is HUGE lots of different types of data. Reviewed (Swiss-Prot), Unreviewed (TrEMBL), Isoform sequences, Taxonomic divisions, Reference proteomes, Pan proteomes, ID mapping, Proteomics mapping, Variants, Genome annotation tracks, Embeddings (per-protein). they have a license and citation information that is fairly straight forward, a bit burried, but findable"""
+enabled = true
 
 [[knowledge_bases]]
 name = "InSSURR"
+title = "International Seizure and SUDEP Research Repository (InSSURR)"
 url = "https://sudepresearch.org/"
+grant_number = "NS143946"
+pi = "Samden Lhatoo"
+announcement_number = "PAR-23-236"
+notes = "Overall impression: not well organized. I cannot find a link to any data. It looks like they do produce it but its either not open source, predicted health records or something else. will require some digging. "
 enabled = false
 
 [[knowledge_bases]]
 name = "OAI CORE"
+title = "The OAI Collaborative Osteoarthritis Research Enterprise (OAI CORE) Knowledgebase"
 url = "https://nda.nih.gov/oai"
+grant_number = "AR085006"
+pi = "Jeffrey B. Driban"
+announcement_number = "PAR-23-236"
+notes = "Datasets are restricted to users with accounts. There is a data dictionary describing each studies basics you can expand further to the terms in the study but finding license and citations might be more challenging."
 enabled = false
 
 [[knowledge_bases]]
 name = "PDR"
+title = "HIV Pharmacology Data Repository"
 url = "https://pdr.renci.org/"
+grant_number = "AI181685"
+pi = "Mackenzie Cottrell"
+announcement_number = "PAR-23-079"
+notes = "this is at RENCI but getting a 403 forbidden? "
 enabled = false
 
 [[knowledge_bases]]
 name = "ISIC Archive"
+title = "ISIC-REPO; ISIC Skin Imaging Repository Enhancements for Promoting Interoperability and Utilization"
 url = "https://www.isic-archive.com/"
+grant_number = "CA285296"
+pi = "Allan C. Halpern"
+announcement_number = "PAR-23-079"
+notes = "They have different types of data. They have data for ML training but allows \"The Gallery\" where clinicians can upload images in general. Licenses and citations are available but are going to be on a per-upload bases. all of them are CC-BY but they can vary per upload. "
 enabled = false
 
 [[knowledge_bases]]
 name = "GACFDW"
+title = "The Georgia Cystic Fibrosis Data Warehouse"
 url = "https://github.com/The-CRIC-at-Emory/GACFDW"
+grant_number = "HL171672"
+pi = "Arlene A. Stecenko"
+announcement_number = "PAR-23-079"
+notes = "VERY minimal information on their github, only a basic data dictionary could be a difficult one"
 enabled = false
 
 [[knowledge_bases]]
 name = "ECID"
+title = "Exposome Correlation and Interpretation Database (ECID)"
 url = "https://github.com/idslme"
+grant_number = "ES035386"
+pi = "Dinesh Barupal"
+announcement_number = "PAR-20-097"
+notes = """They don't have a download it now place, and they have 3 separate components CCDB, EDIR, EWS each is kinda knowledge graph like, but not really easily available.
+I see no license."""
 enabled = false
 
 [[knowledge_bases]]
 name = "REDfly"
+title = "REDfly: The regulatory sequence resource for Drosophila and other insects"
 url = "http://redfly.ccr.buffalo.edu/about"
+grant_number = "GM142435"
+pi = "Marc S. Halfon"
+announcement_number = "PAR-20-097"
+notes = "They have data but I cannot find a spot to download it all in like a flat file, you can search it, but not get it. They do have citations, license, etc. "
 enabled = false
 
 [[knowledge_bases]]
 name = "GlyGen"
-url = "https://www.glygen.org/"
-enabled = false
+title = "GlyGen growth and evolution into a central resource for glycans and glycoconjugates"
+url = "https://data.glygen.org/"
+#url = "https://www.glygen.org/"
+grant_number = "GM146616"
+pi = "Michael Tiemeyer"
+announcement_number = "PAR-20-097"
+notes = "We know them"
+enabled = true
 
 [[knowledge_bases]]
-name = "HemOnc.org"
+name = "HemOnc"
+title = "Enhancing the HemOnc Knowledgebase of Chemotherapy Drugs and Regimens"
 url = "https://hemonc.org/wiki/Main_Page"
+grant_number = "CA265879"
+pi = "Jeremy Lyle Warner"
+announcement_number = "PAR-20-097"
+notes = """This website is completely different than any other. There is a lot of information but I do not see a place to download the data.
+You would have to read specific sections to find out what you need.  They set it up more like wikipedia. I do not see a license or citation, but I might have missed it"""
 enabled = false
 
 [[knowledge_bases]]
 name = "ODC-SCI"
+title = "Pan-Neurotrauma Data Commons"
 url = "https://odc-sci.org/"
+grant_number = "NS122732"
+pi = "Adam R. Ferguson"
+announcement_number = "PAR-20-089"
+notes = """their data is behind user accounts. although they say their are open data and fair compliant you need to be a registered user to get the data.
+They have a license statment for pubic access but also have teiers of membership which is a bit confusing. i do not see an obvious citation."""
+enabled = false
+
+[[knowledge_bases]]
+name = "WormBase"
+title = "WormBase: a core data resource for C. elegans and other nematodes"
+url = "https://wormbase.org/#012-34-5"
+grant_number = "HG002223"
+pi = "Paul W. Sternberg"
+announcement_number = "PAR-20-097"
+notes = """https://wormbase.org/about/userguide#3--10
+I see a citations section but no license. They are part of Alliance so it might be that they are using the Alliance license and do not have their own."""
+has_crawler_blockers = "cloud flare authentication"
+enabled = false
+
+[[knowledge_bases]]
+name = "Archiving and Sharing Skeletal Phenotyping Data"
+title = "Archiving and Sharing Skeletal Phenotyping Data"
+url = "No Link"
+grant_number = "AR084725"
+pi = "Peter Maye"
+announcement_number = "PAR-23-236"
+notes = "I can find no website or database related to this project."
+enabled = false
+
+[[knowledge_bases]]
+name = "From RRID to Resource Watch: A Knowledgebase of Biomedical Research Resources"
+title = "From RRID to Resource Watch: A Knowledgebase of Biomedical Research Resources"
+url = "https://scicrunch.org/ResourceWatch"
+grant_number = "GM144308"
+pi = "Anita Elzbieta Bandrowski"
+announcement_number = "PAR-20-097"
+notes = "It seems that there is data, but they don't actually allow access to it. you have to search using an RRID to actually get the the results. they don't have like a \"download this\" page. they talk about FAIR a lot but I see no license or citation or any other data that would help it be FAIR. "
 enabled = false
