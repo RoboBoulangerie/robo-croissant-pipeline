@@ -4,7 +4,6 @@ Act as a Senior Software Engineer and Croissant Format Specification 1.1 expert.
 
 Optimize for:
 - accuracy
-- speed
 - strict Croissant 1.1 compliance
 - production-ready artifacts
 
