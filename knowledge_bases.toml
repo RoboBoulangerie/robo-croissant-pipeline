@@ -68,7 +68,7 @@ pi = "Lincoln D. Stein"
 announcement_number = "PAR-20-097"
 notes = """https://reactome.org/download-data
 pretty straightforward, they have a citations section and a licensing section. another example of a source with licenses for data, software, but also includes s separate one for illustrations"""
-enabled = true
+enabled = false
 
 [[knowledge_bases]]
 name = "BindingDB"
@@ -284,8 +284,7 @@ pi = "Noel P. Burtt"
 announcement_number = "PAR-23-236"
 notes = """https://msk.hugeamp.org/datasets.html
 they have datasets from individual groups, less of a unified source. they also have tools/software they produce. again, it might be that we have to track down the license for each study.
-GBs of data per study.
-"""
+GBs of data per study."""
 enabled = false
 
 [[knowledge_bases]]
