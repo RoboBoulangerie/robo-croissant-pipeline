@@ -1,6 +1,6 @@
 ---
 name: croissant-metadata-generator
-version: 1.0.9
+version: 1.0.13
 temperature: 0.1
 description: Main agent for generating Croissant Metadata JSON-LD files.
 mode: all
@@ -18,7 +18,7 @@ complete list of available files to download.
 
 Capture execution metrics throughout the run and include them in the final summary.
 
-- Record a run-level start timestamp before Step 1 begins and a run-level end timestamp after Step 11 completes.
+- Record a run-level start timestamp before Step 1 begins and a run-level end timestamp after Step 10 completes.
 - For every numbered step, record:
   - step name
   - start timestamp
@@ -58,7 +58,7 @@ If a step fails, still record its partial metrics before exiting or retrying.
 
 ## Step 2: resolve target knowledge source
 
-Resolve the target `knowledge_bases` entry from `knowledge_bases.toml` using environment varialbe `RCP_KB_NAME`, then perform the following steps using only that selected entry.
+Resolve the target `knowledge_bases` entry from `knowledge_bases.toml` using environment variable `RCP_KB_NAME`, then perform the following steps using only that selected entry.
 
 - Read `RCP_KB_NAME` from the environment.
 - Find the single `knowledge_bases` entry in `knowledge_bases.toml` whose `name` exactly matches `RCP_KB_NAME`.
@@ -154,6 +154,7 @@ Files should preferentially include, but are not limited to, the following exten
 - sqlite
 - db
 - duckdb
+- sql
 - h5
 - hdf5
 - biom
@@ -239,11 +240,28 @@ Review the files in `outputs/{name}/{run}/{tmp_dir}` and generate a file called 
 
 ### Schema/Header Detection
 
-For each downloadable file, attempt to extract header information of that file to satisfy how a Croissant Metadata "recordSet" can be structured. Limit the number of lines to sample for determining the datatype to 5.
+Perform schema/header detection only for downloadable files whose resolved data format is in one of these groups:
 
-For columnar files, do not assume the first non-empty line is the only source of schema or header information. Inspect the beginning of the file for commented metadata, preambles, or descriptive blocks that may declare column names, schema notes, datatypes, units, or header conventions before the tabular data begins.
+- Strongest Schema Sources: `parquet`, `avro`, `orc`, `feather`, `arrow`, `sqlite`, `db`, `duckdb`, `sql`, `h5`, `hdf5`, `biom`, `graphml`, `xgmml`, `gpml`, `xml`, `owl`, and `obo`.
+- Common Column or Record Headers: `csv`, `tsv`, `tab`, `txt`, `vcf`, `bcf`, `sam`, `bam`, `gff`, `gff3`, `gtf`, `gaf`, `gpad`, `gpi`, `fasta`, `fa`, `fna`, `fsa`, `fastq`, and `maf`.
 
-When parsing a columnar file:
+Apply this allowlist to the actual inner or decompressed format, not merely the outer archive or compression extension. For an allowed file, attempt to extract its schema or header information to determine how a Croissant Metadata `recordSet` can be structured. Limit the number of lines sampled for determining datatypes to 5.
+
+From the repository root, execute the parser commands directly for every supported local file:
+
+- For `csv`, `tsv`, `tab`, `txt`, `sam`, `bam`, `vcf`, `bcf`, `parquet`, `avro`, and `arrow`, run `cargo run --quiet --bin parse_headers -- '<local-file-path>'`. Treat its comma-separated output as the ordered field names, including generated `column_N` names when a delimited file has no detected header.
+- For `sqlite`, or a `db` file confirmed to be SQLite, run `nu ./bin/parse_sqlite_schema.nu '<local-file-path>'`. Treat its JSON output as the exact table names, field names, and declared datatypes.
+- For `sql`, run `nu ./bin/parse_sql_schema.nu '<local-file-path>'`. Treat its JSON output as the exact table names, field names, and declared datatypes from the file's `CREATE TABLE` statements.
+- If a supported file is compressed or contained in an archive, decompress or extract it into `outputs/{name}/{run}/{tmp_dir}` before invoking the corresponding command.
+- Preserve parser-returned names exactly. Do not normalize, split, capitalize, or otherwise rewrite them.
+- If a parser command fails, record the command error and limitation in `dct:provenance`, then apply the remaining detection rules in this section. Do not fabricate parser output.
+
+Do not perform schema/header inference for `json`, `jsonl`, `ndjson`, `rdf`, `ttl`, `trig`, `n3`, `nt`, `nq`, `hdt`, `gml`, `bed`, `sif`, or `assoc` files. In particular, do not treat JSON object keys, RDF predicates or prefixes, graph attributes, or format conventions as an inferred record schema. These files may still be represented in `distribution`, but do not generate `recordSet` fields from inferred structure. Apply this restriction whenever a later step refers back to **Schema/Header Detection**.
+
+For all remaining columnar files that are not handled by the above parsers or excluded from detecting schema/header information, attempt to identify appropriate data to satisfy the Croissant Metadata 'distribution' and 'recordSet' objects. 
+
+Here some rules to follow when parsing a columnar file not handled by a pre-defined parser:
+- do not assume the first non-empty line is the only source of schema or header information. Inspect the beginning of the file for commented metadata, preambles, or descriptive blocks that may declare column names, schema notes, datatypes, units, or header conventions before the tabular data begins.
 - inspect leading comment lines and pre-header text before the main data rows
 - treat commented schema lines as evidence when they clearly describe the columns, even if the actual header row is missing, abbreviated, or partially inconsistent
 - consider common comment prefixes such as `#`, `//`, `;`, `--`, or similarly obvious file-level comment markers when they appear at the top of the file
@@ -252,7 +270,7 @@ When parsing a columnar file:
 - if an actual in-band header row is present in the downloadable file, preserve each header token exactly as it appears in that row unless the file itself explicitly documents that a different canonical machine-readable field name should be used
 - if the top comments indicate there is no header row, use the documented schema from those comments to build the `recordSet` fields rather than inventing placeholder names
 - record in `dct:provenance` when recordSet fields were derived from commented schema information, when comments conflict with the observed header row, or when the schema remains ambiguous after inspection
-- if schema or header information is detected from the file contents or from top-of-file comments, preserve each detected column name exactly as written. Do not split, expand, title-case, normalize punctuation, infer word boundaries, or otherwise transform detected names such as `citytownregionarea` into `City,Town,Region,Area`.
+- if schema or header information is detected from the file contents or from top-of-file comments, preserve each detected column name exactly as written. Do not split, expand, title-case, normalize punctuation, infer word boundaries, or otherwise transform detected names.
 - when downloadable file headers conflict with human-readable field lists, download-page labels, documentation tables, XML element labels, or prior assumptions, prefer the exact header strings found in the file for the Croissant `field.name` values and record the conflict in `dct:provenance`
 - do not "improve readability" of detected headers. Specifically, do not insert commas, spaces, capitalization changes, or inferred word boundaries into observed header names, and do not replace a machine header with a nicer-looking documentation label when the machine header is available
 - only synthesize fallback placeholder names or inferred labels when no reliable schema/header information is detected at all. If fallback names are necessary, record that fact and the reason in `dct:provenance`.
@@ -350,14 +368,14 @@ Each top-level `distribution` entry must represent a distinct downloadable file 
 
 ### Add Missing Inner File Metadata From Archives
 
-A `distribution` entry may represent a compressed archive such as `.zip`, or `.tgz` that contains one or more tabular or structured files, including TSV, CSV, JSON, JSONL, or similar formats. Do not represent only the downloadable parent archive when its inner files can be inspected and described.  Note that a file ending in '.gz' does not mean it is an archive.  This step is intended to only process archive files and not just compressed files (e.g. *.csv.gz and *.tsv.gz are not archives, whereas *.tar.gz, *.tgz, and *.zip are archives).   
+A `distribution` entry may represent a compressed archive such as `.zip`, or `.tgz` that contains one or more tabular or structured files, including TSV, CSV, JSON, JSONL, or similar formats. Do not represent only the downloadable parent archive when its inner files can be inspected and described. Represent relevant inner files in `distribution`, but perform schema/header inference and generate `recordSet` fields only for inner formats allowed by **Schema/Header Detection**. Note that a file ending in '.gz' does not mean it is an archive. This step is intended to only process archive files and not just compressed files (e.g. *.csv.gz and *.tsv.gz are not archives, whereas *.tar.gz, *.tgz, and *.zip are archives).   
 
 - Inspect every downloaded archive and enumerate its inner files without modifying the original archive.
 - Retain the parent archive as a `cr:FileObject` in the top-level `distribution` array. Give it a stable, unique `@id`, the archive's verified remote `contentUrl`, and the appropriate archive `encodingFormat`.
 - Add a separate `cr:FileObject` to the top-level `distribution` array for each relevant inner file. Give every inner file its own stable, unique `@id`, exact archive-relative path or filename as `contentUrl`, appropriate `encodingFormat`, and a `containedIn` object whose `@id` references the parent archive's `@id`.
 - Do not assign the parent archive's remote URL to an inner file. The inner file's `contentUrl` identifies the member within the archive, while `containedIn` identifies the downloadable parent archive.
 - Derive inner filenames and paths from the archive contents. Do not guess an inner filename or create metadata for a member that cannot be verified in the downloaded archive.
-- For each tabular or structured inner file that supports records, generate a corresponding `cr:RecordSet`. Apply all rules from **Schema/Header Detection**, including inspection of comments and preambles, preservation of exact detected column names, sampling no more than 5 lines for datatype detection, and provenance for ambiguous or inferred schema information.
+- For each inner file whose resolved format is allowed by **Schema/Header Detection** and that supports records, generate a corresponding `cr:RecordSet`. Apply all rules from **Schema/Header Detection**, including inspection of comments and preambles for columnar files, preservation of exact detected column names, sampling no more than 5 lines for datatype detection, and provenance for ambiguous or inferred schema information. Do not generate inferred `recordSet` fields for disallowed inner formats such as JSON, JSONL, NDJSON, or RDF.
 - Set every generated `recordSet.field[*].source.fileObject.@id` to the `@id` of the corresponding inner `cr:FileObject`, not the parent archive. Preserve any extraction, column, or JSON path information needed to locate the field within that inner file.
 - Verify that every inner file reference resolves to an existing distribution `@id`, every `containedIn.@id` resolves to the correct parent archive distribution, and no `RecordSet` field that was derived from an inner file points directly to the archive.
 - During URL response validation, check the parent archive's remote `contentUrl` with HTTP. Validate an inner file's archive-relative `contentUrl` by confirming that the member exists in the downloaded archive; do not treat that relative member path as a standalone HTTP URL.
