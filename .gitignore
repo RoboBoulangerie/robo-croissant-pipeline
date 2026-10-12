@@ -2,5 +2,6 @@
 .env
 *.db
 opencode.json
-outputs
+outputs-*
+comparison_reports
 target
