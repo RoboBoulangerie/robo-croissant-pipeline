@@ -1,12 +1,12 @@
 ---
 name: croissant-metadata-generator
-version: 1.0.15
+version: 1.0.16
 temperature: 0.1
 description: Main agent for generating Croissant Metadata JSON-LD files.
 mode: all
 ---
 
-Before starting, refer to the `.opencode/agent/subagent/master-planner.md` file for a high-level overview of the agent's role and responsibilities.
+Before starting, refer to the `.opencode/agents/subagent/master-planner.md` file for a high-level overview of the agent's role and responsibilities.
 
 # Objective
 
@@ -56,9 +56,11 @@ If a step fails, still record its partial metrics before exiting or retrying.
 **Requirement**: 
   - Run the following command and if the exit code is not 0, terminate this program, but print the standard output: !`nu ./bin/requirements.nu`
 
+Be sure to inform the user why the agent failed to continue if a failure occurred.
+
 ## Step 2: resolve target knowledge source
 
-Resolve the target `knowledge_bases` entry from `knowledge_bases.toml` using environment variable `RCP_KB_NAME`, then perform the following steps using only that selected entry.
+Resolve the target `knowledge_bases` entry from the `knowledge_bases.toml` file using environment variable `RCP_KB_NAME` value, then perform the following steps using only that selected entry.
 
 - Read `RCP_KB_NAME` from the environment.
 - Find the single `knowledge_bases` entry in `knowledge_bases.toml` whose `name` exactly matches `RCP_KB_NAME`.
@@ -68,18 +70,18 @@ Resolve the target `knowledge_bases` entry from `knowledge_bases.toml` using env
 ## Step 3: initialization
 
 - **`{name}`**
-  - sourced from `name` in the `knowledge_bases` entries
+  - sourced from `name` from the `knowledge_bases` entry
 - **`{run}`**
-  - an integer (1, 2, 3, …) that increments with each new invocation; determine it by listing `outputs/{name}` and
+  - an integer (1, 2, 3, …) that increments with each new invocation; determine it by listing `./outputs` and
     taking one more than the highest existing integer subdirectory, or `1` if none exist
 - **`{tmp_dir}`**
   - a temp directory that is created using the following command: !`mktemp -d -p`
 
-Create a directory structure following this format: `outputs/{name}/{run}/{tmp_dir}`.  Do not create a temporary directory in `/tmp`.  All generated scripts and/or Agent generated code should be placed in `outputs/{name}/{run}/bin`.
+Create a directory structure following this format: `./outputs/{name}/{run}/{tmp_dir}`.  Do not create a temporary directory in `/tmp`.  All generated scripts and/or Agent generated code should be placed in `./outputs`.  Do not inspect or use previous `run` directories.  For example, if the current `run` is `3`, then `1` and `2` are off limits. 
 
 ## Step 4: Crawl and download files
 
-Using the `knowledge_bases` entry value from the `url` field and the `outputs/{name}/{run}/{tmp_dir}` value from the previous step, crawl the source website and download all relevant files into the `outputs/{name}/{run}/{tmp_dir}` directory.
+Using the `knowledge_bases` entry value from the `url` field and the `./outputs` value from the previous step, crawl the source webs    ite and download all relevant files into the `./outputs` directory.
 
 There are two primary goals when downloading files from a web crawl:
 
@@ -236,30 +238,35 @@ For Croissant generation:
 
 ## Step 5: generate croissant metadata file
 
-Review the files in `outputs/{name}/{run}/{tmp_dir}` and generate a file called `croissant.json` in the `outputs/{name}/{run}` directory that is an as complete Croissant Metadata JSON file as possible. Include "distribution" and "recordSet" metadata based on a complete list of downloadable data files.  
+Review the files in `./outputs` and generate a file called `croissant.json` in the `./outputs` directory that is an as complete Croissant Metadata JSON file as possible. Include "distribution" and "recordSet" metadata based on a complete list of downloadable data files.  
 
 ### Schema/Header Detection
 
 Perform schema/header detection only for downloadable files whose resolved data format is in one of these groups:
 
 - Strongest Schema Sources: `parquet`, `avro`, `orc`, `feather`, `arrow`, `sqlite`, `db`, `duckdb`, `sql`, `h5`, `hdf5`, `biom`, `graphml`, `xgmml`, `gpml`, `xml`, `owl`, and `obo`.
-- Common Column or Record Headers: `csv`, `tsv`, `tab`, `txt`, `vcf`, `bcf`, `sam`, `bam`, `gff`, `gff3`, `gtf`, `gaf`, `gpad`, `gpi`, `fasta`, `fa`, `fna`, `fsa`, `fastq`, and `maf`.
+- Common Column or Record Headers: `csv`, `tsv`, `tab`, `txt`, `vcf`, `bcf`, `sam`, `bam`, `gff`, `gff3`, `gtf`, `gaf`, `gpad`, `gpi`, `fasta`, `fa`, `fna`, `fsa`, `fastq`, `jsonl`, `ndjson`, and `maf`.
 
 Apply this allowlist to the actual inner or decompressed format, not merely the outer archive or compression extension. For an allowed file, attempt to extract its schema or header information to determine how a Croissant Metadata `recordSet` can be structured. Limit the number of lines sampled for determining datatypes to 5.
 
 From the repository root, execute the parser commands directly for every supported local file:
 
-- For `csv`, `tsv`, `tab`, `txt`, `sam`, `bam`, `vcf`, `bcf`, `parquet`, `avro`, and `arrow`, run `cargo run --quiet --bin parse_headers -- '<local-file-path>'`. Treat its JSON `columns` output as the ordered field names and datatypes, including generated `column_N` names when a delimited file has no detected header.  Use the output to determine the `recordSet` structure, field names, and datatypes.
+- For `csv`, `tsv`, `tab`, `txt`, `sam`, `bam`, `vcf`, `bcf`, `parquet`, `avro`, `jsonl`, `ndjson`, and `arrow`, run `cargo run --quiet --bin parse_headers -- '<local-file-path>'`. Treat its JSON `columns` output as the ordered field names and datatypes, including generated `column_N` names when a delimited file has no detected header.  Use the output to determine the `recordSet` structure, field names, and datatypes.
 - For `sqlite`, or a `db` file confirmed to be SQLite, run `nu ./bin/parse_sqlite_schema.nu '<local-file-path>'`. Treat its JSON output as the exact table names, field names, and declared datatypes.
 - For `sql`, run `nu ./bin/parse_sql_schema.nu '<local-file-path>'`. Treat its JSON output as the exact table names, field names, and declared datatypes from the file's `CREATE TABLE` statements.  Use the output to determine the `recordSet` structure, field names, and datatypes.
 - Only for `xml`, run `nu ./bin/parse_xml_schema.nu '<local-file-path>'`; do not run this parser for any other file type. Use the generated XSD schema output to create a schema-descriptive `cr:RecordSet` with the detected structure, exact field names, nesting, repetition, and datatypes. Set each field's `source` to a direct reference to the XML `cr:FileObject`, represented as `{ "@id": "<xml-file-object-id>" }`. Do not add `extract`, XPath, JSONPath, column, or regex selectors to these XML fields: Croissant 1.1 has no general XML selector, and these fields describe the parsed schema rather than an executable extraction mapping. State this limitation and the use of the generated XSD in `dct:provenance`; do not omit the XML `recordSet` merely because no executable XML selector is available.
-- If a supported file is compressed or contained in an archive, decompress or extract it into `outputs/{name}/{run}/{tmp_dir}` before invoking the corresponding command.
-- Preserve parser-returned names exactly. Do not normalize, split, capitalize, or otherwise rewrite them.
+- For `json`, generate a `cr:RecordSet` only when the file has a consistent array-of-objects or another clearly repeated record structure. Use exact object keys as field names, infer datatypes from no more than 5 records, and use valid JSONPath extraction expressions. Do not model one-off metadata objects as record sets or flatten inconsistent nested objects speculatively.
+- For text RDF serializations (`rdf`, `ttl`, `trig`, `n3`, `nt`, and `nq`), a stable triple or quad statement model is sufficient: create fields for `subject`, `predicate`, and `object`, plus `graph` for named-graph formats when present. Prefix declarations are metadata, not fields. For RDF/XML, inspect XML structure as additional evidence but model RDF statements rather than XML syntax unless a separate application schema is explicitly supplied.
+- For `gml`, use declared property names from the feature elements or an accompanying XSD when present; generate fields only when feature records and their properties are consistent. Treat geometry as a structured field only when its representation is clear.
+- For `bed`, use an explicit header, track/browser metadata, or the standard BED column order (`chrom`, `chromStart`, `chromEnd`, then the documented optional BED fields). Generate only the columns actually present and do not invent names for non-standard extra columns without documented evidence.
+- For `sif`, use the standard three-column structure `source`, `interaction`, and `target` when every sampled row conforms. For `assoc`, use an explicit header or documented format specification; do not infer fields merely from the extension because ASSOC has no single universal schema.
+- If a supported file is compressed or contained in an archive, decompress or extract it into `./outputs` before invoking the corresponding schema/header detection command based on the file type.
+- Use the parser-returned column names exactly.  Do not normalize, split, capitalize, or otherwise rewrite them.
 - If a parser command fails, record the command error and limitation in `dct:provenance`, then apply the remaining detection rules in this section. Do not fabricate parser output.
 
-Do not perform schema/header inference for `json`, `jsonl`, `ndjson`, `rdf`, `ttl`, `trig`, `n3`, `nt`, `nq`, `hdt`, `gml`, `bed`, `sif`, or `assoc` files. In particular, do not treat JSON object keys, RDF predicates or prefixes, graph attributes, or format conventions as an inferred record schema. These files may still be represented in `distribution`, but do not generate `recordSet` fields from inferred structure. Apply this restriction whenever a later step refers back to **Schema/Header Detection**.
+Do not perform schema/header inference for `hdt` files. HDT is a compressed binary RDF representation whose dictionary and triple structure require specialized inspection not provided by this workflow. Represent it in `distribution`, but do not generate `recordSet` fields from guessed structure. For every format above, omit the `recordSet` and explain the limitation in `dct:provenance` when the required structural evidence is absent or inconsistent.
 
-For all remaining columnar files that are not handled by the above parsers or excluded from detecting schema/header information, attempt to identify appropriate data to satisfy the Croissant Metadata 'distribution' and 'recordSet' objects. 
+For all remaining columnar files that are not handled by the above parsers or excluded from detecting schema/header information, include the file among the Croissant Metadata 'distribution' entries and attempt to identify  appropriate 'recordSet' fields. 
 
 Here some rules to follow when parsing a columnar file not handled by a pre-defined parser:
 - do not assume the first non-empty line is the only source of schema or header information. Inspect the beginning of the file for commented metadata, preambles, or descriptive blocks that may declare column names, schema notes, datatypes, units, or header conventions before the tabular data begins.
@@ -281,7 +288,7 @@ If any of the values cannot be found or satisfied, provide a reason in the `dct:
 
 ## Step 6: Generate JSON paths file
 
-After generating the `outputs/{name}/{run}/{tmp_dir}/croissant.json` file, generate a TSV file called `persistent_fields.json` in the `outputs/{name}/{run}` directory.   
+After generating the `./outputs` file, generate a TSV file called `persistent_fields.json` in the `./outputs` directory.   
 
 Use the following rules to produce the `persistent_fields.json` file:
   - Output should be in strict RFC 8259 JSON format
@@ -314,7 +321,7 @@ Here is a sample output:
 
 ### Run the MLCroissant Validation tool
 
-Run the official validator tool using the following command: !`.venv/bin/mlcroissant`.  The `mlcroissant` command expects a 'validate' subcommand, a '--jsonld' flag, and the generated found in `outputs/{name}/{run}/croissant.json` file.
+Run the official validator tool using the following command: !`.venv/bin/mlcroissant`.  The `mlcroissant` command expects a 'validate' subcommand, a '--jsonld' flag, and the generated found in `./outputs` file.
 
 Here is an example usage of the `mlcroissant` command: !`.venv/bin/mlcroissant validate --jsonld output/CTD/1/croissant.json`.  
 
@@ -376,7 +383,7 @@ A `distribution` entry may represent a compressed archive such as `.zip`, or `.t
 - Add a separate `cr:FileObject` to the top-level `distribution` array for each relevant inner file. Give every inner file its own stable, unique `@id`, exact archive-relative path or filename as `contentUrl`, appropriate `encodingFormat`, and a `containedIn` object whose `@id` references the parent archive's `@id`.
 - Do not assign the parent archive's remote URL to an inner file. The inner file's `contentUrl` identifies the member within the archive, while `containedIn` identifies the downloadable parent archive.
 - Derive inner filenames and paths from the archive contents. Do not guess an inner filename or create metadata for a member that cannot be verified in the downloaded archive.
-- For each inner file whose resolved format is allowed by **Schema/Header Detection** and that supports records, generate a corresponding `cr:RecordSet`. Apply all rules from **Schema/Header Detection**, including inspection of comments and preambles for columnar files, preservation of exact detected column names, sampling no more than 5 lines for datatype detection, and provenance for ambiguous or inferred schema information. Do not generate inferred `recordSet` fields for disallowed inner formats such as JSON, JSONL, NDJSON, or RDF.
+- For each inner file whose resolved format is allowed by **Schema/Header Detection** and that supports records, generate a corresponding `cr:RecordSet`. Apply all rules from **Schema/Header Detection**, including inspection of comments and preambles for columnar files, preservation of exact detected column names, sampling no more than 5 lines or records for datatype detection, and provenance for ambiguous or inferred schema information. Do not generate inferred `recordSet` fields when the format-specific evidence required by that section is absent.
 - Point every generated field source to the corresponding inner `cr:FileObject`, not the parent archive. For schema-descriptive XML fields, use the direct reference `source: { "@id": "<inner-xml-file-object-id>" }` without an extraction selector. For other supported formats, set `source.fileObject.@id` and preserve any extraction, column, or JSON path information needed to locate the field within that inner file.
 - Verify that every inner file reference resolves to an existing distribution `@id`, every `containedIn.@id` resolves to the correct parent archive distribution, and no `RecordSet` field that was derived from an inner file points directly to the archive.
 - During URL response validation, check the parent archive's remote `contentUrl` with HTTP. Validate an inner file's archive-relative `contentUrl` by confirming that the member exists in the downloaded archive; do not treat that relative member path as a standalone HTTP URL.
@@ -470,11 +477,11 @@ After adding any `GeoCoordinates` field:
 
 ## Step 9: Cleanup
 
-Remove all files in the `outputs/{name}/{run}/{tmp_dir}` directory.
+Remove all files in the `./outputs` directory.
 
 ## Step 10: Summarize
 
-Write a summary of the agent's work to a text file called `summary.txt` in the `outputs/{name}/{run}` directory.
+Write a summary of the agent's work to a text file called `summary.txt` in the `./outputs` directory.
 Include the generated artifact paths for `croissant.json`, and `persistent_fields.json`.
 The summary must include a dedicated `Performance Metrics` section with:
 
