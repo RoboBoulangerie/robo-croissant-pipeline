@@ -288,7 +288,7 @@ If any of the values cannot be found or satisfied, provide a reason in the `dct:
 
 ## Step 6: Generate JSON paths file
 
-After generating the `./outputs` file, generate a TSV file called `persistent_fields.json` in the `./outputs` directory.   
+After generating the `./outputs` file, generate a JSON file called `persistent_fields.json` in the `./outputs` directory.   
 
 Use the following rules to produce the `persistent_fields.json` file:
   - Output should be in strict RFC 8259 JSON format
