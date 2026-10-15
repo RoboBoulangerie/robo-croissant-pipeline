@@ -8,7 +8,6 @@ def main [--outputs_dir: path = "./outputs"] {
     stor open | query db "CREATE TABLE IF NOT EXISTS kb_links (kb_name TEXT, path TEXT, value TEXT, url TEXT, confidence REAL, reviewed BOOLEAN, auto_reviewed BOOLEAN, PRIMARY KEY (kb_name, path))"
     stor open | query db "CREATE TABLE IF NOT EXISTS runs (id INTEGER PRIMARY KEY AUTOINCREMENT, label TEXT NOT NULL, run_date TEXT, model TEXT, file_hash TEXT UNIQUE NOT NULL, imported_at TEXT NOT NULL)"
     stor open | query db "CREATE TABLE IF NOT EXISTS run_links (run_id INTEGER NOT NULL, kb_name TEXT NOT NULL, path TEXT NOT NULL, value TEXT NOT NULL, PRIMARY KEY (run_id, kb_name, path))"
-    stor open | query db "CREATE INDEX IF NOT EXISTS idx_kb_links_kb_path ON kb_links(kb_name, path)"
     stor open | query db "CREATE INDEX IF NOT EXISTS idx_run_links_kb_path ON run_links(kb_name, path)"
     stor open | query db "CREATE TABLE IF NOT EXISTS validation_issues (id INTEGER PRIMARY KEY AUTOINCREMENT, kb_name TEXT NOT NULL, issue_type TEXT NOT NULL, path TEXT NOT NULL, value TEXT NOT NULL, detail TEXT NOT NULL, created_at TEXT NOT NULL)"
 
