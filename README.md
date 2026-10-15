@@ -1,58 +1,74 @@
-# Welcome to RoboCroissant Pipeline
+# RoboCroissant Pipeline
 
-## Getting started
+RoboCroissant generates [Croissant 1.1](https://mlcommons.org/croissant/) JSON-LD metadata for biomedical knowledge bases. An OpenCode agent crawls each source in `knowledge_bases.toml`, describes its downloadable files and (where supported) record schemas, and records source URLs and confidence for review. Nushell scripts can combine the results in a SQLite database; a Python validator reports data-quality issues.
 
-### Install Dependencies/Libraries
+## Setup
 
-#### Install Rust
+Run commands from the repository root. You will need:
 
-From https://rust-lang.org/tools/install/
-```shell
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+- [OpenCode](https://opencode.ai/docs/) configured with a working model/provider.
+- [Nushell](https://www.nushell.sh/) (`nu`) for the pipeline scripts and SQLite storage.
+- [Rust and Cargo](https://rustup.rs/) for the `parse_headers` schema parser.
+- Python 3 and [uv](https://docs.astral.sh/uv/) for the Croissant validator and the optional quality checks.
+- `jq` for the agent's JSON checks; `trang` if processing XML schemas.
+
+`opencode.sample.json` is a configuration template. Copy it to `opencode.json` and set a model and credentials for your provider. The local config file is gitignored.
+
+```sh
+cp opencode.sample.json opencode.json
+uv venv
+uv pip install mlcroissant requests
 ```
 
-#### Install Nushell
+The agent's preflight checks for `.venv/bin/mlcroissant` and `RCP_KB_NAME`. The Python quality validator also needs `requests` (installed above). Nushell's built-in SQLite support creates the database; the `sqlite3` command-line program is not required.
 
-Nushell is a modern, cross-platform shell and programming language written in Rust that treats all data as structured tables rather than raw text.
-```shell
-cargo install nu
-```
-See https://www.nushell.sh/ for more information.
+## Generate metadata
 
-#### Install Sqlite
+`knowledge_bases.toml` contains the source inventory. Its `name` values select a source (case-sensitive); `enabled = true` determines which sources the batch script and database builder process. A source site may require access or be unavailable even when enabled.
 
-On Ubuntu:
-```shell
-sudo apt update && sudo apt install sqlite3
+Generate metadata for one source:
+
+```sh
+RCP_KB_NAME=CTD opencode run --agent croissant-metadata-generator "run"
 ```
 
-## Running RoboCroissant Pipeline
+To run the agent once per enabled sources:
 
-This will run the pipeline for one knowledge base.  Note that the RCP_KB_NAME environment variable must be set to the name of the knowledge base from the knowledge_bases.toml file.  Here, CTD is specified as the knowledge base name.
-```nushell
-RCP_KB_NAME="CTD" opencode run --agent croissant-metadata-generator "run"
-```
-
-There is a convenience script called ./bin/run_main_agent.nu that will invoke the Croissant Metadata Generator Agent for all enabled Knowledge Bases. 
-```nushell
+```sh
 nu ./bin/run_main_agent.nu
 ```
 
-To generate the robo_croissant.db file, run the following command:
-```nushell
+Generation can download large datasets and take significant time and disk space. Each invocation creates a numbered directory under `outputs/<knowledge-base>/<run>/`. The main artifacts are:
+
+```text
+outputs/<KB>/1/
+├── croissant.json          # Croissant JSON-LD: dataset, distributions, record sets, fields
+├── persistent_fields.json  # metadata values with source URLs and confidence scores
+└── summary.txt             # run summary and performance metrics
+```
+
+The agent may also put generated scripts and temporary downloaded files in that run directory. Its workflow validates `croissant.json` with MLCroissant; you can check a result manually with:
+
+```sh
+.venv/bin/mlcroissant validate --jsonld outputs/<KB>/1/croissant.json
+```
+
+For local schema inspection, the agent uses `cargo run --quiet --bin parse_headers -- <file>` for supported formats, plus the `bin/parse_*_schema.nu` scripts for SQL, SQLite, and XML.
+
+## Build and check the database
+
+```sh
 nu ./bin/build_db.nu
 ```
 
-## Extracting the Croissant Metadata JSON from the DB 
-From within Nushell, issue the follow:
-```shell
-let kb_names = open knowledge_bases.toml | get knowledge_bases.name
-for x in $kb_names { open robo_croissant.db | get knowledge_bases | where name == $x | save -f $"($x).json" }
+This **replaces** `robo_croissant.db` with metadata and evidence from enabled sources with files in `outputs/`. You can point it at another output directory with `nu ./bin/build_db.nu --outputs_dir ./outputs-10-01`. For each source, it picks the most recently modified `croissant.json` and `persistent_fields.json` independently; check that they belong to the same run before importing if multiple runs exist.
+
+The database has `knowledge_bases` (metadata), `kb_links` (values, evidence, confidence, review state), and tables for runs and validation issues. 
+
+To export one metadata document from the database, run this in Nushell:
+
+```nu
+open robo_croissant.db | get knowledge_bases | where name == '<KB.name>' | get croissant_metadata | to json | save -f output.json
 ```
 
-The current list of generated Croissant Metadata JSON files can be found [here](https://roboboulangerie.github.io/robo-croissant-pipeline/).
-
-
-
-
-
+Some [previously published Croissant files](https://roboboulangerie.github.io/robo-croissant-pipeline/) are also available on GitHub Pages.
