@@ -3,7 +3,7 @@
 use std/dirs
 
 def main [outputs_path_1: path, outputs_path_2: path] {
-    for kb in (open knowledge_bases.toml | get knowledge_bases | where $it.enabled == true) {
+    for kb in (open knowledge-bases.toml | get knowledge_bases | where $it.enabled == true) {
         print $"Starting: ($kb.name)"
         let comparison_report_dir = $"./comparison_reports/($kb.name)"
         mkdir $comparison_report_dir
