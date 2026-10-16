@@ -1,6 +1,6 @@
 # RoboCroissant Pipeline
 
-RoboCroissant generates [Croissant 1.1](https://mlcommons.org/croissant/) JSON-LD metadata for biomedical knowledge bases. An OpenCode agent crawls each source in `knowledge_bases.toml`, describes its downloadable files and (where supported) record schemas, and records source URLs and confidence for review. Nushell scripts can combine the results in a SQLite database; a Python validator reports data-quality issues.
+RoboCroissant generates [Croissant 1.1](https://mlcommons.org/croissant/) JSON-LD metadata for biomedical knowledge bases. An OpenCode agent crawls each source in `knowledge-bases.toml`, describes its downloadable files and (where supported) record schemas, and records source URLs and confidence for review. Nushell scripts can combine the results in a SQLite database; a Python validator reports data-quality issues.
 
 ## Setup
 
@@ -24,7 +24,7 @@ The agent's preflight checks for `.venv/bin/mlcroissant` and `RCP_KB_NAME`. The 
 
 ## Generate metadata
 
-`knowledge_bases.toml` contains the source inventory. Its `name` values select a source (case-sensitive); `enabled = true` determines which sources the batch script and database builder process. A source site may require access or be unavailable even when enabled.
+`knowledge-bases.toml` contains the source inventory. Its `name` values select a source (case-sensitive); `enabled = true` determines which sources the batch script and database builder process. A source site may require access or be unavailable even when enabled.
 
 Generate metadata for one source:
 

@@ -60,10 +60,10 @@ Be sure to inform the user why the agent failed to continue if a failure occurre
 
 ## Step 2: resolve target knowledge source
 
-Resolve the target `knowledge_bases` entry from the `knowledge_bases.toml` file using environment variable `RCP_KB_NAME` value, then perform the following steps using only that selected entry.
+Resolve the target `knowledge_bases` entry from the `knowledge-bases.toml` file using environment variable `RCP_KB_NAME` value, then perform the following steps using only that selected entry.
 
 - Read `RCP_KB_NAME` from the environment.
-- Find the single `knowledge_bases` entry in `knowledge_bases.toml` whose `name` exactly matches `RCP_KB_NAME`.
+- Find the single `knowledge_bases` entry in `knowledge-bases.toml` whose `name` exactly matches `RCP_KB_NAME`.
 - Treat that matched record as the only source to process.
 - Do not iterate over all `knowledge_bases` entries.
 

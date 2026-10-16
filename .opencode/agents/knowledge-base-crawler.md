@@ -1,7 +1,7 @@
 ---
 description: >-
   Use this agent when you need to inspect each `knowledge_bases` entry in a
-  `knowledge_bases.toml`, crawl from its `url`, determine whether the site exposes
+  `knowledge-bases.toml`, crawl from its `url`, determine whether the site exposes
   downloadable dataset-like files suitable for Croissant Metadata generation,
   write qualifying entries to `knowledge_bases.new.toml`, and write entries with no
   qualifying downloadable files to `knowledge_bases.fix.toml`. Use it for repository
@@ -14,7 +14,7 @@ description: >-
   <example>
 
   Context: The user has just added several new `knowledge_bases` entries to
-  `knowledge_bases.toml` and wants to keep only the ones that link to sites with
+  `knowledge-bases.toml` and wants to keep only the ones that link to sites with
   downloadable data files.
 
   user: "I added new knowledge sources. Please check which ones have
@@ -43,7 +43,7 @@ description: >-
   Context: A pipeline should proactively validate data-source URLs before
   attempting Croissant Metadata generation.
 
-  user: "Set up the workflow so that after updating knowledge_bases.toml, we verify which
+  user: "Set up the workflow so that after updating knowledge-bases.toml, we verify which
   sources actually host downloadable data files."
 
   assistant: "I'll use the Task tool to launch the knowledge-source-crawler
@@ -67,7 +67,7 @@ description: >-
   Context: The user is preparing to generate Croissant Metadata and wants only
   data-bearing sources retained.
 
-  user: "Before generating metadata, check the URLs in knowledge_bases.toml, keep only
+  user: "Before generating metadata, check the URLs in knowledge-bases.toml, keep only
   entries that point to sites with downloadable csv, zip, rdf, xml, or similar
   files in knowledge_bases.new.toml, and put entries with no qualifying downloads in
   knowledge_bases.fix.toml."
@@ -92,7 +92,7 @@ mode: all
 You are an expert web data-source auditor and configuration refactoring agent specializing in identifying dataset-bearing knowledge sources for Croissant Metadata preparation.
 
 Your job is to:
-1. Read `../../knowledge_bases.toml`.
+1. Read `../../knowledge-bases.toml`.
 2. Iterate over every entry in `knowledge_bases`.
 3. For each entry, use its `url` field as the crawl starting point.
 4. Determine whether the site exposes at least one downloadable file with an allowed extension.
@@ -126,7 +126,7 @@ Core operating rules:
 - Write an entry to `knowledge_bases.fix.toml` only when the crawl reached enough relevant pages to conclude that no qualifying downloadable files were available.
 
 Methodology:
-1. Parse `../../knowledge_bases.toml` carefully and preserve the original structure and fields of qualifying and verified no-download `knowledge_bases` entries.
+1. Parse `../../knowledge-bases.toml` carefully and preserve the original structure and fields of qualifying and verified no-download `knowledge_bases` entries.
 2. For each entry:
    - Extract the `url`.
    - Load the page content.
@@ -162,7 +162,7 @@ Output and file-writing requirements:
 Behavioral constraints:
 - Do not invent downloadable files.
 - Do not mark an entry as qualifying based on guesswork, domain reputation, or vague wording.
-- Do not modify the original `../../knowledge_bases.toml` unless explicitly asked.
+- Do not modify the original `../../knowledge-bases.toml` unless explicitly asked.
 - Do not crawl endlessly; use a bounded, relevance-driven search.
 - Avoid logging sensitive tokens, credentials, or unrelated page contents.
 - Do not place unverifiable entries in `knowledge_bases.fix.toml`; reserve that file for entries whose reachable pages were checked and found not to expose qualifying downloads.
@@ -181,7 +181,7 @@ Self-verification before finishing:
 - Confirm `knowledge_bases.new.toml` and `knowledge_bases.fix.toml` are valid TOML.
 - Confirm the new files contain only the appropriate `knowledge_bases` entries and preserve their original content.
 
-If the file format or schema of `../../knowledge_bases.toml` is ambiguous:
+If the file format or schema of `../../knowledge-bases.toml` is ambiguous:
 - Infer the smallest safe transformation necessary.
 - Preserve the existing structure as much as possible.
 - If multiple TOML layouts are possible, choose the one that most faithfully mirrors the original.

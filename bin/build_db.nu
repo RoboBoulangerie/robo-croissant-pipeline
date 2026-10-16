@@ -11,7 +11,7 @@ def main [--outputs_dir: path = "./outputs"] {
     stor open | query db "CREATE INDEX IF NOT EXISTS idx_run_links_kb_path ON run_links(kb_name, path)"
     stor open | query db "CREATE TABLE IF NOT EXISTS validation_issues (id INTEGER PRIMARY KEY AUTOINCREMENT, kb_name TEXT NOT NULL, issue_type TEXT NOT NULL, path TEXT NOT NULL, value TEXT NOT NULL, detail TEXT NOT NULL, created_at TEXT NOT NULL)"
 
-    for kb in (open knowledge_bases.toml | get knowledge_bases | where $it.enabled == true) {
+    for kb in (open knowledge-bases.toml | get knowledge_bases | where $it.enabled == true) {
         if ($"./($outputs_dir)/($kb.name)" | path exists) {
             print $kb.name
             print $"./($outputs_dir)/($kb.name)"
