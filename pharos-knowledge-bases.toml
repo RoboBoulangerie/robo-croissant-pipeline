@@ -1,0 +1,958 @@
+# Source: https://pharos.nih.gov/about (Data Sources table)
+# URLs are the source links listed by Pharos; they are not necessarily download pages.
+
+[[knowledge_bases]]
+name = "Animal TFDB"
+title = "Animal TFDB"
+url = "http://bioinfo.life.hust.edu.cn/AnimalTFDB/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "Antibodypedia"
+title = "Antibodypedia"
+url = "https://www.antibodypedia.com/"
+enabled = true
+metadata_urls = [
+    "https://www.antibodypedia.com/",
+    "https://www.antibodypedia.com/text/about_us",
+    "https://www.antibodypedia.com/text/terms_conditions",
+]
+download_urls = []
+
+[[knowledge_bases]]
+name = "ARCHS4"
+title = "ARCHS4"
+url = "https://maayanlab.cloud/archs4/"
+enabled = true
+metadata_urls = [
+    "https://maayanlab.cloud/archs4/",
+]
+download_urls = [
+    "https://maayanlab.cloud/archs4/download.html",
+    "https://s3.dev.maayanlab.cloud/archs4/files/human_gene_v2.5.h5",
+    "https://s3.dev.maayanlab.cloud/archs4/files/mouse_gene_v2.5.h5",
+    "https://s3.dev.maayanlab.cloud/archs4/files/human_transcript_v2.5.h5",
+    "https://s3.dev.maayanlab.cloud/archs4/files/mouse_transcript_v2.5.h5",
+]
+
+[[knowledge_bases]]
+name = "BioPlex Protein-Protein Interactions"
+title = "BioPlex Protein-Protein Interactions"
+url = "https://bioplex.hms.harvard.edu/"
+enabled = true
+metadata_urls = [
+    "https://bioplex.hms.harvard.edu/",
+]
+download_urls = [
+    "https://bioplex.hms.harvard.edu/interactions.php"
+]
+
+[[knowledge_bases]]
+name = "CCLE"
+title = "CCLE"
+url = "https://portals.broadinstitute.org/ccle"
+enabled = true
+metadata_urls = [
+    "https://portals.broadinstitute.org/ccle",
+]
+download_urls = [
+    "https://sites.broadinstitute.org/ccle/datasets",
+]
+
+[[knowledge_bases]]
+name = "Cell Surface Protein Atlas"
+title = "Cell Surface Protein Atlas"
+url = "http://wlab.ethz.ch/cspa/"
+enabled = true
+metadata_urls = [
+    "http://wlab.ethz.ch/cspa/",
+]
+download_urls = [
+    "http://wlab.ethz.ch/cspa/",
+]
+
+[[knowledge_bases]]
+name = "ChEMBL"
+title = "ChEMBL"
+url = "https://www.ebi.ac.uk/chembl/"
+enabled = true
+metadata_urls = [
+    "https://www.ebi.ac.uk/chembl/",
+]
+download_urls = [
+    "https://chembl.gitbook.io/chembl-interface-documentation/downloads",
+    "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/",
+]
+
+[[knowledge_bases]]
+name = "ClinVar"
+title = "ClinVar"
+url = "https://www.ncbi.nlm.nih.gov/clinvar/"
+enabled = true
+metadata_urls = [
+    "https://www.ncbi.nlm.nih.gov/clinvar/intro/",
+]
+download_urls = [
+    "https://www.ncbi.nlm.nih.gov/clinvar/docs/downloads/",
+    "https://www.ncbi.nlm.nih.gov/clinvar/docs/ftp_primer/",
+]
+
+[[knowledge_bases]]
+name = "Consensus Expression Values"
+title = "Consensus Expression Values"
+url = ""
+notes = "No external source URL provided by Pharos."
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "CTD"
+title = "CTD"
+url = "https://ctdbase.org/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "Dark Kinase Knowledgebase"
+title = "Dark Kinase Knowledgebase"
+url = "https://darkkinome.org/"
+enabled = true
+metadata_urls = [
+    "https://darkkinome.org/",
+]
+download_urls = [
+    "https://darkkinome.org/data",
+]
+
+[[knowledge_bases]]
+name = "Disease Ontology"
+title = "Disease Ontology"
+url = "http://www.disease-ontology.org/"
+enabled = true
+metadata_urls = [
+    "https://disease-ontology.org/",
+    "https://disease-ontology.org/resources/citing-do/",
+]
+download_urls = [
+    "https://disease-ontology.org/downloads/",
+]
+
+[[knowledge_bases]]
+name = "DisGeNET"
+title = "DisGeNET"
+url = "http://www.disgenet.org/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "Drug Central - ChEMBL"
+title = "Drug Central - ChEMBL"
+url = "http://drugcentral.org/"
+enabled = true
+metadata_urls = [
+    "http://drugcentral.org/",
+    "https://drugcentral.org/about",
+]
+download_urls = [
+    "https://drugcentral.org/download",
+]
+
+[[knowledge_bases]]
+name = "Drug Central - Drug Label"
+title = "Drug Central - Drug Label"
+url = "http://drugcentral.org/"
+enabled = true
+metadata_urls = [
+    "http://drugcentral.org/",
+    "https://drugcentral.org/about",
+]
+download_urls = [
+    "https://drugcentral.org/download",
+]
+
+[[knowledge_bases]]
+name = "Drug Central - GtoPdb"
+title = "Drug Central - GtoPdb"
+url = "http://drugcentral.org/"
+enabled = true
+metadata_urls = [
+    "http://drugcentral.org/",
+    "https://drugcentral.org/about",
+]
+download_urls = [
+    "https://drugcentral.org/download",
+]
+
+[[knowledge_bases]]
+name = "Drug Central - Kegg Drug"
+title = "Drug Central - Kegg Drug"
+url = "http://drugcentral.org/"
+enabled = true
+metadata_urls = [
+    "http://drugcentral.org/",
+    "https://drugcentral.org/about",
+]
+download_urls = [
+    "https://drugcentral.org/download",
+]
+
+[[knowledge_bases]]
+name = "Drug Central - Scientific Literature"
+title = "Drug Central - Scientific Literature"
+url = "http://drugcentral.org/"
+enabled = true
+metadata_urls = [
+    "http://drugcentral.org/",
+    "https://drugcentral.org/about",
+]
+download_urls = [
+    "https://drugcentral.org/download",
+]
+
+[[knowledge_bases]]
+name = "Drug Central Indication"
+title = "Drug Central Indication"
+url = "http://drugcentral.org"
+enabled = true
+metadata_urls = [
+    "http://drugcentral.org",
+    "https://drugcentral.org/about",
+]
+download_urls = [
+    "https://drugcentral.org/download",
+]
+
+[[knowledge_bases]]
+name = "Drug Target Ontology IDs and Classifications"
+title = "Drug Target Ontology IDs and Classifications"
+url = "http://drugtargetontology.org/"
+enabled = true
+metadata_urls = [
+    "http://drugtargetontology.org/",
+    "https://drugtargetontology.org/about.html",
+]
+download_urls = [
+    "https://github.com/DrugTargetOntology/DTO",
+]
+
+[[knowledge_bases]]
+name = "EBI Patent Counts"
+title = "EBI Patent Counts"
+url = "https://www.ebi.ac.uk/patentdata/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "Ensembl Gene IDs"
+title = "Ensembl Gene IDs"
+url = "https://uswest.ensembl.org/index.html"
+enabled = true
+metadata_urls = [
+    "https://www.ensembl.org/",
+]
+download_urls = [
+    "https://ftp.ensembl.org/pub/",
+    "https://jun2026.archive.ensembl.org/info/data/ftp/index.html",
+]
+
+[[knowledge_bases]]
+name = "eRAM"
+title = "eRAM"
+url = "http://www.unimd.org/eram/"
+enabled = true
+metadata_urls = [
+    "http://www.unimd.org/eram/",
+]
+download_urls = [
+    "http://119.3.41.228/eram/download.php",
+]
+
+[[knowledge_bases]]
+name = "Expression Atlas"
+title = "Expression Atlas"
+url = "https://www.ebi.ac.uk/gxa/"
+enabled = true
+metadata_urls = [
+    "https://www.ebi.ac.uk/gxa/about.html",
+    "https://www.ebi.ac.uk/gxa/licence.html",
+]
+download_urls = [
+    "https://www.ebi.ac.uk/gxa/download.html",
+    "https://ftp.ebi.ac.uk/pub/databases/microarray/data/atlas/indices/",
+]
+
+[[knowledge_bases]]
+name = "Gene Ontology"
+title = "Gene Ontology"
+url = "http://geneontology.org/"
+enabled = true
+metadata_urls = [
+    "http://geneontology.org/",
+    "https://geneontology.org/docs/go-citation-policy/",
+]
+download_urls = [
+    "https://geneontology.org/docs/download-ontology/",
+    "https://geneontology.org/docs/download-go-annotations/",
+]
+
+[[knowledge_bases]]
+name = "GENEVA"
+title = "GENEVA"
+url = "https://genevatool.org/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "GlyGen"
+title = "GlyGen"
+url = "https://glygen.org/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "GTEx"
+title = "GTEx"
+url = ""
+notes = "No external source URL provided by Pharos."
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "Guide to Pharmacology"
+title = "Guide to Pharmacology"
+url = "https://www.guidetopharmacology.org/"
+enabled = true
+metadata_urls = [
+    "https://www.guidetopharmacology.org/",
+]
+download_urls = []
+
+[[knowledge_bases]]
+name = "GWAS Catalog"
+title = "GWAS Catalog"
+url = "https://www.ebi.ac.uk/gwas/"
+enabled = true
+metadata_urls = [
+    "https://www.ebi.ac.uk/gwas/",
+    "https://www.ebi.ac.uk/gwas/docs/citation/",
+]
+download_urls = [
+    "https://www.ebi.ac.uk/gwas/docs/file-downloads/",
+]
+
+[[knowledge_bases]]
+name = "Harmonizome"
+title = "Harmonizome"
+url = "http://amp.pharm.mssm.edu/Harmonizome/"
+enabled = true
+metadata_urls = [
+    "http://amp.pharm.mssm.edu/Harmonizome/",
+]
+download_urls = [
+    "https://maayanlab.cloud/Harmonizome/download",
+]
+
+[[knowledge_bases]]
+name = "HGNC"
+title = "HGNC"
+url = "https://www.genenames.org/"
+enabled = true
+metadata_urls = [
+    "https://www.genenames.org/",
+]
+download_urls = [
+    "https://www.genenames.org/download/statistics-and-files/",
+    "https://www.genenames.org/help/statistics-and-downloads/",
+]
+
+[[knowledge_bases]]
+name = "HomoloGene"
+title = "HomoloGene"
+url = "https://www.ncbi.nlm.nih.gov/homologene"
+enabled = true
+metadata_urls = [
+    "https://ftp.ncbi.nlm.nih.gov/pub/HomoloGene/README",
+]
+download_urls = [
+    "https://ftp.ncbi.nlm.nih.gov/pub/HomoloGene/last-archive/",
+]
+
+[[knowledge_bases]]
+name = "HPA Protein"
+title = "HPA Protein"
+url = ""
+notes = "No external source URL provided by Pharos."
+enabled = false
+metadata_urls = [
+    "https://www.proteinatlas.org/about",
+    "https://www.proteinatlas.org/about/licence",
+]
+download_urls = [
+    "https://www.proteinatlas.org/about/download",
+    "https://www.proteinatlas.org/humanproteome/tissue/data",
+]
+
+[[knowledge_bases]]
+name = "HPA RNA"
+title = "HPA RNA"
+url = ""
+notes = "No external source URL provided by Pharos."
+enabled = false
+metadata_urls = [
+    "https://www.proteinatlas.org/about",
+    "https://www.proteinatlas.org/about/licence",
+]
+download_urls = [
+    "https://www.proteinatlas.org/about/download",
+    "https://www.proteinatlas.org/humanproteome/tissue/data",
+]
+
+[[knowledge_bases]]
+name = "HPM Protein"
+title = "HPM Protein"
+url = ""
+notes = "No external source URL provided by Pharos."
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "Human Cell Atlas Compartments"
+title = "Human Cell Atlas Compartments"
+url = "https://www.humancellatlas.org/"
+enabled = true
+metadata_urls = [
+    "https://www.humancellatlas.org/",
+    "https://data.humancellatlas.org/about",
+]
+download_urls = []
+
+[[knowledge_bases]]
+name = "Human Cell Atlas Expression"
+title = "Human Cell Atlas Expression"
+url = "https://www.humancellatlas.org/"
+enabled = true
+metadata_urls = [
+    "https://www.humancellatlas.org/",
+    "https://data.humancellatlas.org/about",
+]
+download_urls = []
+
+[[knowledge_bases]]
+name = "Human Protein Atlas"
+title = "Human Protein Atlas"
+url = "https://www.proteinatlas.org/"
+enabled = true
+metadata_urls = [
+    "https://www.proteinatlas.org/",
+    "https://www.proteinatlas.org/about/licence",
+]
+download_urls = [
+    "https://www.proteinatlas.org/about/download",
+]
+
+[[knowledge_bases]]
+name = "Human Proteome Map"
+title = "Human Proteome Map"
+url = "https://www.humanproteomemap.org/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "IDG Eligible Targets List"
+title = "IDG Eligible Targets List"
+url = ""
+notes = "No external source URL provided by Pharos."
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "IDG Families"
+title = "IDG Families"
+url = ""
+notes = "No external source URL provided by Pharos."
+enabled = false
+metadata_urls = [
+    "https://opendata.ncats.nih.gov/public/pharos/pharos400_readme.html",
+]
+download_urls = [
+    "https://opendata.ncats.nih.gov/public/pharos/",
+]
+
+[[knowledge_bases]]
+name = "IMPC Mouse Clones"
+title = "IMPC Mouse Clones"
+url = "https://www.mousephenotype.org/"
+enabled = true
+metadata_urls = [
+    "https://www.mousephenotype.org/",
+    "https://www.mousephenotype.org/about-impc/",
+]
+download_urls = [
+    "https://www.mousephenotype.org/data/release",
+    "https://ftp.ebi.ac.uk/pub/databases/impc/",
+]
+
+[[knowledge_bases]]
+name = "IMPC Phenotypes"
+title = "IMPC Phenotypes"
+url = "https://www.mousephenotype.org/"
+enabled = true
+metadata_urls = [
+    "https://www.mousephenotype.org/",
+    "https://www.mousephenotype.org/about-impc/",
+]
+download_urls = [
+    "https://www.mousephenotype.org/data/release",
+    "https://ftp.ebi.ac.uk/pub/databases/impc/",
+]
+
+[[knowledge_bases]]
+name = "JAX/MGI Mouse/Human Orthology Phenotypes"
+title = "JAX/MGI Mouse/Human Orthology Phenotypes"
+url = "http://www.informatics.jax.org/"
+enabled = true
+metadata_urls = [
+    "http://www.informatics.jax.org/",
+    "https://www.informatics.jax.org/mgihome/other/citation.shtml",
+]
+download_urls = [
+    "https://www.informatics.jax.org/downloads/reports/index.html",
+]
+
+[[knowledge_bases]]
+name = "JensenLab COMPARTMENTS"
+title = "JensenLab COMPARTMENTS"
+url = "https://compartments.jensenlab.org/"
+enabled = true
+metadata_urls = [
+    "https://compartments.jensenlab.org/About",
+]
+download_urls = [
+    "https://compartments.jensenlab.org/Downloads",
+]
+
+[[knowledge_bases]]
+name = "JensenLab Knowledge UniProtKB-KW"
+title = "JensenLab Knowledge UniProtKB-KW"
+url = "https://diseases.jensenlab.org/"
+enabled = true
+metadata_urls = [
+    "https://diseases.jensenlab.org/About",
+]
+download_urls = [
+    "https://diseases.jensenlab.org/Downloads",
+]
+
+[[knowledge_bases]]
+name = "JensenLab PubMed Text-mining Scores"
+title = "JensenLab PubMed Text-mining Scores"
+url = "https://diseases.jensenlab.org/"
+enabled = true
+metadata_urls = [
+    "https://diseases.jensenlab.org/About",
+]
+download_urls = [
+    "https://diseases.jensenlab.org/Downloads",
+]
+
+[[knowledge_bases]]
+name = "JensenLab Text Mining"
+title = "JensenLab Text Mining"
+url = "https://diseases.jensenlab.org/"
+enabled = true
+metadata_urls = [
+    "https://diseases.jensenlab.org/About",
+]
+download_urls = [
+    "https://diseases.jensenlab.org/Downloads",
+]
+
+[[knowledge_bases]]
+name = "JensenLab TISSUES"
+title = "JensenLab TISSUES"
+url = ""
+notes = "No external source URL provided by Pharos."
+enabled = false
+metadata_urls = [
+    "https://tissues.jensenlab.org/About",
+]
+download_urls = [
+    "https://tissues.jensenlab.org/Downloads",
+]
+
+[[knowledge_bases]]
+name = "KEGG Distances"
+title = "KEGG Distances"
+url = ""
+notes = "No external source URL provided by Pharos."
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "KEGG Nearest Tclins"
+title = "KEGG Nearest Tclins"
+url = ""
+notes = "No external source URL provided by Pharos."
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "KEGG Pathways"
+title = "KEGG Pathways"
+url = "https://www.genome.jp/kegg/pathway.html"
+enabled = true
+metadata_urls = [
+    "https://www.genome.jp/kegg/pathway.html",
+]
+download_urls = [
+    "https://www.kegg.jp/kegg/api.html",
+]
+
+[[knowledge_bases]]
+name = "LINCS"
+title = "LINCS"
+url = "http://www.lincsproject.org/LINCS/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "LINCS L1000 XRefs"
+title = "LINCS L1000 XRefs"
+url = "http://www.lincsproject.org/LINCS/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "LocSigDB"
+title = "LocSigDB"
+url = "http://genome.unmc.edu/LocSigDB/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "Monarch"
+title = "Monarch"
+url = "https://monarchinitiative.org/"
+enabled = true
+metadata_urls = [
+    "https://data.monarchinitiative.org/monarch-kg/latest/metadata.yaml",
+]
+download_urls = [
+    "https://data.monarchinitiative.org/monarch-kg/latest/index.html",
+    "https://data.monarchinitiative.org/monarch-kg/index.html",
+]
+
+[[knowledge_bases]]
+name = "Monarch Ortholog Disease Associations"
+title = "Monarch Ortholog Disease Associations"
+url = "https://monarchinitiative.org/"
+enabled = true
+metadata_urls = [
+    "https://data.monarchinitiative.org/monarch-kg/latest/metadata.yaml",
+]
+download_urls = [
+    "https://data.monarchinitiative.org/monarch-kg/latest/index.html",
+    "https://data.monarchinitiative.org/monarch-kg/index.html",
+]
+
+[[knowledge_bases]]
+name = "NCBI Gene"
+title = "NCBI Gene"
+url = "https://www.ncbi.nlm.nih.gov/gene/"
+enabled = true
+metadata_urls = [
+    "https://ftp.ncbi.nlm.nih.gov/gene/DATA/README",
+]
+download_urls = [
+    "https://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+]
+
+[[knowledge_bases]]
+name = "NCBI GI Numbers"
+title = "NCBI GI Numbers"
+url = ""
+notes = "No external source URL provided by Pharos."
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "OMIM"
+title = "OMIM"
+url = "https://www.ncbi.nlm.nih.gov/omim"
+enabled = true
+metadata_urls = [
+    "https://www.ncbi.nlm.nih.gov/omim",
+]
+download_urls = []
+
+[[knowledge_bases]]
+name = "Orthologs"
+title = "Orthologs"
+url = "https://www.genenames.org/tools/hcop/"
+enabled = true
+metadata_urls = [
+    "https://www.genenames.org/tools/hcop/",
+]
+download_urls = [
+    "https://www.genenames.org/download/statistics-and-files/",
+]
+
+[[knowledge_bases]]
+name = "P-HIPSTer Viral PPIs"
+title = "P-HIPSTer Viral PPIs"
+url = "http://phipster.org/"
+enabled = true
+metadata_urls = [
+    "http://phipster.org/",
+]
+download_urls = []
+
+[[knowledge_bases]]
+name = "PANTHER Protein Classes"
+title = "PANTHER Protein Classes"
+url = "http://www.pantherdb.org/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "PathwayCommons"
+title = "PathwayCommons"
+url = "https://www.pathwaycommons.org/"
+enabled = true
+metadata_urls = [
+    "https://www.pathwaycommons.org/",
+]
+download_urls = [
+    "https://download.baderlab.org/PathwayCommons/",
+    "https://www.pathwaycommons.org/pc2/datasources",
+]
+
+[[knowledge_bases]]
+name = "ProKinO"
+title = "ProKinO"
+url = "https://prokino.uga.edu/kinview/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "PubChem CIDs"
+title = "PubChem CIDs"
+url = "https://pubchem.ncbi.nlm.nih.gov/"
+enabled = false
+metadata_urls = []
+download_urls = [
+    "https://ftp.ncbi.nlm.nih.gov/pubchem/Compound/",
+]
+
+[[knowledge_bases]]
+name = "PubMed"
+title = "PubMed"
+url = "https://pubmed.ncbi.nlm.nih.gov/"
+enabled = true
+metadata_urls = [
+    "https://pubmed.ncbi.nlm.nih.gov/",
+    "https://pubmed.ncbi.nlm.nih.gov/about/",
+]
+download_urls = [
+    "https://pubmed.ncbi.nlm.nih.gov/download/",
+]
+
+[[knowledge_bases]]
+name = "PubTator Text-mining Scores"
+title = "PubTator Text-mining Scores"
+url = "https://www.ncbi.nlm.nih.gov/research/pubtator/"
+enabled = false
+metadata_urls = []
+download_urls = [
+    "https://ftp.ncbi.nlm.nih.gov/pub/lu/PubTator3/",
+]
+
+[[knowledge_bases]]
+name = "RCSB Protein Data Bank"
+title = "RCSB Protein Data Bank"
+url = "https://www.rcsb.org/"
+enabled = true
+metadata_urls = [
+    "https://www.rcsb.org/",
+    "https://www.rcsb.org/pages/policies",
+]
+download_urls = [
+    "https://www.rcsb.org/downloads",
+    "https://www.rcsb.org/docs/programmatic-access/file-download-services",
+]
+
+[[knowledge_bases]]
+name = "Reactome Pathways"
+title = "Reactome Pathways"
+url = "https://reactome.org/"
+enabled = true
+metadata_urls = [
+    "https://reactome.org/",
+    "https://reactome.org/license",
+    "https://reactome.org/cite",
+]
+download_urls = [
+    "https://reactome.org/download-data",
+]
+
+[[knowledge_bases]]
+name = "Reactome Protein-Protein Interactions"
+title = "Reactome Protein-Protein Interactions"
+url = "https://reactome.org/"
+enabled = true
+metadata_urls = [
+    "https://reactome.org/",
+    "https://reactome.org/license",
+    "https://reactome.org/cite",
+]
+download_urls = [
+    "https://reactome.org/download-data",
+]
+
+[[knowledge_bases]]
+name = "RESOLUTE"
+title = "RESOLUTE"
+url = "https://re-solute.eu/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "RGD"
+title = "RGD"
+url = "https://rgd.mcw.edu/rgdweb/homepage/"
+enabled = true
+metadata_urls = [
+    "https://rgd.mcw.edu/rgdweb/homepage/",
+    "https://rgd.mcw.edu/wg/about-us/",
+]
+download_urls = [
+    "https://download.rgd.mcw.edu/",
+]
+
+[[knowledge_bases]]
+name = "STRING IDs"
+title = "STRING IDs"
+url = "https://string-db.org/"
+enabled = true
+metadata_urls = [
+    "https://string-db.org/",
+    "https://string-db.org/cgi/access?footer_active_subpage=licensing",
+]
+download_urls = [
+    "https://string-db.org/cgi/download",
+]
+
+[[knowledge_bases]]
+name = "STRINGDB"
+title = "STRINGDB"
+url = "https://string-db.org/"
+enabled = true
+metadata_urls = [
+    "https://string-db.org/",
+    "https://string-db.org/cgi/access?footer_active_subpage=licensing",
+]
+download_urls = [
+    "https://string-db.org/cgi/download",
+]
+
+[[knowledge_bases]]
+name = "Target Illumination GWAS Analytics (TIGA)"
+title = "Target Illumination GWAS Analytics (TIGA)"
+url = "https://unmtid-shinyapps.net/shiny/tiga/"
+enabled = true
+metadata_urls = [
+    "https://unmtid-shinyapps.net/shiny/tiga/",
+]
+download_urls = [
+    "https://unmtid-shinyapps.net/shiny/tiga/",
+    "https://unmtid-dbs.net/download/TIGA/",
+]
+
+[[knowledge_bases]]
+name = "TIN-X Data"
+title = "TIN-X Data"
+url = "https://www.newdrugtargets.org/"
+enabled = true
+metadata_urls = [
+    "https://www.newdrugtargets.org/",
+]
+download_urls = []
+
+[[knowledge_bases]]
+name = "TMHMM Predictions"
+title = "TMHMM Predictions"
+url = "https://www.uniprot.org/uniprot/"
+enabled = false
+metadata_urls = []
+download_urls = []
+
+[[knowledge_bases]]
+name = "Transcription Factor Flags"
+title = "Transcription Factor Flags"
+url = "http://humantfs.ccbr.utoronto.ca/"
+enabled = true
+metadata_urls = [
+    "http://humantfs.ccbr.utoronto.ca/",
+]
+download_urls = [
+    "https://humantfs.ccbr.utoronto.ca/download.php",
+]
+
+[[knowledge_bases]]
+name = "UniProt"
+title = "UniProt"
+url = "https://www.uniprot.org/"
+enabled = true
+metadata_urls = [
+    "https://ftp.uniprot.org/pub/databases/uniprot/current_release/README",
+]
+download_urls = [
+    "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/",
+]
+
+[[knowledge_bases]]
+name = "UniProt Disease"
+title = "UniProt Disease"
+url = "https://www.uniprot.org/"
+enabled = true
+metadata_urls = [
+    "https://ftp.uniprot.org/pub/databases/uniprot/current_release/README",
+]
+download_urls = [
+    "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/",
+]
+
+[[knowledge_bases]]
+name = "WikiPathways"
+title = "WikiPathways"
+url = "https://www.wikipathways.org/index.php/WikiPathways"
+enabled = true
+metadata_urls = [
+    "https://www.wikipathways.org/about.html",
+    "https://www.wikipathways.org/cite.html",
+]
+download_urls = [
+    "https://www.wikipathways.org/download.html",
+    "https://data.wikipathways.org/current/",
+]
