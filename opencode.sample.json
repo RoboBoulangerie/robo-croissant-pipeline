@@ -114,14 +114,15 @@
       "type": "local",
       "enabled": true,
       "command": [
-        "nu",
+        "<home dir>/.cargo/bin/nu",
         "--no-history",
         "--mcp"
       ],
       "environment": {
-        "HOME": "",
-        "PATH": ""
-      }
+        "HOME": "<home dir>",
+        "PATH": "<home dir>/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+        "MCP_NU_MCP_TIMEOUT": "600"
+      },
     }
   }
 }
