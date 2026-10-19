@@ -10,8 +10,7 @@ Before starting, refer to the `.opencode/agents/subagent/master-planner.md` file
 
 # Objective
 
-Generate a complete Croissant Metadata JSON-LD file with strong validation, deterministic output, and clear reporting of
-assumptions for a single configured knowledge source. Include "distribution" and "recordSet" metadata based on a
+Generate a complete Croissant Metadata JSON-LD file with strong validation, deterministic output, and clear reporting of assumptions for a single configured knowledge source. Include "distribution" and "recordSet" metadata based on a
 complete list of available files to download.
 
 # Performance Metrics
@@ -60,10 +59,11 @@ Be sure to inform the user why the agent failed to continue if a failure occurre
 
 ## Step 2: resolve target knowledge source
 
-Resolve the target `knowledge_bases` entry from the `knowledge-bases.toml` file using environment variable `RCP_KB_NAME` value, then perform the following steps using only that selected entry.
+Resolve two inputs independently: (1) the path to a knowledge bases TOML file (`RCP_KB_INPUT`) and (2) the entry name in that file (`RCP_KB_NAME`). Each input may be supplied in the user's prompt or through its environment variable. Use a value explicitly supplied in the prompt when both are present; otherwise use the corresponding environment variable. Do not default to a particular file or entry.
 
-- Read `RCP_KB_NAME` from the environment.
-- Find the single `knowledge_bases` entry in `knowledge-bases.toml` whose `name` exactly matches `RCP_KB_NAME`.
+- If either input is missing or empty, report which input is needed and stop before initialization.
+- Read the specified TOML file and find exactly one `knowledge_bases` entry whose `name` matches the specified entry name exactly (case-sensitive). If the file cannot be read or parsed, or there is not exactly one match, report the issue and stop.
+- Read `metadata_urls` and `download_urls` from that entry as separate arrays of absolute HTTP(S) URLs. Report malformed or missing arrays or invalid URLs and stop; an empty array is valid and means no crawl roots for that category. Do not substitute the entry's `url` for either array.
 - Treat that matched record as the only source to process.
 - Do not iterate over all `knowledge_bases` entries.
 
@@ -81,7 +81,7 @@ Create a directory structure following this format: `./outputs/{name}/{run}/{tmp
 
 ## Step 4: Crawl and download files
 
-Using the `knowledge_bases` entry value from the `url` field and the `./outputs` value from the previous step, crawl the source webs    ite and download all relevant files into the `./outputs` directory.
+Use **every** URL in the selected entry's `metadata_urls` as a crawl root for all top-level Croissant fields **except** `distribution` and `recordSet`. Use **every** URL in `download_urls` as a separate crawl root to discover and download the files for `distribution` and to inspect their schemas for `recordSet`. Follow relevant in-scope links from each root. Do not use the entry's `url` as a crawl root or as a fallback when either array is empty. Keep the source URL for each discovered value or file; a URL listed in both arrays may serve both purposes. Download relevant files into `./outputs` from Step 3. If either array is empty or a root cannot be crawled, document the corresponding evidence gap in `dct:provenance` rather than borrowing evidence from the other category.
 
 There are two primary goals when downloading files from a web crawl:
 
@@ -90,14 +90,14 @@ There are two primary goals when downloading files from a web crawl:
 
 ### Crawl scope and traversal rules
 
-- Treat the configured `url` as a discovery root, not as the only page to inspect.
+- Treat every URL in each configured array as a discovery root, not as the only page to inspect. Explore all roots in both arrays, even when they are on different hosts.
 - Recursively traverse all publicly accessible descendant pages and container pages that are in scope for that knowledge source.
-- If the configured `url` is a listing page, index page, catalog page, release page, graph registry page, dataset registry page, or directory-style page, continue traversing into its child pages until no new in-scope dataset or knowledge graph assets are discovered.
+- If a configured download root is a listing page, index page, catalog page, release page, graph registry page, dataset registry page, or directory-style page, continue traversing into its child pages until no new in-scope dataset or knowledge graph assets are discovered.
 - When a root page contains multiple sibling graph, dataset, release, version, or export branches, traverse all of them, not just the first matching branch.
 - Do not stop at one level of depth. Continue descending through nested paths such as version folders, `latest`, `current`, `release`, `releases`, `archive`, `downloads`, `files`, `data`, `dumps`, `exports`, `graphs`, `kg`, `knowledge-graph`, `ontology`, or similarly named subpaths when they appear relevant.
 - Treat human-readable index pages and machine-generated directory listings as navigational containers to be explored, not as terminal pages.
-- Stay within the same source scope by default:
-  - prefer descendant paths on the same host and under the same root path prefix as the configured `url`
+- Stay within the same knowledge source scope for each root by default:
+  - prefer relevant linked pages on the same host, including descendant paths under that root's path prefix
   - also allow direct download links on trusted linked download hosts or CDNs when those links are clearly presented by an in-scope source page as official downloadable assets
 - Skip pages or files that require authentication, credentials, tokens, or other access restrictions.
 
@@ -221,7 +221,7 @@ If a page appears to be a container for multiple graph or dataset families, enum
 
 ### Download completeness requirement
 
-The download set for Step 4 should be as complete as reasonably possible for the configured knowledge source's public data holdings that are discoverable from the configured root URL and its in-scope descendant pages.
+The download set for Step 4 should be as complete as reasonably possible for the configured knowledge source's public data holdings discoverable from **all** `download_urls` roots and their in-scope linked pages.
 
 For Croissant generation:
 
@@ -238,7 +238,7 @@ For Croissant generation:
 
 ## Step 5: generate croissant metadata file
 
-Review the files in `./outputs` and generate a file called `croissant.json` in the `./outputs` directory that is an as complete Croissant Metadata JSON file as possible. Include "distribution" and "recordSet" metadata based on a complete list of downloadable data files.  
+Review the crawl evidence and files in `./outputs` and generate a file called `croissant.json` in the `./outputs` directory that is an as complete Croissant Metadata JSON file as possible. Derive top-level fields other than `distribution` and `recordSet` from the `metadata_urls` crawl; derive `distribution` and `recordSet` only from the complete set of files and schema evidence found through the `download_urls` crawl. Do not treat a file linked only from a metadata crawl as a distribution asset unless it is also discovered through a download root.
 
 ### Schema/Header Detection
 
@@ -305,7 +305,7 @@ Use the following rules to produce the `persistent_fields.json` file:
     - `value`
       - a string or array of strings derived from the final `croissant.json` exactly as written
     - `url`
-      - a reference to the specific page or URL the information came from, not a local file path
+      - a reference to the specific page or URL the information came from in the appropriate `metadata_urls` or `download_urls` crawl, not a local file path
     - `confidence` 
       - a score with a range between 0.0 and 1.0 reflecting how confident the agent is in reconciling the value from the actual URL.
 
@@ -341,7 +341,7 @@ Review the standard output from the `mlcroissant` command and perform the follow
      - `license`
        - re-fetch the license/terms page and confirm the license URL or verbatim policy text matches
      - `name` and `description` 
-       - re-fetch the homepage and confirm these are exact quotes, not paraphrases
+       - re-fetch the relevant page reached from `metadata_urls` and confirm these are exact quotes, not paraphrases
      - `conditionsOfAccess`
        - re-fetch the terms page and confirm any quoted policy language is verbatim
 
@@ -351,11 +351,11 @@ For each field fetch the source URL, then find the relevant sentence or paragrap
 
 ### Missing Required Fields
 
-Inspect every top-level field required by the Croissant specification and ensure that it is present and non-empty. Treat a missing property, `null`, an empty or whitespace-only string, or an empty array or object as missing. Populate required metadata from authoritative pages within the configured knowledge source whenever possible, and do not invent source-specific values.
+Inspect every top-level field required by the Croissant specification and ensure that it is present and non-empty. Treat a missing property, `null`, an empty or whitespace-only string, or an empty array or object as missing. Populate required top-level metadata other than `distribution` and `recordSet` from authoritative pages reached through `metadata_urls` whenever possible, and do not invent source-specific values.
 
-- `license`: Use the canonical URL for the license stated by the dataset source, such as `https://creativecommons.org/licenses/by/4.0/`. Verify that the selected URL identifies the exact license and version stated by the source. If no license can be found after checking the dataset homepage, terms, license, documentation, citation, and download pages, set `license` to the literal string `Not Found` and explain the search limitation in `dct:provenance`. Do not infer a license from unrelated datasets, software repositories, or general website copyright text.
+- `license`: Use the canonical URL for the license stated by the dataset source, such as `https://creativecommons.org/licenses/by/4.0/`. Verify that the selected URL identifies the exact license and version stated by the source. If no license can be found after checking the relevant homepage, terms, license, documentation, and citation pages reached through `metadata_urls`, set `license` to the literal string `Not Found` and explain the search limitation in `dct:provenance`. Do not infer a license from unrelated datasets, software repositories, or general website copyright text.
 - `conformsTo`: Set the value to exactly `http://mlcommons.org/croissant/1.1`.
-- `url`: Set the value to the canonical dataset homepage URL. Prefer the dataset-specific landing page published by the authoritative source rather than a download URL, individual file URL, API endpoint, search result, repository, or general organization homepage. Follow redirects and store the final canonical URL when it remains the authoritative dataset homepage.
+- `url`: Set the value to the canonical dataset homepage URL supported by the `metadata_urls` crawl. Prefer the dataset-specific landing page published by the authoritative source rather than a download URL, individual file URL, API endpoint, search result, repository, or general organization homepage. Follow redirects and store the final canonical URL when it remains the authoritative dataset homepage; do not copy the entry's `url` without evidence from `metadata_urls`.
 - Re-check all other top-level required fields and populate any missing values with source-supported metadata. Preserve exact source text where the field validation rules require it, and record any unresolved required metadata in `dct:provenance`.
 - Do not complete Step 8 while a required field remains empty. If no source-supported value can be established and this section does not define a fallback, mark the fix as failed and report the unresolved field rather than inventing a value.
 - Re-run the official Croissant validator after repairing required fields and fix all resulting errors. Include the number of required fields checked, empty fields found, fields populated, `license` values set to `Not Found`, and additional validator runs or fix cycles in the Step 8 performance metrics.

@@ -20,16 +20,17 @@ uv venv
 uv pip install mlcroissant requests
 ```
 
-The agent's preflight checks for `.venv/bin/mlcroissant` and `RCP_KB_NAME`. The Python quality validator also needs `requests` (installed above). Nushell's built-in SQLite support creates the database; the `sqlite3` command-line program is not required.
+The agent's preflight checks for `.venv/bin/mlcroissant`. The Python quality validator also needs `requests` (installed above). Nushell's built-in SQLite support creates the database; the `sqlite3` command-line program is not required.
 
 ## Generate metadata
 
-`knowledge-bases.toml` contains the source inventory. Its `name` values select a source (case-sensitive); `enabled = true` determines which sources the batch script and database builder process. A source site may require access or be unavailable even when enabled.
+`knowledge-bases.toml` contains the source inventory. Its `name` values select a source (case-sensitive); `enabled = true` determines which sources the batch script and database builder process. A source site may require access or be unavailable even when enabled. The agent requires a TOML file path and an entry name; provide each via `RCP_KB_INPUT` and `RCP_KB_NAME` respectively, or in the prompt. Prompt values override environment values independently.
 
 Generate metadata for one source:
 
 ```sh
-RCP_KB_NAME=CTD opencode run --agent croissant-metadata-generator "run"
+RCP_KB_INPUT=knowledge-bases.toml RCP_KB_NAME=CTD opencode run --agent croissant-metadata-generator "run"
+opencode run --agent croissant-metadata-generator "Use knowledge-bases.toml; entry name: CTD"
 ```
 
 To run the agent once per enabled sources:
