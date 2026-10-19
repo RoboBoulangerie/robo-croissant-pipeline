@@ -2,12 +2,6 @@
 
 def main [] {
 
-    # check for RCP_KB_NAME environment variable
-    if not ("RCP_KB_NAME" in $env) {
-        echo """Please prefix the command with 'RCP_KB_NAME=<name from knowledge-bases.toml file>'"""
-        exit 1
-    }
-
     # check mlcroissant
     let mlcroissant_binary_exists = ".venv/bin/mlcroissant" | path exists
 
