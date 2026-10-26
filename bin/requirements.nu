@@ -8,10 +8,10 @@ def main [] {
     let mlcroissant_binary_exists = ".venv/bin/mlcroissant" | path exists
 
     if not $mlcroissant_binary_exists {
-        print """Please run the following:
-        uv venv
-        source .venv/bin/activate
-        uv pip install mlcroissant"""
+        print "Please run the following:
+    uv venv
+    source .venv/bin/activate
+    uv pip install mlcroissant"
         $ok = false
     }
 

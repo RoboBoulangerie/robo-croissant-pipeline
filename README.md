@@ -41,15 +41,15 @@ nu ./bin/run_main_agent.nu --harness pi
 
 ### Choosing a harness
 
-The agent prompts live in `agents/` as plain Markdown. `bin/run_agent.nu <agent> [task]` runs one of them under the harness named by `--harness` (or `RCP_HARNESS`), defaulting to `opencode`. `--model` (or `RCP_MODEL`) is passed through in the harness's own format; without it the harness's default model is used. `--dry-run` prints the command without running it. `run_main_agent.nu` and `run_comparisons.nu` accept the same `--harness` and `--model` flags.
+The agent prompts live in `agents/` as plain Markdown. `bin/run_agent.nu <agent> [task]` runs one of them under the harness named by `--harness` (or `RCP_HARNESS`), defaulting to `opencode`. `--model` (or `RCP_MODEL`) is passed through in the harness's own format; without it the harness's default model is used. `--dry-run` prints the command without running it; run it with no agent name to list the available agents. `run_main_agent.nu` and `run_comparisons.nu` accept the same `--harness` and `--model` flags.
 
 | Harness | Command run by `run_agent.nu` | Model setup |
 | --- | --- | --- |
 | `opencode` | `opencode run --agent <agent> <task>` | `opencode.json` (see above). `.opencode/agents/*.md` are symlinks into `agents/`, so `opencode run --agent croissant-metadata-generator "run"` also still works directly. |
 | `pi` | `pi -p --no-session --append-system-prompt <prompt> <task>` | `/login` inside `pi`, or a custom provider (e.g. Azure) in `~/.pi/agent/models.json`; select it with `--model provider/id`. |
-| `claude` | `claude -p --append-system-prompt-file <prompt> --permission-mode bypassPermissions <task>` | `claude` login or `ANTHROPIC_API_KEY`. |
+| `claude` | `claude -p --append-system-prompt <prompt> --permission-mode bypassPermissions <task>` | `claude` login or `ANTHROPIC_API_KEY`. |
 
-For `pi` and `claude`, the launcher strips the YAML frontmatter from `agents/<agent>.md` into a temporary file and appends it to the harness's system prompt. Both run without permission prompts (Pi has none; Claude Code needs `bypassPermissions` to work non-interactively), so the agent can run arbitrary shell commands and downloads: run it in a container or sandbox you are comfortable with. The prompts only assume shell, file read, and file write tools; when no web-fetch tool exists the agent uses `curl`.
+For `pi` and `claude`, the launcher strips the YAML frontmatter from `agents/<agent>.md` and passes the rest inline to append to the harness's system prompt. Both run without permission prompts (Pi has none; Claude Code needs `bypassPermissions` to work non-interactively), so the agent can run arbitrary shell commands and downloads: run it in a container or sandbox you are comfortable with. The prompts only assume shell, file read, and file write tools; when no web-fetch tool exists the agent uses `curl`.
 
 To support another harness, add a case to the `match $harness` blocks in `bin/run_agent.nu`.
 

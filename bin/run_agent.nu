@@ -6,7 +6,7 @@
 # The model is chosen by --model, then $env.RCP_MODEL; if neither is set the
 # harness's own default model is used.
 def main [
-    agent: string             # agent name, e.g. croissant-metadata-generator
+    agent?: string            # agent name, e.g. croissant-metadata-generator
     task: string = "run"      # user prompt passed to the agent
     --harness: string         # opencode | pi | claude
     --model: string           # model id in the harness's own format
@@ -15,7 +15,16 @@ def main [
     let harness = $harness | default ($env.RCP_HARNESS? | default "opencode")
     let model = $model | default ($env.RCP_MODEL? | default "")
     let repo_root = $env.FILE_PWD | path dirname
-    let prompt_path = $repo_root | path join "agents" $"($agent).md"
+    let agents_dir = $repo_root | path join "agents"
+
+    if $agent == null {
+        let names = ls ($agents_dir | path join "*.md" | into glob) | get name | path parse | get stem | sort
+        print -e "Usage: nu ./bin/run_agent.nu <agent> [task] [--harness opencode|pi|claude] [--model <id>] [--dry-run]"
+        print -e $"Available agents: ($names | str join ', ')"
+        exit 2
+    }
+
+    let prompt_path = $agents_dir | path join $"($agent).md"
 
     if not ($prompt_path | path exists) {
         print -e $"Unknown agent '($agent)': ($prompt_path) not found"
@@ -38,29 +47,26 @@ def main [
     }
 
     # OpenCode reads .opencode/agents/<agent>.md (a symlink into ./agents) itself;
-    # the other harnesses get the prompt body appended to their system prompt.
-    let prompt_file = if $harness == "opencode" { null } else {
-        let file = mktemp --tmpdir --suffix .md $"rcp-($agent).XXXXXX"
-        strip_frontmatter $prompt_path | save -f $file
-        $file
-    }
+    # the other harnesses get the prompt body appended to their system prompt as
+    # inline text, so there is no temp file to clean up.
+    let prompt = if $harness == "opencode" { "" } else { strip_frontmatter $prompt_path }
 
     let model_args = if ($model | is-empty) { [] } else { ["--model" $model] }
     let cmd_args = match $harness {
         "opencode" => (["run" "--agent" $agent] ++ $model_args ++ [$task])
-        "pi" => (["-p" "--no-session" "--append-system-prompt" $prompt_file] ++ $model_args ++ [$task])
-        "claude" => (["-p" "--append-system-prompt-file" $prompt_file "--permission-mode" "bypassPermissions"] ++ $model_args ++ [$task])
+        "pi" => (["-p" "--no-session" "--append-system-prompt" $prompt] ++ $model_args ++ [$task])
+        "claude" => (["-p" "--append-system-prompt" $prompt "--permission-mode" "bypassPermissions"] ++ $model_args ++ [$task])
     }
 
     if $dry_run {
-        print ([$bin] ++ $cmd_args | str join " ")
+        let shown = $cmd_args | each {|arg| if $arg == $prompt and $prompt != "" { $"<body of agents/($agent).md>" } else { $arg } }
+        print ([$bin] ++ $shown | str join " ")
         return
     }
 
-    try { run-external $bin ...$cmd_args }
-    let code = $env.LAST_EXIT_CODE
-    if $prompt_file != null { rm -f $prompt_file }
-    exit $code
+    # Run the harness as the script's last command so its exit code becomes
+    # this script's exit code (nu 0.99 resets $env.LAST_EXIT_CODE inside try/do).
+    run-external $bin ...$cmd_args
 }
 
 # Return a markdown file's contents without a leading YAML frontmatter block.
