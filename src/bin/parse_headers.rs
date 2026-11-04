@@ -11,6 +11,8 @@ use chrono::{DateTime, NaiveDate, NaiveDateTime};
 use flate2::read::MultiGzDecoder;
 use noodles::{bam, bcf, sam, vcf};
 use polars::{io::avro::AvroReader, io::ipc::IpcReader, io::parquet::read::ParquetReader, prelude::*};
+use polars::frame::column;
+// use polars::prelude::ParquetStatistics::Column;
 use serde::Serialize;
 
 const SAM_COLUMNS: &[(&str, &str)] = &[
@@ -179,6 +181,27 @@ fn merge_datatypes(current: Option<&'static str>, next: Option<&'static str>) ->
     }
 }
 
+fn parse_gct_headers(path: &Path) -> Result<Vec<Column>, Box<dyn Error>> {
+
+    let file = File::open(path)?;
+    let input: Box<dyn io::Read> = if path.extension().is_some_and(|ext| ext == "gz") { Box::new(MultiGzDecoder::new(file)) } else { Box::new(file) };
+    let mut lines = BufReader::new(input).lines();
+
+    lines.next();
+    lines.next();
+
+    // Line 3: Column Sample Names
+    let header_str = lines.next().ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "Missing headers"))??;
+    let mut headers: Vec<String> = header_str.split('\t').map(String::from).collect();
+    let samples = headers.split_off(2); // Skip "Name" and "Description"
+
+    let mut columns = vec![Column::new(headers.get(0).unwrap(), "string") , Column::new(headers.get(1).unwrap(), "string")];
+    samples.iter().for_each(|s| columns.push(Column::new(s, "float")));
+
+    Ok(columns)
+}
+
+
 fn parse_delimited_headers(path: &Path, delimiter: Option<char>) -> Result<Vec<Column>, Box<dyn Error>> {
     let (declared_header, offset, first_line) = inspect_preamble(path)?;
     let first_line = first_line.ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "file contains no data rows"))?;
@@ -315,6 +338,8 @@ fn parse_jsonl_schema(path: &Path) -> Result<JsonlSchema, Box<dyn Error>> {
 
 fn parse_headers(path: &Path) -> Result<Vec<Column>, Box<dyn Error>> {
     match path.extension().and_then(|ext| ext.to_str()) {
+        Some("gct") => parse_gct_headers(path),
+        Some("gz") if path.with_extension("").extension().is_some_and(|ext| ext == "gct") => parse_gct_headers(path),
         Some("csv") => parse_delimited_headers(path, Some(',')),
         Some("tsv") | Some("tab") => parse_delimited_headers(path, Some('\t')),
         Some("txt") => parse_delimited_headers(path, None),
@@ -423,6 +448,49 @@ mod tests {
             fs::remove_file(path)?;
         }
 
+        Ok(())
+    }
+
+    #[test]
+    fn extracts_gct_headers() -> Result<(), Box<dyn Error>> {
+        let path = env::temp_dir().join(format!("parse_headers-{}.gct", process::id()));
+        fs::write(
+            &path,
+            "#1.2\n1\t2\nName\tDescription\tGTEX-1117F-0005-SM-HL9SH\tGTEX-111CU-0005-SM-GJ3PH\nENSG000001\tGENE1\t1.5\t2.0\n",
+        )?;
+
+        assert_eq!(
+            parse_gct_headers(&path)?,
+            vec![
+                Column::new("Name", "string"),
+                Column::new("Description", "string"),
+                Column::new("GTEX-1117F-0005-SM-HL9SH", "float"),
+                Column::new("GTEX-111CU-0005-SM-GJ3PH", "float"),
+            ]
+        );
+
+        fs::remove_file(path)?;
+        Ok(())
+    }
+
+    #[test]
+    fn extracts_gzipped_gct_headers() -> Result<(), Box<dyn Error>> {
+        let path = env::temp_dir().join(format!("parse_headers-{}.gct.gz", process::id()));
+        let mut encoder = GzEncoder::new(File::create(&path)?, Compression::default());
+        encoder.write_all(b"#1.2\n1\t2\nName\tDescription\tGTEX-1117F-0005-SM-HL9SH\tGTEX-111CU-0005-SM-GJ3PH\nENSG000001\tGENE1\t1.5\t2.0\n")?;
+        encoder.finish()?;
+
+        assert_eq!(
+            parse_headers(&path)?,
+            vec![
+                Column::new("Name", "string"),
+                Column::new("Description", "string"),
+                Column::new("GTEX-1117F-0005-SM-HL9SH", "float"),
+                Column::new("GTEX-111CU-0005-SM-GJ3PH", "float"),
+            ]
+        );
+
+        fs::remove_file(path)?;
         Ok(())
     }
 
