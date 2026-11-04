@@ -6,14 +6,16 @@ name = "Animal TFDB"
 title = "Animal TFDB"
 url = "http://bioinfo.life.hust.edu.cn/AnimalTFDB/"
 enabled = false
-metadata_urls = []
-download_urls = []
+js_crawling_required = false
+metadata_urls = ["https://guolab.wchscu.cn/AnimalTFDB4/#/"]
+download_urls = ["https://guolab.wchscu.cn/AnimalTFDB4/#/Download"]
 
 [[knowledge_bases]]
 name = "Antibodypedia"
 title = "Antibodypedia"
 url = "https://www.antibodypedia.com/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.antibodypedia.com/",
     "https://www.antibodypedia.com/text/about_us",
@@ -26,6 +28,7 @@ name = "ARCHS4"
 title = "ARCHS4"
 url = "https://maayanlab.cloud/archs4/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://maayanlab.cloud/archs4/",
 ]
@@ -42,6 +45,7 @@ name = "BioPlex Protein-Protein Interactions"
 title = "BioPlex Protein-Protein Interactions"
 url = "https://bioplex.hms.harvard.edu/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://bioplex.hms.harvard.edu/",
 ]
@@ -54,10 +58,12 @@ name = "CCLE"
 title = "CCLE"
 url = "https://portals.broadinstitute.org/ccle"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://portals.broadinstitute.org/ccle",
 ]
 download_urls = [
+    #"https://depmap.org/portal/data_page/?tab=allData",  # cloudflare restriction
     "https://sites.broadinstitute.org/ccle/datasets",
 ]
 
@@ -66,6 +72,7 @@ name = "Cell Surface Protein Atlas"
 title = "Cell Surface Protein Atlas"
 url = "http://wlab.ethz.ch/cspa/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://wlab.ethz.ch/cspa/",
 ]
@@ -78,6 +85,7 @@ name = "ChEMBL"
 title = "ChEMBL"
 url = "https://www.ebi.ac.uk/chembl/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.ebi.ac.uk/chembl/",
 ]
@@ -91,6 +99,7 @@ name = "ClinVar"
 title = "ClinVar"
 url = "https://www.ncbi.nlm.nih.gov/clinvar/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.ncbi.nlm.nih.gov/clinvar/intro/",
 ]
@@ -105,6 +114,7 @@ title = "Consensus Expression Values"
 url = ""
 notes = "No external source URL provided by Pharos."
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -113,6 +123,7 @@ name = "CTD"
 title = "CTD"
 url = "https://ctdbase.org/"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -121,6 +132,7 @@ name = "Dark Kinase Knowledgebase"
 title = "Dark Kinase Knowledgebase"
 url = "https://darkkinome.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://darkkinome.org/",
 ]
@@ -133,6 +145,7 @@ name = "Disease Ontology"
 title = "Disease Ontology"
 url = "http://www.disease-ontology.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://disease-ontology.org/",
     "https://disease-ontology.org/resources/citing-do/",
@@ -145,8 +158,10 @@ download_urls = [
 name = "DisGeNET"
 title = "DisGeNET"
 url = "http://www.disgenet.org/"
+# Looks like this site requires a JS enabled browser and login to get at data
 enabled = false
-metadata_urls = []
+js_crawling_required = false
+metadata_urls = ["https://disgenet.com/about"]
 download_urls = []
 
 [[knowledge_bases]]
@@ -154,6 +169,7 @@ name = "Drug Central - ChEMBL"
 title = "Drug Central - ChEMBL"
 url = "http://drugcentral.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://drugcentral.org/",
     "https://drugcentral.org/about",
@@ -167,6 +183,7 @@ name = "Drug Central - Drug Label"
 title = "Drug Central - Drug Label"
 url = "http://drugcentral.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://drugcentral.org/",
     "https://drugcentral.org/about",
@@ -180,6 +197,7 @@ name = "Drug Central - GtoPdb"
 title = "Drug Central - GtoPdb"
 url = "http://drugcentral.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://drugcentral.org/",
     "https://drugcentral.org/about",
@@ -193,6 +211,7 @@ name = "Drug Central - Kegg Drug"
 title = "Drug Central - Kegg Drug"
 url = "http://drugcentral.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://drugcentral.org/",
     "https://drugcentral.org/about",
@@ -206,6 +225,7 @@ name = "Drug Central - Scientific Literature"
 title = "Drug Central - Scientific Literature"
 url = "http://drugcentral.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://drugcentral.org/",
     "https://drugcentral.org/about",
@@ -219,6 +239,7 @@ name = "Drug Central Indication"
 title = "Drug Central Indication"
 url = "http://drugcentral.org"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://drugcentral.org",
     "https://drugcentral.org/about",
@@ -232,6 +253,7 @@ name = "Drug Target Ontology IDs and Classifications"
 title = "Drug Target Ontology IDs and Classifications"
 url = "http://drugtargetontology.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://drugtargetontology.org/",
     "https://drugtargetontology.org/about.html",
@@ -240,11 +262,13 @@ download_urls = [
     "https://github.com/DrugTargetOntology/DTO",
 ]
 
+# I believe this has been retired and moved to ftp://ftp.ebi.ac.uk/pub/databases/embl/patent/ and/or ftp://ftp.ebi.ac.uk/pub/databases/fastafiles/patent/
 [[knowledge_bases]]
 name = "EBI Patent Counts"
 title = "EBI Patent Counts"
 url = "https://www.ebi.ac.uk/patentdata/"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -253,6 +277,7 @@ name = "Ensembl Gene IDs"
 title = "Ensembl Gene IDs"
 url = "https://uswest.ensembl.org/index.html"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.ensembl.org/",
 ]
@@ -266,6 +291,7 @@ name = "eRAM"
 title = "eRAM"
 url = "http://www.unimd.org/eram/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://www.unimd.org/eram/",
 ]
@@ -278,6 +304,7 @@ name = "Expression Atlas"
 title = "Expression Atlas"
 url = "https://www.ebi.ac.uk/gxa/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.ebi.ac.uk/gxa/about.html",
     "https://www.ebi.ac.uk/gxa/licence.html",
@@ -292,6 +319,7 @@ name = "Gene Ontology"
 title = "Gene Ontology"
 url = "http://geneontology.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://geneontology.org/",
     "https://geneontology.org/docs/go-citation-policy/",
@@ -303,34 +331,46 @@ download_urls = [
 
 [[knowledge_bases]]
 name = "GENEVA"
-title = "GENEVA"
+title = "GENe Expression Variance Analysis"
 url = "https://genevatool.org/"
+# returns as forbidden
+# url = "https://bio.tools/geneva"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
+# this KB may require JS enabled download
 [[knowledge_bases]]
 name = "GlyGen"
 title = "GlyGen"
 url = "https://glygen.org/"
 enabled = false
-metadata_urls = []
-download_urls = []
+js_crawling_required = false
+metadata_urls = ["https://glygen.org/"]
+download_urls = ["https://data.glygen.org/"]
 
 [[knowledge_bases]]
 name = "GTEx"
 title = "GTEx"
-url = ""
+url = "https://gtexportal.org/home/"
 notes = "No external source URL provided by Pharos."
 enabled = false
-metadata_urls = []
-download_urls = []
+js_crawling_required = true
+metadata_urls = ["https://gtexportal.org/home/", "https://gtexportal.org/home/license", "https://gtexportal.org/home/faq#citePortal"]
+download_urls = [
+    "https://gtexportal.org/home/downloads/adult-gtex",
+    "https://gtexportal.org/home/downloads/egtex/methylation",
+    "https://gtexportal.org/home/downloads/developmental-gtex",
+    "https://gtexportal.org/home/downloads/nhp-dgtex"
+]
 
 [[knowledge_bases]]
 name = "Guide to Pharmacology"
 title = "Guide to Pharmacology"
 url = "https://www.guidetopharmacology.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.guidetopharmacology.org/",
 ]
@@ -341,6 +381,7 @@ name = "GWAS Catalog"
 title = "GWAS Catalog"
 url = "https://www.ebi.ac.uk/gwas/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.ebi.ac.uk/gwas/",
     "https://www.ebi.ac.uk/gwas/docs/citation/",
@@ -354,6 +395,7 @@ name = "Harmonizome"
 title = "Harmonizome"
 url = "http://amp.pharm.mssm.edu/Harmonizome/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://amp.pharm.mssm.edu/Harmonizome/",
 ]
@@ -366,6 +408,7 @@ name = "HGNC"
 title = "HGNC"
 url = "https://www.genenames.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.genenames.org/",
 ]
@@ -379,6 +422,7 @@ name = "HomoloGene"
 title = "HomoloGene"
 url = "https://www.ncbi.nlm.nih.gov/homologene"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://ftp.ncbi.nlm.nih.gov/pub/HomoloGene/README",
 ]
@@ -392,6 +436,7 @@ title = "HPA Protein"
 url = ""
 notes = "No external source URL provided by Pharos."
 enabled = false
+js_crawling_required = false
 metadata_urls = [
     "https://www.proteinatlas.org/about",
     "https://www.proteinatlas.org/about/licence",
@@ -407,6 +452,7 @@ title = "HPA RNA"
 url = ""
 notes = "No external source URL provided by Pharos."
 enabled = false
+js_crawling_required = false
 metadata_urls = [
     "https://www.proteinatlas.org/about",
     "https://www.proteinatlas.org/about/licence",
@@ -422,6 +468,7 @@ title = "HPM Protein"
 url = ""
 notes = "No external source URL provided by Pharos."
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -429,7 +476,7 @@ download_urls = []
 name = "Human Cell Atlas Compartments"
 title = "Human Cell Atlas Compartments"
 url = "https://www.humancellatlas.org/"
-enabled = true
+enabled = false
 metadata_urls = [
     "https://www.humancellatlas.org/",
     "https://data.humancellatlas.org/about",
@@ -441,6 +488,7 @@ name = "Human Cell Atlas Expression"
 title = "Human Cell Atlas Expression"
 url = "https://www.humancellatlas.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.humancellatlas.org/",
     "https://data.humancellatlas.org/about",
@@ -452,6 +500,7 @@ name = "Human Protein Atlas"
 title = "Human Protein Atlas"
 url = "https://www.proteinatlas.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.proteinatlas.org/",
     "https://www.proteinatlas.org/about/licence",
@@ -465,6 +514,7 @@ name = "Human Proteome Map"
 title = "Human Proteome Map"
 url = "https://www.humanproteomemap.org/"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -474,6 +524,7 @@ title = "IDG Eligible Targets List"
 url = ""
 notes = "No external source URL provided by Pharos."
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -483,6 +534,7 @@ title = "IDG Families"
 url = ""
 notes = "No external source URL provided by Pharos."
 enabled = false
+js_crawling_required = false
 metadata_urls = [
     "https://opendata.ncats.nih.gov/public/pharos/pharos400_readme.html",
 ]
@@ -495,6 +547,7 @@ name = "IMPC Mouse Clones"
 title = "IMPC Mouse Clones"
 url = "https://www.mousephenotype.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.mousephenotype.org/",
     "https://www.mousephenotype.org/about-impc/",
@@ -509,6 +562,7 @@ name = "IMPC Phenotypes"
 title = "IMPC Phenotypes"
 url = "https://www.mousephenotype.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.mousephenotype.org/",
     "https://www.mousephenotype.org/about-impc/",
@@ -519,10 +573,11 @@ download_urls = [
 ]
 
 [[knowledge_bases]]
-name = "JAX/MGI Mouse/Human Orthology Phenotypes"
-title = "JAX/MGI Mouse/Human Orthology Phenotypes"
+name = "MGI"
+title = "Mouse Genome Informatics"
 url = "http://www.informatics.jax.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://www.informatics.jax.org/",
     "https://www.informatics.jax.org/mgihome/other/citation.shtml",
@@ -536,6 +591,7 @@ name = "JensenLab COMPARTMENTS"
 title = "JensenLab COMPARTMENTS"
 url = "https://compartments.jensenlab.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://compartments.jensenlab.org/About",
 ]
@@ -548,6 +604,7 @@ name = "JensenLab Knowledge UniProtKB-KW"
 title = "JensenLab Knowledge UniProtKB-KW"
 url = "https://diseases.jensenlab.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://diseases.jensenlab.org/About",
 ]
@@ -560,6 +617,7 @@ name = "JensenLab PubMed Text-mining Scores"
 title = "JensenLab PubMed Text-mining Scores"
 url = "https://diseases.jensenlab.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://diseases.jensenlab.org/About",
 ]
@@ -572,6 +630,7 @@ name = "JensenLab Text Mining"
 title = "JensenLab Text Mining"
 url = "https://diseases.jensenlab.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://diseases.jensenlab.org/About",
 ]
@@ -585,6 +644,7 @@ title = "JensenLab TISSUES"
 url = ""
 notes = "No external source URL provided by Pharos."
 enabled = false
+js_crawling_required = false
 metadata_urls = [
     "https://tissues.jensenlab.org/About",
 ]
@@ -598,6 +658,7 @@ title = "KEGG Distances"
 url = ""
 notes = "No external source URL provided by Pharos."
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -607,6 +668,7 @@ title = "KEGG Nearest Tclins"
 url = ""
 notes = "No external source URL provided by Pharos."
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -615,6 +677,7 @@ name = "KEGG Pathways"
 title = "KEGG Pathways"
 url = "https://www.genome.jp/kegg/pathway.html"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.genome.jp/kegg/pathway.html",
 ]
@@ -627,6 +690,7 @@ name = "LINCS"
 title = "LINCS"
 url = "http://www.lincsproject.org/LINCS/"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -635,6 +699,7 @@ name = "LINCS L1000 XRefs"
 title = "LINCS L1000 XRefs"
 url = "http://www.lincsproject.org/LINCS/"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -643,6 +708,7 @@ name = "LocSigDB"
 title = "LocSigDB"
 url = "http://genome.unmc.edu/LocSigDB/"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -651,6 +717,7 @@ name = "Monarch"
 title = "Monarch"
 url = "https://monarchinitiative.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://data.monarchinitiative.org/monarch-kg/latest/metadata.yaml",
 ]
@@ -664,6 +731,7 @@ name = "Monarch Ortholog Disease Associations"
 title = "Monarch Ortholog Disease Associations"
 url = "https://monarchinitiative.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://data.monarchinitiative.org/monarch-kg/latest/metadata.yaml",
 ]
@@ -677,6 +745,7 @@ name = "NCBI Gene"
 title = "NCBI Gene"
 url = "https://www.ncbi.nlm.nih.gov/gene/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://ftp.ncbi.nlm.nih.gov/gene/DATA/README",
 ]
@@ -690,6 +759,7 @@ title = "NCBI GI Numbers"
 url = ""
 notes = "No external source URL provided by Pharos."
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -708,6 +778,7 @@ name = "Orthologs"
 title = "Orthologs"
 url = "https://www.genenames.org/tools/hcop/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.genenames.org/tools/hcop/",
 ]
@@ -720,6 +791,7 @@ name = "P-HIPSTer Viral PPIs"
 title = "P-HIPSTer Viral PPIs"
 url = "http://phipster.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://phipster.org/",
 ]
@@ -730,6 +802,7 @@ name = "PANTHER Protein Classes"
 title = "PANTHER Protein Classes"
 url = "http://www.pantherdb.org/"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -738,6 +811,7 @@ name = "PathwayCommons"
 title = "PathwayCommons"
 url = "https://www.pathwaycommons.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.pathwaycommons.org/",
 ]
@@ -759,6 +833,7 @@ name = "PubChem CIDs"
 title = "PubChem CIDs"
 url = "https://pubchem.ncbi.nlm.nih.gov/"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = [
     "https://ftp.ncbi.nlm.nih.gov/pubchem/Compound/",
@@ -769,6 +844,7 @@ name = "PubMed"
 title = "PubMed"
 url = "https://pubmed.ncbi.nlm.nih.gov/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://pubmed.ncbi.nlm.nih.gov/",
     "https://pubmed.ncbi.nlm.nih.gov/about/",
@@ -782,6 +858,7 @@ name = "PubTator Text-mining Scores"
 title = "PubTator Text-mining Scores"
 url = "https://www.ncbi.nlm.nih.gov/research/pubtator/"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = [
     "https://ftp.ncbi.nlm.nih.gov/pub/lu/PubTator3/",
@@ -792,6 +869,7 @@ name = "RCSB Protein Data Bank"
 title = "RCSB Protein Data Bank"
 url = "https://www.rcsb.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.rcsb.org/",
     "https://www.rcsb.org/pages/policies",
@@ -806,6 +884,7 @@ name = "Reactome Pathways"
 title = "Reactome Pathways"
 url = "https://reactome.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://reactome.org/",
     "https://reactome.org/license",
@@ -820,6 +899,7 @@ name = "Reactome Protein-Protein Interactions"
 title = "Reactome Protein-Protein Interactions"
 url = "https://reactome.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://reactome.org/",
     "https://reactome.org/license",
@@ -834,6 +914,7 @@ name = "RESOLUTE"
 title = "RESOLUTE"
 url = "https://re-solute.eu/"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -842,6 +923,7 @@ name = "RGD"
 title = "RGD"
 url = "https://rgd.mcw.edu/rgdweb/homepage/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://rgd.mcw.edu/rgdweb/homepage/",
     "https://rgd.mcw.edu/wg/about-us/",
@@ -855,6 +937,7 @@ name = "STRING IDs"
 title = "STRING IDs"
 url = "https://string-db.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://string-db.org/",
     "https://string-db.org/cgi/access?footer_active_subpage=licensing",
@@ -868,6 +951,7 @@ name = "STRINGDB"
 title = "STRINGDB"
 url = "https://string-db.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://string-db.org/",
     "https://string-db.org/cgi/access?footer_active_subpage=licensing",
@@ -877,10 +961,11 @@ download_urls = [
 ]
 
 [[knowledge_bases]]
-name = "Target Illumination GWAS Analytics (TIGA)"
-title = "Target Illumination GWAS Analytics (TIGA)"
+name = "TIGA"
+title = "Target Illumination GWAS Analytics"
 url = "https://unmtid-shinyapps.net/shiny/tiga/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://unmtid-shinyapps.net/shiny/tiga/",
 ]
@@ -894,6 +979,7 @@ name = "TIN-X Data"
 title = "TIN-X Data"
 url = "https://www.newdrugtargets.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.newdrugtargets.org/",
 ]
@@ -904,6 +990,7 @@ name = "TMHMM Predictions"
 title = "TMHMM Predictions"
 url = "https://www.uniprot.org/uniprot/"
 enabled = false
+js_crawling_required = false
 metadata_urls = []
 download_urls = []
 
@@ -912,6 +999,7 @@ name = "Transcription Factor Flags"
 title = "Transcription Factor Flags"
 url = "http://humantfs.ccbr.utoronto.ca/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "http://humantfs.ccbr.utoronto.ca/",
 ]
@@ -924,6 +1012,7 @@ name = "UniProt"
 title = "UniProt"
 url = "https://www.uniprot.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://ftp.uniprot.org/pub/databases/uniprot/current_release/README",
 ]
@@ -936,6 +1025,7 @@ name = "UniProt Disease"
 title = "UniProt Disease"
 url = "https://www.uniprot.org/"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://ftp.uniprot.org/pub/databases/uniprot/current_release/README",
 ]
@@ -948,6 +1038,7 @@ name = "WikiPathways"
 title = "WikiPathways"
 url = "https://www.wikipathways.org/index.php/WikiPathways"
 enabled = true
+js_crawling_required = false
 metadata_urls = [
     "https://www.wikipathways.org/about.html",
     "https://www.wikipathways.org/cite.html",
