@@ -17,30 +17,33 @@ complete list of available files to download.
 
 Capture execution metrics throughout the run and include them in the final summary.
 
-- Record a run-level start timestamp before Step 1 begins and a run-level end timestamp after Step 10 completes.
+- Record a run-level start timestamp before Step 1 begins and a run-level end timestamp after Step 9 completes.
 - For every numbered step, record:
   - step name
   - start timestamp
   - end timestamp
   - duration in seconds with at least millisecond precision when available
   - outcome: `success`, `warning`, or `failed`
-- For every step that changes the filesystem, compare the filesystem state immediately before and after that step and record:
+- For every step that changes the filesystem, track file operations throughout the step (including files created and deleted within Step 4.3) and record:
   - number of files created
   - number of files modified
   - number of files deleted
 - Count file changes across all files touched by the agent during the run, including generated outputs, downloaded files,
   temporary files, and database files.
 - Also capture useful step-specific counts when available, such as:
-  - number of files downloaded in Step 4
-  - total bytes downloaded in Step 4
+  - number of pages and links inventoried in Step 4.2
+  - number of files downloaded in Step 4.3
+  - total bytes downloaded in Step 4.3
   - number of data files included in `distribution`
   - number of `recordSet` entries generated
-  - number of validator runs and fix cycles in Step 7
+  - number of validator runs and fix cycles in Step 6
 - Maintain cumulative totals for the full run:
   - total duration
   - total files created
   - total files modified
   - total files deleted
+
+Report the same start/end times, duration, outcome, and file-operation counts separately for Steps 4.1, 4.2, and 4.3; include them in the Step 4 totals without double-counting.
 
 If a step fails, still record its partial metrics before exiting or retrying.
 
@@ -63,7 +66,8 @@ Resolve two inputs independently: (1) the path to a knowledge bases TOML file (`
 
 - If either input is missing or empty, report which input is needed and stop before initialization.
 - Read the specified TOML file and find exactly one `knowledge_bases` entry whose `name` matches the specified entry name exactly (case-sensitive). If the file cannot be read or parsed, or there is not exactly one match, report the issue and stop.
-- Read `metadata_urls` and `download_urls` from that entry as separate arrays of absolute HTTP(S) URLs. Report malformed or missing arrays or invalid URLs and stop; an empty array is valid and means no crawl roots for that category. Do not substitute the entry's `url` for either array.
+- Read `metadata_urls` and `download_urls` as separate arrays of absolute HTTP(S) URLs. Report malformed or missing arrays or invalid URLs and stop; an empty array is valid and means no crawl roots for that category. Do not substitute the entry's `url` for either array.
+- Read `js_crawling_required` from this entry as a boolean. If absent, use `false` for compatibility with entries that do not yet have the field; if present but not a boolean, report the issue and stop. Apply this one switch to both metadata and download page crawls.
 - Treat that matched record as the only source to process.
 - Do not iterate over all `knowledge_bases` entries.
 
@@ -79,18 +83,31 @@ Resolve two inputs independently: (1) the path to a knowledge bases TOML file (`
 
 Create a directory structure following this format: `./outputs/{name}/{run}/{tmp_dir}`.  Do not create a temporary directory in `/tmp`.  All generated scripts and/or Agent generated code should be placed in `./outputs`.  Do not inspect or use previous `run` directories.  For example, if the current `run` is `3`, then `1` and `2` are off limits. 
 
-## Step 4: Crawl and download files
+## Step 4: Generate Croissant metadata in three sequential sub-steps
 
-Use **every** URL in the selected entry's `metadata_urls` as a crawl root for all top-level Croissant fields **except** `distribution` and `recordSet`. Use **every** URL in `download_urls` as a separate crawl root to discover and download the files for `distribution` and to inspect their schemas for `recordSet`. Follow relevant in-scope links from each root. Do not use the entry's `url` as a crawl root or as a fallback when either array is empty. Keep the source URL for each discovered value or file; a URL listed in both arrays may serve both purposes. Download relevant files into `./outputs` from Step 3. If either array is empty or a root cannot be crawled, document the corresponding evidence gap in `dct:provenance` rather than borrowing evidence from the other category.
+Use every `metadata_urls` root only for top-level fields other than `distribution` and `recordSet`; use every `download_urls` root only for file discovery and file-derived metadata. Follow relevant in-scope links from each root. Do not use the entry's `url` as a crawl root or fallback when either array is empty. Keep the source URL for each discovered value or file; a URL listed in both arrays may serve both purposes. If an array is empty or a root cannot be crawled, record the corresponding evidence gap in `dct:provenance`, not evidence borrowed from the other category. Complete each sub-step and its artifact before starting the next.
 
-There are two primary goals when downloading files from a web crawl:
+For every HTTP(S) **page crawl**, including followed pages and later rechecks, use WebFetch when `js_crawling_required` is `false`. When it is `true`, from the repository root run `cargo run --quiet --bin js_enabled_crawl -- --url '<page-url>'` instead. Parse its JSON object: `html` is the rendered page content for verifying metadata and `links` contains the rendered page's absolute link URLs; `requested_url` identifies the page crawled. Follow relevant links using the same selected crawler. If the selected crawler fails, document the gap in `dct:provenance` instead of silently switching tools or inventing evidence. This switch is for crawling pages, not for downloading data files.
 
-1. satisfy the top-level metadata needed for a Croissant Metadata file, such as `name`, `description`, `keywords`, license, citation, and access conditions
-2. retrieve the complete set of publicly available dataset-like and knowledge-graph-like downloadable assets that should be represented in `distribution` and used to derive `recordSet` metadata
+### Step 4.1: Crawl `metadata_urls` and create top-level `croissant.json`
 
-### Crawl scope and traversal rules
+Crawl every `metadata_urls` root and its relevant in-scope pages for top-level metadata, including but not limited to `name`, `description`, `url`, `license`, `creator`, `citeAs`, `conformsTo`, `datePublished`, `version`, `conditionsOfAccess`, and `isLiveDataset` (and `keywords` when supported). Verify each populated source-specific value against its authoritative page and retain that page URL as evidence; do not guess missing values. Apply the required-field and license rules in Step 7 and the exact-text checks in Step 6 here, before file discovery. `conformsTo` is the Croissant 1.1 constant specified in Step 7, not a claim to extract from a source page. For optional fields without verifiable evidence, omit them and explain the gap in `dct:provenance`; if a required field cannot be satisfied under Step 7's rules, report the failure and do not proceed to Step 4.2.
 
-- Treat every URL in each configured array as a discovery root, not as the only page to inspect. Explore all roots in both arrays, even when they are on different hosts.
+Create and save `outputs/{name}/{run}/croissant.json` with the verified top-level metadata and initially empty `distribution` and `recordSet` arrays. Finish this sub-step only after all top-level fields have been checked, supported values verified, unresolved optional fields documented, and the file saved. Do not discover or download data files in this sub-step.
+
+### Step 4.2: Crawl `download_urls` and write `links.json`
+
+Crawl every `download_urls` root and its in-scope linked pages for qualifying downloadable files using the discovery and inclusion rules below. Do not download or parse the data files yet. Write valid JSON to `outputs/{name}/{run}/links.json` as an array of objects of the form `{ "source_url": "<page where the links were found>", "links": ["<direct downloadable URL>"] }`. Group links by the actual page or listing where they were found, not merely the starting root; for a direct file root, use that root as `source_url` and include the file URL in `links`. Preserve HTTP(S) URLs as verified, without inventing file URLs. Include every qualifying link found across all roots; the same asset may appear on multiple pages, but list it only once per page. If no qualifying links are found, save `[]` and document the gap in `croissant.json`'s `dct:provenance`. Save `links.json` before starting Step 4.3.
+
+For a rendered download page, keep the unfiltered `links` from `js_enabled_crawl` for traversal and for files with missing or unconventional extensions. Also run the crawler with the preferred file extensions below joined in a case-insensitive, end-anchored regex to identify known file links:
+
+`cargo run --quiet --bin js_enabled_crawl -- --url '<page-url>' --extension-regex '\.(gct|tsv|tab|txt|csv|json|jsonl|ndjson|xml|rdf|owl|obo|ttl|nt|nq|trig|n3|hdt|graphml|gml|xgmml|gpml|sif|gaf|gpad|gpi|assoc|parquet|avro|orc|feather|arrow|sqlite|db|duckdb|sql|h5|hdf5|biom|fasta|fa|fna|fsa|fastq|gff|gff3|gtf|bed|vcf|bcf|sam|bam|maf|gz|bgz|bz2|xz|zst|zip|tar|tgz|7z|pdf)$'`
+
+The crawler strips query strings and fragments before matching. Keep both results subject to the same inclusion, traversal, and scope rules used for WebFetch pages; do not treat every matching link as a downloadable asset or the regex as an exhaustive allowlist. Update the regex when the preferred extension list changes.
+
+#### Crawl scope and traversal rules
+
+- Treat every URL in `download_urls` as a discovery root, not as the only page to inspect. Explore all roots, even when they are on different hosts.
 - Recursively traverse all publicly accessible descendant pages and container pages that are in scope for that knowledge source.
 - If a configured download root is a listing page, index page, catalog page, release page, graph registry page, dataset registry page, or directory-style page, continue traversing into its child pages until no new in-scope dataset or knowledge graph assets are discovered.
 - When a root page contains multiple sibling graph, dataset, release, version, or export branches, traverse all of them, not just the first matching branch.
@@ -101,7 +118,7 @@ There are two primary goals when downloading files from a web crawl:
   - also allow direct download links on trusted linked download hosts or CDNs when those links are clearly presented by an in-scope source page as official downloadable assets
 - Skip pages or files that require authentication, credentials, tokens, or other access restrictions.
 
-### What to include
+#### What to include
 
 Include all publicly available downloadable assets that are clearly any of the following:
 
@@ -122,6 +139,7 @@ Do not restrict discovery to a narrow extension allowlist. Include files that ar
 
 Files should preferentially include, but are not limited to, the following extensions:
 
+- gct
 - tsv
 - tab
 - txt
@@ -187,7 +205,7 @@ Files should preferentially include, but are not limited to, the following exten
 
 Also include files whose URLs, anchor text, surrounding page text, or HTTP headers strongly indicate that they are downloadable datasets, graph releases, ontology exports, or release bundles even when the filename extension is missing, unconventional, or hidden behind query parameters.
 
-### Discovery heuristics
+#### Discovery heuristics
 
 While crawling, prioritize following links and pages whose URLs, titles, or nearby text suggest any of the following:
 
@@ -219,39 +237,43 @@ While crawling, prioritize following links and pages whose URLs, titles, or near
 
 If a page appears to be a container for multiple graph or dataset families, enumerate each family and traverse each branch to its downloadable leaf assets.
 
-### Download completeness requirement
+#### Download completeness requirement
 
-The download set for Step 4 should be as complete as reasonably possible for the configured knowledge source's public data holdings discoverable from **all** `download_urls` roots and their in-scope linked pages.
+The `links.json` inventory from Step 4.2 should be as complete as reasonably possible for the configured knowledge source's public data holdings discoverable from **all** `download_urls` roots and their in-scope linked pages.
 
 For Croissant generation:
 
 - include each discovered downloadable data or graph asset in `distribution`
 - use the full discovered set, not a partial subset
-- derive `recordSet` metadata where possible from the downloaded files themselves
+- derive `recordSet` metadata where possible from each downloaded file before deleting it
 - if a branch appears to contain relevant public data but cannot be fully traversed or downloaded, record the limitation and reason in `dct:provenance`
 
-### Exclusions
+#### Exclusions
 
 - Exclude HTML pages from `distribution`, though they may still be fetched for metadata discovery.
 - Exclude restricted, credential-gated, or explicitly unavailable files.
 - Exclude irrelevant binaries or assets that are not dataset-like, graph-like, documentation-like, or otherwise useful for Croissant metadata generation.
 
-## Step 5: generate croissant metadata file
+### Step 4.3: Download and parse files sequentially
 
-Review the crawl evidence and files in `./outputs` and generate a file called `croissant.json` in the `./outputs` directory that is an as complete Croissant Metadata JSON file as possible. Derive top-level fields other than `distribution` and `recordSet` from the `metadata_urls` crawl; derive `distribution` and `recordSet` only from the complete set of files and schema evidence found through the `download_urls` crawl. Do not treat a file linked only from a metadata crawl as a distribution asset unless it is also discovered through a download root.
+Read `outputs/{name}/{run}/links.json` and process each distinct linked asset one at a time, retaining its `source_url` page(s) as evidence. Download each HTTP(S) asset into the current run's temporary directory from Step 3 with `curl --fail --location --output '<local-file-path>' '<asset-url>'`; check its exit status before parsing. The page-crawling switch does not change how files are downloaded. Inspect the actual format and schema/header using **Schema/Header Detection** below and its respective parser, add its `distribution` entry (and any supported `recordSet` entries) to `croissant.json`, and save the updated JSON before processing the next asset. Derive `distribution` and `recordSet` only from files inventoried through `download_urls`, not from files linked solely by `metadata_urls`.
 
-### Schema/Header Detection
+Save the verified remote URL, MIME/signature, exact schema/header or parser result (including generated XSD where needed), and archive member listing as compact evidence in `outputs/{name}/{run}/schema_evidence.json` for later checks, not as retained downloads. Only after the JSON and evidence updates succeed, delete the local download and any extracted/decompressed temporary files. For an archive, process and persist each member's metadata and evidence, delete that member's extracted file, and delete the parent download after all relevant members are processed. If parsing or downloading fails, record the limitation in `dct:provenance` without inventing fields; save that update before deleting any local file. If saving fails, stop and report the failure rather than deleting the only unrecorded evidence. Never accumulate a batch of downloaded files, including when the same asset occurs on multiple pages. Continue through all links in `links.json` so the final `distribution` reflects the full discoverable set, subject to documented access failures. If a single file cannot fit on disk, report the limitation instead of claiming its schema was inspected.
+
+If `links.json` is empty, create `schema_evidence.json` as `[]`; do not fabricate `distribution` or `recordSet` entries.
+
+#### Schema/Header Detection
 
 Perform schema/header detection only for downloadable files whose resolved data format is in one of these groups:
 
-- Strongest Schema Sources: `parquet`, `avro`, `orc`, `feather`, `arrow`, `sqlite`, `db`, `duckdb`, `sql`, `h5`, `hdf5`, `biom`, `graphml`, `xgmml`, `gpml`, `xml`, `owl`, and `obo`.
+- Strongest Schema Sources: `parquet`, `avro`, `orc`, `feather`, `arrow`, `sqlite`, `db`, `duckdb`, `sql`, `h5`, `hdf5`, `biom`, `graphml`, `xgmml`, `gpml`, `xml`, `owl`, and `obo`, `gct`.
 - Common Column or Record Headers: `csv`, `tsv`, `tab`, `txt`, `vcf`, `bcf`, `sam`, `bam`, `gff`, `gff3`, `gtf`, `gaf`, `gpad`, `gpi`, `fasta`, `fa`, `fna`, `fsa`, `fastq`, `jsonl`, `ndjson`, and `maf`.
 
 Apply this allowlist to the actual inner or decompressed format, not merely the outer archive or compression extension. For an allowed file, attempt to extract its schema or header information to determine how a Croissant Metadata `recordSet` can be structured. Limit the number of lines sampled for determining datatypes to 5.
 
 From the repository root, execute the parser commands directly for every supported local file:
 
-- For `csv`, `tsv`, `tab`, `txt`, `sam`, `bam`, `vcf`, `bcf`, `parquet`, `avro`, `jsonl`, `ndjson`, and `arrow`, run `cargo run --quiet --bin parse_headers -- '<local-file-path>'`. Treat its JSON `columns` output as the ordered field names and datatypes, including generated `column_N` names when a delimited file has no detected header.  Use the output to determine the `recordSet` structure, field names, and datatypes.
+- For `gct`, `csv`, `tsv`, `tab`, `txt`, `sam`, `bam`, `vcf`, `bcf`, `parquet`, `avro`, `jsonl`, `ndjson`, and `arrow`, run `cargo run --quiet --bin parse_headers -- '<local-file-path>'`. Treat its JSON `columns` output as the ordered field names and datatypes, including generated `column_N` names when a delimited file has no detected header.  Use the output to determine the `recordSet` structure, field names, and datatypes.
 - For `sqlite`, or a `db` file confirmed to be SQLite, run `nu ./bin/parse_sqlite_schema.nu '<local-file-path>'`. Treat its JSON output as the exact table names, field names, and declared datatypes.
 - For `sql`, run `nu ./bin/parse_sql_schema.nu '<local-file-path>'`. Treat its JSON output as the exact table names, field names, and declared datatypes from the file's `CREATE TABLE` statements.  Use the output to determine the `recordSet` structure, field names, and datatypes.
 - Only for `xml`, run `nu ./bin/parse_xml_schema.nu '<local-file-path>'`; do not run this parser for any other file type. Use the generated XSD schema output to create a schema-descriptive `cr:RecordSet` with the detected structure, exact field names, nesting, repetition, and datatypes. Set each field's `source` to a direct reference to the XML `cr:FileObject`, represented as `{ "@id": "<xml-file-object-id>" }`. Do not add `extract`, XPath, JSONPath, column, or regex selectors to these XML fields: Croissant 1.1 has no general XML selector, and these fields describe the parsed schema rather than an executable extraction mapping. State this limitation and the use of the generated XSD in `dct:provenance`; do not omit the XML `recordSet` merely because no executable XML selector is available.
@@ -260,7 +282,7 @@ From the repository root, execute the parser commands directly for every support
 - For `gml`, use declared property names from the feature elements or an accompanying XSD when present; generate fields only when feature records and their properties are consistent. Treat geometry as a structured field only when its representation is clear.
 - For `bed`, use an explicit header, track/browser metadata, or the standard BED column order (`chrom`, `chromStart`, `chromEnd`, then the documented optional BED fields). Generate only the columns actually present and do not invent names for non-standard extra columns without documented evidence.
 - For `sif`, use the standard three-column structure `source`, `interaction`, and `target` when every sampled row conforms. For `assoc`, use an explicit header or documented format specification; do not infer fields merely from the extension because ASSOC has no single universal schema.
-- If a supported file is compressed or contained in an archive, decompress or extract it into `./outputs` before invoking the corresponding schema/header detection command based on the file type.
+- If a supported file is compressed or contained in an archive, decompress or extract only the member being inspected into the current run's temporary directory before invoking the corresponding schema/header detection command based on the file type. Record relevant archive members and their metadata in `distribution` during Step 4.3, then remove each extracted file after saving its metadata, before inspecting the next member.
 - Use the parser-returned column names exactly.  Do not normalize, split, capitalize, or otherwise rewrite them.
 - If a parser command fails, record the command error and limitation in `dct:provenance`, then apply the remaining detection rules in this section. Do not fabricate parser output.
 
@@ -286,9 +308,9 @@ Here some rules to follow when parsing a columnar file not handled by a pre-defi
 
 If any of the values cannot be found or satisfied, provide a reason in the `dct:provenance` field in the croissant metadata file.
 
-## Step 6: Generate JSON paths file
+## Step 5: Generate JSON paths file
 
-After generating the `./outputs` file, generate a JSON file called `persistent_fields.json` in the `./outputs` directory.   
+After generating `croissant.json`, generate `outputs/{name}/{run}/persistent_fields.json`. Refresh this file after any later changes to `croissant.json` so its paths and values match the final artifact.
 
 Use the following rules to produce the `persistent_fields.json` file:
   - Output should be in strict RFC 8259 JSON format
@@ -305,7 +327,7 @@ Use the following rules to produce the `persistent_fields.json` file:
     - `value`
       - a string or array of strings derived from the final `croissant.json` exactly as written
     - `url`
-      - a reference to the specific page or URL the information came from in the appropriate `metadata_urls` or `download_urls` crawl, not a local file path
+     - a reference to the specific page or URL the information came from in the appropriate `metadata_urls` or `download_urls` crawl, not a local file path
     - `confidence` 
       - a score with a range between 0.0 and 1.0 reflecting how confident the agent is in reconciling the value from the actual URL.
 
@@ -317,7 +339,7 @@ Here is a sample output:
 ]
 ```
 
-## Step 7: Validation
+## Step 6: Validation
 
 ### Run the MLCroissant Validation tool
 
@@ -335,7 +357,7 @@ Review the standard output from the `mlcroissant` command and perform the follow
  - **On warnings**
    - Warnings (`W`) about missing recommended fields (`datePublished`, `version`, etc.) should be ignored.
  - **Content validation** 
-   - After the structural validator passes, re-fetch the source page for each of these fields and compare the Croissant value character-by-character against the live page text:
+    - After the structural validator passes, re-fetch the source page with the crawler selected by `js_crawling_required` for each of these fields and compare the Croissant value character-by-character against the live page text:
      - `citeAs` 
        - re-fetch the citations, FAQ, or about pages to confirm the full author list, exact title, journal, volume, pages, and year match what is on the page
      - `license`
@@ -347,7 +369,7 @@ Review the standard output from the `mlcroissant` command and perform the follow
 
 For each field fetch the source URL, then find the relevant sentence or paragraph, and ask: "Does the Croissant value match the source text exactly, or has it been paraphrased, reformatted, or partially rewritten?" If there is any divergence, correct the Croissant value to match the source exactly.
 
-## Step 8: Apply Fixes
+## Step 7: Apply Fixes
 
 ### Missing Required Fields
 
@@ -357,8 +379,8 @@ Inspect every top-level field required by the Croissant specification and ensure
 - `conformsTo`: Set the value to exactly `http://mlcommons.org/croissant/1.1`.
 - `url`: Set the value to the canonical dataset homepage URL supported by the `metadata_urls` crawl. Prefer the dataset-specific landing page published by the authoritative source rather than a download URL, individual file URL, API endpoint, search result, repository, or general organization homepage. Follow redirects and store the final canonical URL when it remains the authoritative dataset homepage; do not copy the entry's `url` without evidence from `metadata_urls`.
 - Re-check all other top-level required fields and populate any missing values with source-supported metadata. Preserve exact source text where the field validation rules require it, and record any unresolved required metadata in `dct:provenance`.
-- Do not complete Step 8 while a required field remains empty. If no source-supported value can be established and this section does not define a fallback, mark the fix as failed and report the unresolved field rather than inventing a value.
-- Re-run the official Croissant validator after repairing required fields and fix all resulting errors. Include the number of required fields checked, empty fields found, fields populated, `license` values set to `Not Found`, and additional validator runs or fix cycles in the Step 8 performance metrics.
+- Do not complete Step 7 while a required field remains empty. If no source-supported value can be established and this section does not define a fallback, mark the fix as failed and report the unresolved field rather than inventing a value.
+- Re-run the official Croissant validator after repairing required fields and fix all resulting errors. Include the number of required fields checked, empty fields found, fields populated, `license` values set to `Not Found`, and additional validator runs or fix cycles in the Step 7 performance metrics.
 
 ### Fix Repeated contentUrl
 
@@ -372,22 +394,22 @@ Each top-level `distribution` entry must represent a distinct downloadable file 
 - After replacing, consolidating, or updating distribution entries, update every dependent `recordSet`, `field.source`, `containedIn`, `@id`, and other cross-reference so that it targets the surviving distribution entry and accurately describes whether the source is a `cr:FileObject` or `cr:FileSet`. Remove dangling references and do not claim file-level extraction metadata that cannot be supported by the surviving source.
 - Repeat the duplicate scan until every remaining non-empty `distribution[n].contentUrl` is unique across the
   top-level `distribution` array.
-- Re-run the official Croissant validator after these corrections and fix all resulting errors. Include the number of repeated URLs found, affected distribution entries, per-file URLs recovered, `cr:FileSet` entries created, `contentUrl` values omitted, references repaired, and additional validator runs or fix cycles in the Step 7 performance metrics.
+- Re-run the official Croissant validator after these corrections and fix all resulting errors. Include the number of repeated URLs found, affected distribution entries, per-file URLs recovered, `cr:FileSet` entries created, `contentUrl` values omitted, references repaired, and additional validator runs or fix cycles in the Step 6 performance metrics.
 
-### Add Missing Inner File Metadata From Archives
+### Check Inner File Metadata From Archives
 
 A `distribution` entry may represent a compressed archive such as `.zip`, or `.tgz` that contains one or more tabular or structured files, including TSV, CSV, JSON, JSONL, or similar formats. Do not represent only the downloadable parent archive when its inner files can be inspected and described. Represent relevant inner files in `distribution`, but perform schema/header inference and generate `recordSet` fields only for inner formats allowed by **Schema/Header Detection**. Note that a file ending in '.gz' does not mean it is an archive. This step is intended to only process archive files and not just compressed files (e.g. *.csv.gz and *.tsv.gz are not archives, whereas *.tar.gz, *.tgz, and *.zip are archives).   
 
-- Inspect every downloaded archive and enumerate its inner files without modifying the original archive.
+- During Step 4.3, inspect each archive, enumerate its inner files without modifying the original archive, and process relevant members one at a time before deleting the archive. In this step, check the captured member listings and generated entries rather than requiring all archives to remain downloaded. If evidence is missing, re-download only the affected archive, inspect it, update `croissant.json`, and delete the local archive and extracted member immediately after saving the update.
 - Retain the parent archive as a `cr:FileObject` in the top-level `distribution` array. Give it a stable, unique `@id`, the archive's verified remote `contentUrl`, and the appropriate archive `encodingFormat`.
 - Add a separate `cr:FileObject` to the top-level `distribution` array for each relevant inner file. Give every inner file its own stable, unique `@id`, exact archive-relative path or filename as `contentUrl`, appropriate `encodingFormat`, and a `containedIn` object whose `@id` references the parent archive's `@id`.
 - Do not assign the parent archive's remote URL to an inner file. The inner file's `contentUrl` identifies the member within the archive, while `containedIn` identifies the downloadable parent archive.
-- Derive inner filenames and paths from the archive contents. Do not guess an inner filename or create metadata for a member that cannot be verified in the downloaded archive.
+- Derive inner filenames and paths from the archive contents during Step 4.3. Do not guess an inner filename or create metadata for a member that cannot be verified in the archive or its captured member listing.
 - For each inner file whose resolved format is allowed by **Schema/Header Detection** and that supports records, generate a corresponding `cr:RecordSet`. Apply all rules from **Schema/Header Detection**, including inspection of comments and preambles for columnar files, preservation of exact detected column names, sampling no more than 5 lines or records for datatype detection, and provenance for ambiguous or inferred schema information. Do not generate inferred `recordSet` fields when the format-specific evidence required by that section is absent.
 - Point every generated field source to the corresponding inner `cr:FileObject`, not the parent archive. For schema-descriptive XML fields, use the direct reference `source: { "@id": "<inner-xml-file-object-id>" }` without an extraction selector. For other supported formats, set `source.fileObject.@id` and preserve any extraction, column, or JSON path information needed to locate the field within that inner file.
 - Verify that every inner file reference resolves to an existing distribution `@id`, every `containedIn.@id` resolves to the correct parent archive distribution, and no `RecordSet` field that was derived from an inner file points directly to the archive.
-- During URL response validation, check the parent archive's remote `contentUrl` with HTTP. Validate an inner file's archive-relative `contentUrl` by confirming that the member exists in the downloaded archive; do not treat that relative member path as a standalone HTTP URL.
-- Re-run the official Croissant validator after adding archive and inner-file metadata and fix all resulting errors. Include the number of archives inspected, inner files represented, `cr:RecordSet` entries generated, field sources repaired, and additional validator runs or fix cycles in the Step 7 performance metrics.
+- During URL response validation, check the parent archive's remote `contentUrl` with HTTP. Validate an inner file's archive-relative `contentUrl` against the captured member listing (or a one-at-a-time re-download when the listing is missing); do not treat that relative member path as a standalone remote URL.
+- Re-run the official Croissant validator after adding archive and inner-file metadata and fix all resulting errors. Include the number of archives inspected, inner files represented, `cr:RecordSet` entries generated, field sources repaired, and additional validator runs or fix cycles in the Step 6 performance metrics.
 
 Example inner-file distribution:
 
@@ -406,7 +428,7 @@ Example inner-file distribution:
 Inspect every `cr:Field` in every `cr:RecordSet`. For executable field mappings, ensure that `source` maps to an actual column or value location in the referenced file. For schema-descriptive XML fields created under **Schema/Header Detection**, require a direct `source.@id` reference to the XML `cr:FileObject`, but do not require or invent an extraction selector.
 
 - Resolve each `source.fileObject.@id`, or direct `source.@id` used by a schema-descriptive XML field, to exactly one `cr:FileObject` in the top-level `distribution` array. Treat missing, ambiguous, or dangling `@id` references as errors.
-- Open the resolved file and apply all rules from **Schema/Header Detection** to determine its actual schema or columns. For XML, rerun the XML parser as needed and verify fields against its generated XSD. For an inner archive member, resolve `containedIn.@id`, open the parent archive, and inspect the exact member identified by the inner file's archive-relative `contentUrl`; do not inspect the parent archive as though it were the data file.
+- Compare each field with the exact schema/header and parser evidence captured in Step 4.3. For XML, verify fields against the captured generated XSD. For an inner archive member, resolve `containedIn.@id` and compare against the captured evidence for the exact member identified by its archive-relative `contentUrl`; do not use the parent archive as though it were the data file. If evidence is missing or ambiguous, re-download only that file or parent archive, inspect the relevant member, save any corrections to `croissant.json`, and delete temporary downloads and extracted files before continuing.
 - For non-XML executable mappings, verify that `source.extract.column`, or the equivalent supported selector used by the field, identifies a value that actually exists in the resolved file. Match an observed header token exactly, including case, spacing, punctuation, and spelling. Do not normalize, expand, split, title-case, or otherwise rewrite a detected column name.
 - For non-XML files, when a reliable documented schema is used because the file has no in-band header, verify the selector against that schema and record in `dct:provenance` that the column mapping came from documented or commented schema information.
 - If a field points to the wrong file but its source column exists in another represented file, update `source.fileObject.@id` only when the downloaded data establishes that the field came from that file.
@@ -414,7 +436,7 @@ Inspect every `cr:Field` in every `cr:RecordSet`. For executable field mappings,
 - If no actual column or value location supports a non-XML executable field, remove the unsupported `cr:Field` and any dependent references rather than inventing a column or retaining a false source mapping. Do not remove an XSD-supported schema-descriptive XML field solely because Croissant 1.1 lacks an XML extraction selector; verify its direct file reference and document the limitation in `dct:provenance` instead.
 - For hierarchical or composite XML fields, verify every leaf `subField` against the generated XSD and use the same direct XML `source.@id` reference without an extraction selector. For other formats, verify every leaf `subField` against its actual source column. A structural parent field may group verified subfields when permitted by the Croissant schema, but it must not introduce an unsupported source claim.
 - Repeat the check until every remaining field-level source reference resolves to an existing `cr:FileObject`, and every non-XML executable field also resolves to a verified column or value location in that file.
-- Re-run the official Croissant validator after repairing source mappings and fix all resulting errors. Include the number of fields checked, dangling file references found, source file references corrected, column selectors corrected, unsupported fields removed, and additional validator runs or fix cycles in the Step 8 performance metrics.
+- Re-run the official Croissant validator after repairing source mappings and fix all resulting errors. Include the number of fields checked, dangling file references found, source file references corrected, column selectors corrected, unsupported fields removed, and additional validator runs or fix cycles in the Step 7 performance metrics.
 
 ### File Extenstion vs MIME Type Mismatch
 
@@ -430,17 +452,17 @@ Inspect every `cr:FileObject` in the top-level `distribution` array and verify t
   - `.parquet` -> `application/parquet`
   - `.zip` -> `application/zip`
 - For compound or compressed extensions, assign the parent archive or compressed file its compression MIME type and assign each represented inner file the MIME type of the inner file. Do not assign an archive's MIME type to its child `cr:FileObject` entries.
-- If the extension is absent, misleading, or ambiguous, inspect the downloaded file's signature and contents and consult authoritative HTTP `Content-Type` metadata when available. Record unresolved ambiguity in `dct:provenance` rather than guessing.
-- After correcting MIME type mismatches, re-run the official Croissant validator and fix all resulting errors. Include the number of `cr:FileObject` entries checked, missing `encodingFormat` values added, mismatches corrected, ambiguous formats, and additional validator runs or fix cycles in the Step 8 performance metrics.
+- If the extension is absent, misleading, or ambiguous, use the signature and contents captured during Step 4.3 and consult authoritative HTTP `Content-Type` metadata when available. If necessary, re-download and inspect only the affected file, then delete it after saving any corrections. Record unresolved ambiguity in `dct:provenance` rather than guessing.
+- After correcting MIME type mismatches, re-run the official Croissant validator and fix all resulting errors. Include the number of `cr:FileObject` entries checked, missing `encodingFormat` values added, mismatches corrected, ambiguous formats, and additional validator runs or fix cycles in the Step 7 performance metrics.
 
 ### Fix contentUrl Values with Faulty Response Error
 
-- Recursively inspect every scalar `contentUrl` leaf within every entry in the top-level `distribution` array.
-- For each URL, make an HTTP request, follow redirects, and record the final HTTP status. A `HEAD` request may be used first, but if the server rejects or does not support `HEAD` (for example, with `405 Method Not Allowed`) or the result is otherwise inconclusive, retry with a minimal `GET` request before deciding the URL's status.
+- Recursively inspect every scalar `contentUrl` leaf within every entry in the top-level `distribution` array. Check archive-relative inner file paths against the captured member listing rather than making HTTP requests for them.
+- For each HTTP(S) URL, make an HTTP request, follow redirects, and record the final HTTP status. A `HEAD` request may be used first, but if the server rejects or does not support `HEAD` (for example, with `405 Method Not Allowed`) or the result is otherwise inconclusive, retry with a minimal `GET` request before deciding the URL's status.
 - If a `contentUrl` returns `404 Not Found`, remove its owning entry from `distribution`. If an entry contains more than one `contentUrl` leaf and any one of them returns `404`, remove that entire distribution entry. Also remove or update any `recordSet`, `field.source`, or other metadata references that depend on the removed distribution entry so the Croissant metadata does not contain dangling references.
 - If a `contentUrl` returns `401 Unauthorized` or `403 Forbidden`, retain the distribution entry because the response may indicate an authentication or authorization requirement rather than a missing resource. Add or update the dataset-level `conditionsOfAccess` to state that the affected resource URL returned the observed status and may require authentication or authorization. Do not claim that authentication is definitely required unless the source explicitly confirms it.
 - Do not treat redirects to a successful final response as failures. For statuses other than `401`, `403`, or `404`, retain the entry unless the response clearly proves that the resource is unavailable; record any uncertainty or access limitation in `dct:provenance`.
-- After any removal or metadata update, re-run the official Croissant validator and fix all resulting errors. Include the number of `contentUrl` values checked, distribution entries removed, authentication-related responses, HTTP retries, and extra validator runs or fix cycles in the Step 7 performance metrics.
+- After any removal or metadata update, re-run the official Croissant validator and fix all resulting errors. Include the number of `contentUrl` values checked, distribution entries removed, authentication-related responses, HTTP retries, and extra validator runs or fix cycles in the Step 6 performance metrics.
 
 ### Sanitize the Croissant Metadata JSON file
 
@@ -475,14 +497,14 @@ After adding any `GeoCoordinates` field:
 - verify again with `jq empty outputs/{name}/{run}/croissant.json`
 - update performance metrics with the number of `GeoCoordinates` parent fields added and any extra validation or sanitize cycles triggered by this sub-step
 
-## Step 9: Cleanup
+## Step 8: Cleanup
 
-Remove all files in the `./outputs` directory.
+Remove only temporary downloads, extracted files, and generated scripts from the current run's temporary directory. Do not remove `croissant.json`, `links.json`, `schema_evidence.json`, `persistent_fields.json`, or files in other runs.
 
-## Step 10: Summarize
+## Step 9: Summarize
 
-Write a summary of the agent's work to a text file called `summary.txt` in the `./outputs` directory.
-Include the generated artifact paths for `croissant.json`, and `persistent_fields.json`.
+Write a summary of the agent's work to `outputs/{name}/{run}/summary.txt`.
+Include the generated artifact paths for `croissant.json`, `links.json`, `schema_evidence.json`, and `persistent_fields.json`.
 The summary must include a dedicated `Performance Metrics` section with:
 
 - run start timestamp
@@ -497,4 +519,5 @@ The summary must include a dedicated `Performance Metrics` section with:
   - outcome
   - files created, modified, and deleted for that step
   - any relevant step-specific counts such as downloaded file count, bytes downloaded, validator runs, or fix cycles
-- a final artifact list with the generated paths for `croissant.json`, `persistent_fields.json`, and `summary.txt`
+- the same metrics for Steps 4.1, 4.2, and 4.3, plus their Step 4 totals
+- a final artifact list with the generated paths for `croissant.json`, `links.json`, `schema_evidence.json`, `persistent_fields.json`, and `summary.txt`

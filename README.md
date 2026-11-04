@@ -9,6 +9,7 @@ Run commands from the repository root. You will need:
 - [OpenCode](https://opencode.ai/docs/) configured with a working model/provider.
 - [Nushell](https://www.nushell.sh/) (`nu`) for the pipeline scripts and SQLite storage.
 - [Rust and Cargo](https://rustup.rs/) for the `parse_headers` schema parser.
+- `curl` for saving downloadable files; a local Chromium installation for sources with `js_crawling_required = true`.
 - Python 3 and [uv](https://docs.astral.sh/uv/) for the Croissant validator and the optional quality checks.
 - `jq` for the agent's JSON checks; `trang` if processing XML schemas.
 
@@ -25,6 +26,8 @@ The agent's preflight checks for `.venv/bin/mlcroissant`. The Python quality val
 ## Generate metadata
 
 `knowledge-bases.toml` contains the source inventory. Its `name` values select a source (case-sensitive); `enabled = true` determines which sources the batch script and database builder process. A source site may require access or be unavailable even when enabled. The agent requires a TOML file path and an entry name; provide each via `RCP_KB_INPUT` and `RCP_KB_NAME` respectively, or in the prompt. Prompt values override environment values independently.
+
+Each source's `js_crawling_required` flag selects the page crawler: `false` (or absent) uses WebFetch; `true` uses `cargo run --quiet --bin js_enabled_crawl -- --url '<page-url>'` to read rendered HTML and links. Add `--extension-regex '\.(csv|zip)$'` to include only links with matching file extensions when needed. Both modes download discovered data files separately, one at a time.
 
 Generate metadata for one source:
 
@@ -44,6 +47,8 @@ Generation can download large datasets and take significant time and disk space.
 ```text
 outputs/<KB>/1/
 ├── croissant.json          # Croissant JSON-LD: dataset, distributions, record sets, fields
+├── links.json              # download links grouped by source page
+├── schema_evidence.json    # file and schema evidence for later checks
 ├── persistent_fields.json  # metadata values with source URLs and confidence scores
 └── summary.txt             # run summary and performance metrics
 ```
