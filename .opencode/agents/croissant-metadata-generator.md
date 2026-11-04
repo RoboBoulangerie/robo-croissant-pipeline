@@ -1,0 +1,1 @@
+../../agents/croissant-metadata-generator.md
