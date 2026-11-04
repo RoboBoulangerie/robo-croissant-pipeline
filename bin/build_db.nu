@@ -1,6 +1,6 @@
 #!/usr/bin/env nu
 
-def main [--outputs_dir: path = "./outputs"] {
+def main [--kb_file: path = "knowledge-bases.toml", --outputs_dir: path = "outputs"] {
 
     rm --force "robo_croissant.db"
 
@@ -11,10 +11,10 @@ def main [--outputs_dir: path = "./outputs"] {
     stor open | query db "CREATE INDEX IF NOT EXISTS idx_run_links_kb_path ON run_links(kb_name, path)"
     stor open | query db "CREATE TABLE IF NOT EXISTS validation_issues (id INTEGER PRIMARY KEY AUTOINCREMENT, kb_name TEXT NOT NULL, issue_type TEXT NOT NULL, path TEXT NOT NULL, value TEXT NOT NULL, detail TEXT NOT NULL, created_at TEXT NOT NULL)"
 
-    for kb in (open knowledge-bases.toml | get knowledge_bases | where $it.enabled == true) {
+    for kb in (open $kb_file | get knowledge_bases | where $it.enabled == true) {
         if ($"./($outputs_dir)/($kb.name)" | path exists) {
             print $kb.name
-            print $"./($outputs_dir)/($kb.name)"
+            #print $"./($outputs_dir)/($kb.name)"
             try {
                 let first = ls ...(glob ./($outputs_dir)/($kb.name)/**/croissant.json) | sort-by -r modified | first | get name | wrap first
                 let second = ls ...(glob ./($outputs_dir)/($kb.name)/**/persistent_fields.json) | sort-by -r modified | first | get name | wrap second
@@ -26,7 +26,7 @@ def main [--outputs_dir: path = "./outputs"] {
                     stor insert --table-name "knowledge_bases" --data-record { name: $"($kb.name)", url: $kb.url, croissant_metadata: $croissant_metadata_json }
                     for pfr in (open $row.second) {
                         let record = { kb_name: $"($kb.name)", path: $pfr.path, value: $pfr.value, url: $pfr.url, confidence: $pfr.confidence, reviewed: false, auto_reviewed: false }
-                        print $record
+#                        print $record
                         try {
                             stor insert --table-name "kb_links" --data-record { kb_name: $"($kb.name)", path: $pfr.path, value: $pfr.value, url: $pfr.url, confidence: $pfr.confidence, reviewed: false, auto_reviewed: false }
                         } catch {|e| print $e }
