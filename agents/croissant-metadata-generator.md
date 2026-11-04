@@ -6,7 +6,7 @@ description: Main agent for generating Croissant Metadata JSON-LD files.
 mode: all
 ---
 
-Before starting, refer to the `.opencode/agents/subagent/master-planner.md` file for a high-level overview of the agent's role and responsibilities.
+Before starting, refer to the `./agents/shared/master-planner.md` file for a high-level overview of the agent's role and responsibilities.
 
 # Objective
 
