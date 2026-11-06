@@ -73,7 +73,7 @@ The agent may also put generated scripts and temporary downloaded files in that 
 .venv/bin/mlcroissant validate --jsonld outputs/<KB>/1/croissant.json
 ```
 
-For local schema inspection, the agent uses `cargo run --quiet --bin parse_headers -- <file>` for supported formats, plus the `bin/parse_*_schema.nu` scripts for SQL, SQLite, and XML.
+For local schema inspection, the agent uses `cargo run --quiet --bin parse_headers -- <file>` for supported formats, `nu ./bin/parse_gaf_schema.nu --input <file>` for GAF, `nu ./bin/parse_gpi_schema.nu --input <file>` for GPI (both support `.gz`), and the other `bin/parse_*_schema.nu` scripts for SQL, SQLite, and XML.
 
 ## Build and check the database
 
