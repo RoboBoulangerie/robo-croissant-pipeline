@@ -880,34 +880,51 @@ download_urls = [
 ]
 
 [[knowledge_bases]]
-name = "Reactome Pathways"
-title = "Reactome Pathways"
+name = "Reactome"
+title = "Reactome"
 url = "https://reactome.org/"
 enabled = true
-js_crawling_required = false
+js_crawling_required = true
 metadata_urls = [
     "https://reactome.org/",
     "https://reactome.org/license",
     "https://reactome.org/cite",
 ]
 download_urls = [
-    "https://reactome.org/download-data",
+    "https://reactome.org/download-data"
+    #"https://reactome.org/download/current/"
 ]
 
-[[knowledge_bases]]
-name = "Reactome Protein-Protein Interactions"
-title = "Reactome Protein-Protein Interactions"
-url = "https://reactome.org/"
-enabled = true
-js_crawling_required = false
-metadata_urls = [
-    "https://reactome.org/",
-    "https://reactome.org/license",
-    "https://reactome.org/cite",
-]
-download_urls = [
-    "https://reactome.org/download-data",
-]
+
+#[[knowledge_bases]]
+#name = "Reactome Pathways"
+#title = "Reactome Pathways"
+#url = "https://reactome.org/"
+#enabled = true
+#js_crawling_required = false
+#metadata_urls = [
+#    "https://reactome.org/",
+#    "https://reactome.org/license",
+#    "https://reactome.org/cite",
+#]
+#download_urls = [
+#    "https://reactome.org/download-data",
+#]
+
+#[[knowledge_bases]]
+#name = "Reactome Protein-Protein Interactions"
+#title = "Reactome Protein-Protein Interactions"
+#url = "https://reactome.org/"
+#enabled = true
+#js_crawling_required = false
+#metadata_urls = [
+#    "https://reactome.org/",
+#    "https://reactome.org/license",
+#    "https://reactome.org/cite",
+#]
+#download_urls = [
+#    "https://reactome.org/download-data",
+#]
 
 [[knowledge_bases]]
 name = "RESOLUTE"
