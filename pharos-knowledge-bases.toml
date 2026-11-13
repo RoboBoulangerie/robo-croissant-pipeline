@@ -63,7 +63,7 @@ metadata_urls = [
     "https://portals.broadinstitute.org/ccle",
 ]
 download_urls = [
-    #"https://depmap.org/portal/data_page/?tab=allData",  # cloudflare restriction
+    #"https://depmap.org/portal/data_page/?tab=allData",  # cloudflare restriction & javascript enabled
     "https://sites.broadinstitute.org/ccle/datasets",
 ]
 
@@ -90,7 +90,7 @@ metadata_urls = [
     "https://www.ebi.ac.uk/chembl/",
 ]
 download_urls = [
-    "https://chembl.gitbook.io/chembl-interface-documentation/downloads",
+#    "https://chembl.gitbook.io/chembl-interface-documentation/downloads",
     "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/",
 ]
 
@@ -100,12 +100,12 @@ title = "ClinVar"
 url = "https://www.ncbi.nlm.nih.gov/clinvar/"
 enabled = true
 js_crawling_required = false
+# requires reCAPTCHA
 metadata_urls = [
     "https://www.ncbi.nlm.nih.gov/clinvar/intro/",
 ]
 download_urls = [
-    "https://www.ncbi.nlm.nih.gov/clinvar/docs/downloads/",
-    "https://www.ncbi.nlm.nih.gov/clinvar/docs/ftp_primer/",
+    "https://www.ncbi.nlm.nih.gov/clinvar/docs/downloads/"
 ]
 
 [[knowledge_bases]]
@@ -372,9 +372,12 @@ url = "https://www.guidetopharmacology.org/"
 enabled = true
 js_crawling_required = false
 metadata_urls = [
-    "https://www.guidetopharmacology.org/",
+    "https://www.guidetopharmacology.org/about.jsp",
 ]
-download_urls = []
+# user access restriction
+download_urls = [
+    # "https://www.guidetopharmacology.org/download.jsp"
+]
 
 [[knowledge_bases]]
 name = "GWAS Catalog"
@@ -769,9 +772,10 @@ title = "OMIM"
 url = "https://www.ncbi.nlm.nih.gov/omim"
 enabled = true
 metadata_urls = [
-    "https://www.ncbi.nlm.nih.gov/omim",
+    "https://omim.org/help/faq",
 ]
-download_urls = []
+# user access restriction
+download_urls = ["https://omim.org/downloads/"]
 
 [[knowledge_bases]]
 name = "Orthologs"
@@ -795,6 +799,7 @@ js_crawling_required = false
 metadata_urls = [
     "http://phipster.org/",
 ]
+# no download links, site currently says DB is being updated
 download_urls = []
 
 [[knowledge_bases]]
@@ -949,19 +954,20 @@ download_urls = [
     "https://download.rgd.mcw.edu/",
 ]
 
-[[knowledge_bases]]
-name = "STRING IDs"
-title = "STRING IDs"
-url = "https://string-db.org/"
-enabled = true
-js_crawling_required = false
-metadata_urls = [
-    "https://string-db.org/",
-    "https://string-db.org/cgi/access?footer_active_subpage=licensing",
-]
-download_urls = [
-    "https://string-db.org/cgi/download",
-]
+#[[knowledge_bases]]
+#name = "STRING IDs"
+#title = "STRING IDs"
+#url = "https://string-db.org/"
+#enabled = true
+#js_crawling_required = false
+#metadata_urls = [
+#    "https://string-db.org/cgi/about",
+#    "https://string-db.org/cgi/help?sessionId=beGEhBRSbl9T",
+#    "https://string-db.org/cgi/access?footer_active_subpage=licensing",
+#]
+#download_urls = [
+#    "https://string-db.org/cgi/download",
+#]
 
 [[knowledge_bases]]
 name = "STRINGDB"
@@ -970,7 +976,8 @@ url = "https://string-db.org/"
 enabled = true
 js_crawling_required = false
 metadata_urls = [
-    "https://string-db.org/",
+    "https://string-db.org/cgi/about",
+    "https://string-db.org/cgi/help?sessionId=beGEhBRSbl9T",
     "https://string-db.org/cgi/access?footer_active_subpage=licensing",
 ]
 download_urls = [
@@ -1000,6 +1007,7 @@ js_crawling_required = false
 metadata_urls = [
     "https://www.newdrugtargets.org/",
 ]
+# no real download avialable, JS enabled
 download_urls = []
 
 [[knowledge_bases]]
@@ -1037,18 +1045,18 @@ download_urls = [
     "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/",
 ]
 
-[[knowledge_bases]]
-name = "UniProt Disease"
-title = "UniProt Disease"
-url = "https://www.uniprot.org/"
-enabled = true
-js_crawling_required = false
-metadata_urls = [
-    "https://ftp.uniprot.org/pub/databases/uniprot/current_release/README",
-]
-download_urls = [
-    "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/",
-]
+#[[knowledge_bases]]
+#name = "UniProt Disease"
+#title = "UniProt Disease"
+#url = "https://www.uniprot.org/"
+#enabled = true
+#js_crawling_required = false
+#metadata_urls = [
+#    "https://ftp.uniprot.org/pub/databases/uniprot/current_release/README",
+#]
+#download_urls = [
+#    "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/",
+#]
 
 [[knowledge_bases]]
 name = "WikiPathways"
