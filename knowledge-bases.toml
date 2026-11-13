@@ -147,10 +147,9 @@ js_crawling_required = false
 [[knowledge_bases]]
 name = "CTD"
 title = "Comparative Toxicogenomics Database (CTD)"
-url = "https://ctdbase.org/downloads/"
-metadata_urls = []
-download_urls = []
-#source_url = "https://ctdbase.org/"
+url = "https://ctdbase.org/"
+metadata_urls = ["https://ctdbase.org/about/", "https://ctdbase.org/about/publications/"]
+download_urls = ["https://ctdbase.org/downloads/"]
 depth = 3
 blacklist = "/(help|reports|documents|tools)/,.*\\.(obo|tgz),.*(type|jsessionid).*"
 grant_number = "ES033155"
