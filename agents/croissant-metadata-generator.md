@@ -69,7 +69,7 @@ Resolve two inputs independently: (1) the path to a knowledge bases TOML file (`
 - If either input is missing or empty, report which input is needed and stop before initialization.
 - Read the specified TOML file and find exactly one `knowledge_bases` entry whose `name` matches the specified entry name exactly (case-sensitive). If the file cannot be read or parsed, or there is not exactly one match, report the issue and stop.
 - Read `metadata_urls` and `download_urls` as separate arrays of absolute HTTP(S) URLs. Report malformed or missing arrays or invalid URLs and stop; an empty array is valid and means no crawl roots for that category. Do not substitute the entry's `url` for either array.
-- Read `js_crawling_required` from this entry as a boolean. If absent, use `false` for compatibility with entries that do not yet have the field; if present but not a boolean, report the issue and stop. Apply this one switch to both metadata and download page crawls.
+- Read `depth` from this entry as a non-negative integer. If absent, use `0` (the crawler's default); if present but not a non-negative integer, report the issue and stop. Pass this value as `--depth` on every page crawl, including metadata, download, filtered-link, and validation rechecks.
 - Treat that matched record as the only source to process.
 - Do not iterate over all `knowledge_bases` entries.
 
@@ -89,192 +89,66 @@ Create a directory structure following this format: `./outputs/{name}/{run}/{tmp
 
 Use every `metadata_urls` root only for top-level fields other than `distribution` and `recordSet`; use every `download_urls` root only for file discovery and file-derived metadata. Follow relevant in-scope links from each root. Do not use the entry's `url` as a crawl root or fallback when either array is empty. Keep the source URL for each discovered value or file; a URL listed in both arrays may serve both purposes. If an array is empty or a root cannot be crawled, record the corresponding evidence gap in `dct:provenance`, not evidence borrowed from the other category. Complete each sub-step and its artifact before starting the next.
 
-For every HTTP(S) **page crawl**, including followed pages and later rechecks, use WebFetch when `js_crawling_required` is `false`. When it is `true`, from the repository root run `cargo run --quiet --bin js_enabled_crawl -- --url '<page-url>'` instead. Parse its JSON object: `html` is the rendered page content for verifying metadata and `links` contains the rendered page's absolute link URLs; `requested_url` identifies the page crawled. Follow relevant links using the same selected crawler. If the selected crawler fails, document the gap in `dct:provenance` instead of silently switching tools or inventing evidence. This switch is for crawling pages, not for downloading data files.
+For every HTTP(S) **page crawl**, including followed pages and later rechecks, use only `js_enabled_crawl` from the repository root with the step-specific commands below; `<depth>` is the value resolved in Step 2. `--url` accepts one or more separately quoted HTTP(S) URLs and crawls each root to that depth, including roots on different hosts. Do not use WebFetch, curl, or another tool to crawl pages. Read every record in the file specified by `--output-path`: `requested_url` identifies the crawled page, `links` contains absolute rendered link URLs, and `html_file` names its rendered HTML file in the crawl directory. The crawler prints no JSON to stdout. Use a fresh crawl directory per invocation, with its output file inside it; do not confuse the crawl's `download-links.json` with the run-level download inventory `links.json` written in Step 4.2. Follow relevant links with the same step-specific command and `--depth` value; use the Step 4.1 command with the relevant page URL for metadata validation rechecks. If the crawler fails, document the gap in `dct:provenance` instead of switching tools or inventing evidence. Download data files separately as described in Step 4.3.
 
 ### Step 4.1: Crawl `metadata_urls` and create top-level `croissant.json`
 
-Crawl every `metadata_urls` root and its relevant in-scope pages for top-level metadata defined by the Dataset-level information here: https://docs.mlcommons.org/croissant/docs/croissant-spec-1.1.html#dataset-level-information. Verify each populated source-specific value against its authoritative page and retain that page URL as evidence; do not guess missing values. Apply the required-field and license rules in Step 7 and the exact-text checks in Step 6 here, before file discovery. `conformsTo` is the Croissant 1.1 constant specified in Step 7, not a claim to extract from a source page. For optional fields without verifiable evidence, omit them and explain the gap in `dct:provenance`; if a required field cannot be satisfied under Step 7's rules, report the failure and do not proceed to Step 4.2.
+Crawl the `metadata_urls` URLs from the matched `RCP_KB_INPUT` entry and its relevant in-scope pages for top-level metadata defined by the Dataset-level information here: https://docs.mlcommons.org/croissant/docs/croissant-spec-1.1.html#dataset-level-information. 
 
-Create and save `outputs/{name}/{run}/croissant.json` with the verified top-level metadata and initially empty `distribution` and `recordSet` arrays. Finish this sub-step only after all top-level fields have been checked, supported values verified, unresolved optional fields documented, and the file saved. Do not discover or download data files in this sub-step.
+Apply the following rules to this step:
+  - if the `metadata_urls` array is empty, skip the command and record the evidence gap
+  - Pass every URL as a separate quoted argument after `--url` (the two URLs below illustrate the syntax; include exactly as many as the array contains).
+  - Apply the required-field and license rules in Step 7 and the exact-text checks in Step 6 here, before file discovery. 
+  - `conformsTo` is the Croissant 1.1 constant specified in Step 7, not a claim to extract from a source page. 
+  - For optional fields without verifiable evidence, omit them and explain the gap in `dct:provenance`; if a required field cannot be satisfied under Step 7's rules, report the failure and do not proceed to Step 4.2.
 
-### Step 4.2: Crawl `download_urls` and write `links.json`
+Here is an example command to run:
+`cargo run --quiet --bin js_enabled_crawl -- --url '<metadata-url-1>' '<metadata-url-2>' --temp-dir '<{tmp_dir}/metadata>' --depth <depth> --output-path 'outputs/{name}/{run}/metadata-links.json'`
 
-Crawl every `download_urls` root and its in-scope linked pages for qualifying downloadable files using the discovery and inclusion rules below. Do not download or parse the data files yet; WebFetch is for page crawling, not downloading assets inventoried in `links.json`. Write valid JSON to `outputs/{name}/{run}/links.json` as an array of objects of the form `{ "source_url": "<page where the links were found>", "links": ["<direct downloadable URL>"] }`. Group links by the actual page or listing where they were found, not merely the starting root; for a direct file root, use that root as `source_url` and include the file URL in `links`. Preserve HTTP(S) URLs as verified, without inventing file URLs. Include every qualifying link found across all roots; the same asset may appear on multiple pages, but list it only once per page. If no qualifying links are found, save `[]` and document the gap in `croissant.json`'s `dct:provenance`. Save `links.json` before starting Step 4.3.
+Create and save `outputs/{name}/{run}/croissant.json` with the verified top-level metadata derived from the html pages downloaded during the js_enabled_crawl command.  The croissant.json file should have empty `distribution` and `recordSet` arrays.  Finish this sub-step only after all top-level fields have been checked, supported values verified, unresolved optional fields documented, and the file saved. Do not discover or download data files in this sub-step.
 
-While crawling, note which release an asset belongs to and which release the source identifies as current/latest **for that dataset or graph family**. Retain the listing or release page URL as evidence; still inventory historical releases. A compressed archive (`.zip`, `.tar.gz`, etc.) is a file format, not proof that its contents are from a historical release.
+### Step 4.2: Crawl `download_urls` and write `download-links.json`
 
-For a rendered download page, keep the unfiltered `links` from `js_enabled_crawl` for traversal and for files with missing or unconventional extensions. Also run the crawler with the preferred file extensions below joined in a case-insensitive, end-anchored regex to identify known file links:
+Crawl the `download_urls` URLs from the matched `RCP_KB_INPUT` entry and its relevant in-scope pages for qualifying downloadable files using the discovery and inclusion rules below.
 
-`cargo run --quiet --bin js_enabled_crawl -- --url '<page-url>' --extension-regex '\.(gct|tsv|tab|txt|csv|json|jsonl|ndjson|xml|rdf|owl|obo|ttl|nt|nq|trig|n3|hdt|graphml|gml|xgmml|gpml|sif|gaf|gpad|gpi|assoc|parquet|avro|orc|feather|arrow|sqlite|db|duckdb|sql|h5|hdf5|biom|fasta|fa|fna|fsa|fastq|gff|gff3|gtf|bed|vcf|bcf|sam|bam|maf|gz|bgz|bz2|xz|zst|zip|tar|tgz|7z|pdf)$'`
+Apply the following rules to this step:
+  - If no qualifying links are found, save `[]` for both the `distribution` and `recordSet` values and document the gap in `croissant.json`'s `dct:provenance`. 
+  - Pass every URL as a separate quoted argument after `--url` (the two URLs below illustrate the syntax; include exactly as many as the array contains).
 
-The crawler strips query strings and fragments before matching. Keep both results subject to the same inclusion, traversal, and scope rules used for WebFetch pages; do not treat every matching link as a downloadable asset or the regex as an exhaustive allowlist. Update the regex when the preferred extension list changes.
-
-#### Crawl scope and traversal rules
-
-- Treat every URL in `download_urls` as a discovery root, not as the only page to inspect. Explore all roots, even when they are on different hosts.
-- Recursively traverse all publicly accessible descendant pages and container pages that are in scope for that knowledge source.
-- If a configured download root is a listing page, index page, catalog page, release page, graph registry page, dataset registry page, or directory-style page, continue traversing into its child pages until no new in-scope dataset or knowledge graph assets are discovered.
-- When a root page contains multiple sibling graph, dataset, release, version, or export branches, traverse all of them, not just the first matching branch.
-- Do not stop at one level of depth. Continue descending through nested paths such as version folders, `latest`, `current`, `release`, `releases`, `archive`, `downloads`, `files`, `data`, `dumps`, `exports`, `graphs`, `kg`, `knowledge-graph`, `ontology`, or similarly named subpaths when they appear relevant.
-- Treat human-readable index pages and machine-generated directory listings as navigational containers to be explored, not as terminal pages.
-- Stay within the same knowledge source scope for each root by default:
-  - prefer relevant linked pages on the same host, including descendant paths under that root's path prefix
-  - also allow direct download links on trusted linked download hosts or CDNs when those links are clearly presented by an in-scope source page as official downloadable assets
-- Skip pages or files that require authentication, credentials, tokens, or other access restrictions.
-
-#### What to include
-
-Include all publicly available downloadable assets that are clearly any of the following:
-
-- datasets
-- dataset releases
-- data dumps
-- exports
-- graphs
-- archives containing datasets
-- knowledge graph releases
-- graph serializations
-- ontology or terminology releases
-- machine-readable data bundles
-- database snapshots
-- structured documentation files that materially support dataset interpretation, such as PDFs describing schemas, releases, or usage
-
-Do not restrict discovery to a narrow extension allowlist. Include files that are clearly dataset-like, graph-like, ontology-like, archival, or otherwise machine-readable release artifacts.
-
-Files should preferentially include, but are not limited to, the following extensions:
-
-- gct
-- tsv
-- tab
-- txt
-- csv
-- json
-- jsonl
-- ndjson
-- xml
-- rdf
-- owl
-- obo
-- ttl
-- nt
-- nq
-- trig
-- n3
-- hdt
-- graphml
-- gml
-- xgmml
-- gpml
-- sif
-- gaf
-- gpad
-- gpi
-- assoc
-- parquet
-- avro
-- orc
-- feather
-- arrow
-- sqlite
-- db
-- duckdb
-- sql
-- h5
-- hdf5
-- biom
-- fasta
-- fa
-- fna
-- fsa
-- fastq
-- gff
-- gff3
-- gtf
-- bed
-- vcf
-- bcf
-- sam
-- bam
-- maf
-- gz
-- bgz
-- bz2
-- xz
-- zst
-- zip
-- tar
-- tgz
-- 7z
-- pdf
-
-Also include files whose URLs, anchor text, surrounding page text, or HTTP headers strongly indicate that they are downloadable datasets, graph releases, ontology exports, or release bundles even when the filename extension is missing, unconventional, or hidden behind query parameters.
-
-#### Discovery heuristics
-
-While crawling, prioritize following links and pages whose URLs, titles, or nearby text suggest any of the following:
-
-- download
-- files
-- data
-- export
-- details
-- dump
-- archive
-- release
-- releases
-- version
-- latest
-- current
-- graph
-- graphs
-- kg
-- knowledge graph
-- ontology
-- rdf
-- ttl
-- obo
-- owl
-- api export
-- bulk download
-- snapshot
-- artifacts
-
-If a page appears to be a container for multiple graph or dataset families, enumerate each family and traverse each branch to its downloadable leaf assets.
-
-#### Download completeness requirement
-
-The `links.json` inventory from Step 4.2 should be as complete as reasonably possible for the configured knowledge source's public data holdings discoverable from **all** `download_urls` roots and their in-scope linked pages.
-
-For Croissant generation:
-
-- include each discovered downloadable data or graph asset in `distribution` when it can be represented with verified metadata; for assets verified over 100 GB, retain them in `links.json` and report any omission from `distribution` in `dct:provenance`
-- use the full discovered set, not a partial subset selected by release, filename, or convenience
-- derive `recordSet` metadata where possible only from downloaded files verified as current/latest for their dataset or graph family; keep older and unclassified releases in `distribution` without schema/header parsing
-- if a branch appears to contain relevant public data but cannot be fully traversed or downloaded, record the limitation and reason in `dct:provenance`
-
-#### Exclusions
-
-- Exclude HTML pages from `distribution`, though they may still be fetched for metadata discovery.
-- Exclude restricted, credential-gated, or explicitly unavailable files.
-- Exclude irrelevant binaries or assets that are not dataset-like, graph-like, documentation-like, or otherwise useful for Croissant metadata generation.
+Here is an example command to run: 
+`cargo run --quiet --bin js_enabled_crawl -- --url '<download-url-1>' '<download-url-2>' --temp-dir '<{tmp_dir}/downloads>' --depth <depth> --output-path 'outputs/{name}/{run}/download-links.json' --extension-regex '\.(gct|tsv|tab|txt|csv|json|jsonl|ndjson|xml|rdf|owl|obo|ttl|nt|nq|trig|n3|hdt|graphml|gml|xgmml|gpml|sif|gaf|gpad|gpi|assoc|parquet|avro|orc|feather|arrow|sqlite|db|duckdb|sql|h5|hdf5|biom|fasta|fa|fna|fsa|fastq|gff|gff3|gtf|bed|vcf|bcf|sam|bam|maf|gz|bgz|bz2|xz|zst|zip|tar|tgz|7z|pdf)$'`
 
 ### Step 4.3: Download and parse files sequentially
 
-Read `outputs/{name}/{run}/links.json` and process each distinct linked asset one at a time, retaining its `source_url` page(s) as evidence. Apply the 100 GB download rule below to every URL. Download eligible HTTP(S) assets into the current run's temporary directory from Step 3 with `curl --fail --location --retry 1 --retry-connrefused --retry-delay 2 --connect-timeout 60 --max-time 3600 --max-filesize 100000000000 --output '<local-file-path>' '<asset-url>'`; check its exit status before parsing. Never use WebFetch to download an inventoried asset; the page-crawling switch does not change how files are downloaded. Verify the downloaded file's format for `distribution`, and save its verified remote `contentUrl`. Apply **Schema/Header Detection** and generate supported `recordSet` entries only when the asset is verified as belonging to the current/latest release. Save the updated JSON before processing the next asset. Derive `distribution` and `recordSet` only from files inventoried through `download_urls`, not from files linked solely by `metadata_urls`.
+The `outputs/{name}/{run}/download-links.json` file from Step 4.2 should be as complete as reasonably possible for the configured knowledge source's public data holdings discoverable from **all** `download_urls` roots and their in-scope linked pages.
 
-Build the processing worklist by flattening every `links` array in the saved `links.json` and deduplicating by exact URL while preserving first-seen order. Do **not** hard-code filenames, select a sample, impose any other file-count/size cutoff, or silently skip an inventoried URL. For example, in Python: `worklist = list(dict.fromkeys(url for page in json.load(open(links_path)) for url in page["links"]))`. Handle every URL in that worklist, including files from other releases or source pages; repeated URLs retain all their `source_url` pages as evidence. A failed download, parser, or oversized-file skip must not prevent processing later URLs, except when evidence cannot be saved safely.
+For Croissant generation:
+  - include each discovered downloadable data or graph asset in `distribution` when it can be represented with verified metadata; for assets verified over 100 GB, retain them in `download-links.json` and report any omission from `distribution` in `dct:provenance`
+  - use the full discovered set, not a partial subset selected by release, filename, or convenience
+  - derive `recordSet` metadata where possible only from downloaded files verified as current/latest for their dataset or graph family; keep older and unclassified releases in `distribution` without schema/header parsing
+  - if a branch appears to contain relevant public data but cannot be fully traversed or downloaded, record the limitation and reason in `dct:provenance`
 
-For this rule, **100 GB = 100,000,000,000 bytes** of the downloadable asset (not its uncompressed contents); exactly 100 GB is eligible. Before downloading each distinct URL, use curl to check the final HTTP(S) response after redirects: first HEAD, then, when HEAD fails or size is absent/inconclusive, a GET with `--range 0-0 --max-filesize 1` to avoid an unbounded probe if the server ignores Range. Use the final successful response's `Content-Length` for a full response, or the total after `/` in `Content-Range` for a 206 response; do **not** mistake a one-byte range response's `Content-Length`, intermediate redirect headers, a listing's estimated size, or an unverified filename for the full asset size. Record the status, final URL, size in bytes, and header/basis of the size determination in `schema_evidence.json`. If a reliable size is **greater** than 100,000,000,000 bytes, do not download it: record `skipped_over_100GB` with its URL, verified size and evidence in `schema_evidence.json` and `dct:provenance`. If the size is at or below the bound, attempt the download. If size cannot be established, **still attempt** the bounded download; never skip solely because a size is unknown. If curl reaches `--max-filesize` without trustworthy evidence that the asset exceeds 100 GB, record `size_limit_reached` and an unknown total size, not a verified oversize or a successful download. Save the outcome and limitation before deleting any partial file, then continue with the next URL. Do not call a HEAD or range probe a full-file download.
+Using NuShell, run ```open outputs/{name}/{run}/download-links.json | where ($it.links | is-not-empty) | select requested_url links | flatten | to tsv``` to get a list of the files to download.  Then download each one sequentially using `curl`.  Here is an example:
+
+```curl --fail --location --retry 1 --retry-connrefused --retry-delay 2 --connect-timeout 60 --max-time 3600 --max-filesize 100000000000 --output '<local-file-path>' '<link-url>'```
+
+For each downloadable file, execute the following steps:  
+  - Process each distinct linked asset one at a time, retaining its `requested_url` page(s) as evidence. 
+  - Verify the downloaded file's format for `distribution`, and save its verified remote `contentUrl`. 
+  - Apply **Schema/Header Detection** and generate supported `recordSet` entries only when the asset is verified as belonging to the current/latest release. Save the updated JSON before processing the next asset. 
+  - Delete the downloaded file.
+
+Before downloading each distinct URL, use curl to check the final HTTP(S) response after redirects: first HEAD, then, when HEAD fails or size is absent/inconclusive, a GET with `--range 0-0 --max-filesize 1` to avoid an unbounded probe if the server ignores Range. Use the final successful response's `Content-Length` for a full response, or the total after `/` in `Content-Range` for a 206 response; do **not** mistake a one-byte range response's `Content-Length`, intermediate redirect headers, a listing's estimated size, or an unverified filename for the full asset size. Record the status, final URL, size in bytes, and header/basis of the size determination in `schema_evidence.json`. If a reliable size is **greater** than 100,000,000,000 bytes, do not download it: record `skipped_over_100GB` with its URL, verified size and evidence in `schema_evidence.json` and `dct:provenance`. If the size is at or below the bound, attempt the download. If size cannot be established, **still attempt** the bounded download; never skip solely because a size is unknown. If curl reaches `--max-filesize` without trustworthy evidence that the asset exceeds 100 GB, record `size_limit_reached` and an unknown total size, not a verified oversize or a successful download. Save the outcome and limitation before deleting any partial file, then continue with the next URL. Do not call a HEAD or range probe a full-file download.
 
 Before schema/header detection, classify each distinct URL as `current`, `historical`, or `unknown` using its source page(s), release listings, and verified release labels. Compare versions within the same dataset or graph family, not across unrelated families. An authoritative current/latest link to the same asset takes precedence over an older listing that also links to it. Do not classify by a date, an `archive` path component, or a compression extension alone. If current/latest cannot be established, mark it `unknown`, explain the uncertainty in `dct:provenance`, and do not claim its schema represents the current release. For `historical` and `unknown`, add only the downloaded asset's own `distribution` entry, verify its file format without parsing its data schema or extracting archive members, and do not generate a `recordSet`. Where supported, identify the release/version and its current or historical status in the distribution entry's `description`; explain skipped schema inspection or unknown release status in `dct:provenance`. Do not invent a Croissant release-status property. For `current`, follow the full format, archive-member, schema/header, and `recordSet` rules below.
 
 For a single data file compressed as one stream (including an archive member such as `data.csv.gz`), keep one `cr:FileObject` for the compressed file and set `encodingFormat` to an array of the inner data MIME type first and the verified compression MIME type second. For example, `asdf.tsv.gz` has `"encodingFormat": ["text/tab-separated-values", "application/gzip"]`. Inspect the decompressed content when possible; prefer its verified format over the filename. If inspection cannot establish the inner format, infer it from an unambiguous inner filename extension (e.g., `.txt.gz` -> `text/plain`, `.tsv.gz` -> `text/tab-separated-values`) unless available content, signature, or HTTP evidence contradicts that inference. Record the filename-based inference and inspection limitation in `dct:provenance` and `schema_evidence.json`; do not infer `recordSet` fields from the filename or create a fictitious separate inner `cr:FileObject`. If the inner format is still ambiguous, retain only the verified compression format and explain the gap in `dct:provenance`. Archives containing distinct files instead use the separate member entries described below.
 
-Save each URL's release classification and supporting source page URL(s), verified remote URL, observed MIME/signature and any filename-inferred MIME with its basis, plus the exact schema/header or parser result (including generated XSD where needed) and archive member listing **only for inspected current releases**, as compact evidence in `outputs/{name}/{run}/schema_evidence.json`, not as retained downloads. For a verified oversized asset, include a `distribution` entry only if its direct file URL and any required metadata can be verified without downloading; never invent a hash, format, archive members, or `recordSet` fields. Otherwise omit that entry and explain the gap in `dct:provenance`, while retaining its URL in `links.json` and its skip status and size evidence in `schema_evidence.json`. Only after the JSON and evidence updates succeed, delete the local download and any extracted/decompressed temporary files. For a current-release archive, process and persist each member's metadata and evidence, delete that member's extracted file, and delete the parent download after all relevant members are processed. If parsing or downloading fails, record the limitation in `dct:provenance` without inventing fields; save that update before deleting any local file. If saving fails, stop and report the failure rather than deleting the only unrecorded evidence. Never accumulate a batch of downloaded files, including when the same asset occurs on multiple pages. Continue through all links in `links.json` so the final `distribution` reflects all verifiable downloadable assets, subject to documented size skips and access failures. If a single file cannot fit on disk, report the limitation instead of claiming its schema was inspected.
+Save each URL's release classification and supporting source page URL(s), verified remote URL, observed MIME/signature and any filename-inferred MIME with its basis, plus the exact schema/header or parser result (including generated XSD where needed) and archive member listing **only for inspected current releases**, as compact evidence in `outputs/{name}/{run}/schema_evidence.json`, not as retained downloads. For a verified oversized asset, include a `distribution` entry only if its direct file URL and any required metadata can be verified without downloading; never invent a hash, format, archive members, or `recordSet` fields. Otherwise omit that entry and explain the gap in `dct:provenance`, while retaining its URL in `download-links.json` and its skip status and size evidence in `schema_evidence.json`. Only after the JSON and evidence updates succeed, delete the local download and any extracted/decompressed temporary files. For a current-release archive, process and persist each member's metadata and evidence, delete that member's extracted file, and delete the parent download after all relevant members are processed. If parsing or downloading fails, record the limitation in `dct:provenance` without inventing fields; save that update before deleting any local file. If saving fails, stop and report the failure rather than deleting the only unrecorded evidence. Never accumulate a batch of downloaded files, including when the same asset occurs on multiple pages. Continue through all links from the list of downloadable URLs (links) so the final `distribution` reflects all verifiable downloadable assets, subject to documented size skips and access failures. If a single file cannot fit on disk, report the limitation instead of claiming its schema was inspected.
 
-Record one terminal status per distinct worklist URL in `schema_evidence.json`: represented (including `current`, `historical`, or `unknown` release classification and any parser limitation), `skipped_over_100GB` with verified size and evidence, `size_limit_reached` with unknown total size, or the specific download, access, or verified resource failure and its cause. A schema parser failure does not justify omitting an otherwise verified downloadable file from `distribution`. Record statuses only after the corresponding URL has actually been handled; guessed sizes and self-imposed limits are not verified oversize. Before leaving Step 4.3, independently compare the set of URLs in `links.json` with the set of URLs in those status records, and check that each represented URL has a corresponding remote `contentUrl` in `distribution` (current-release archive members are additional entries). If any URL is missing or any represented URL lacks its distribution entry, continue processing/correcting it rather than proceeding to Step 5. Report every skipped URL and verified byte size, and every unknown-size bounded transfer, in `dct:provenance` and the summary. Report inventory, attempted downloads, represented, verified oversize skipped, size-limit-reached, other failed, and unattempted counts separately, plus represented URLs by release classification and the number intentionally omitted from `recordSet`; completed worklist coverage means no URLs left without a terminal status, **not** that every asset was downloaded. Never describe a skipped or unattempted URL as a failed download or a completed download.
+Record one terminal status per distinct worklist URL in `schema_evidence.json`: represented (including `current`, `historical`, or `unknown` release classification and any parser limitation), `skipped_over_100GB` with verified size and evidence, `size_limit_reached` with unknown total size, or the specific download, access, or verified resource failure and its cause. A schema parser failure does not justify omitting an otherwise verified downloadable file from `distribution`. Record statuses only after the corresponding URL has actually been handled; guessed sizes and self-imposed limits are not verified oversize. Before leaving Step 4.3, independently compare the set of URLs in `download-links.json` with the set of URLs in those status records, and check that each represented URL has a corresponding remote `contentUrl` in `distribution` (current-release archive members are additional entries). If any URL is missing or any represented URL lacks its distribution entry, continue processing/correcting it rather than proceeding to Step 5. Report every skipped URL and verified byte size, and every unknown-size bounded transfer, in `dct:provenance` and the summary. Report inventory, attempted downloads, represented, verified oversize skipped, size-limit-reached, other failed, and unattempted counts separately, plus represented URLs by release classification and the number intentionally omitted from `recordSet`; completed worklist coverage means no URLs left without a terminal status, **not** that every asset was downloaded. Never describe a skipped or unattempted URL as a failed download or a completed download.
 
-If `links.json` is empty, create `schema_evidence.json` as `[]`; do not fabricate `distribution` or `recordSet` entries.
+If `download-links.json` is empty, create `schema_evidence.json` as `[]`; do not fabricate `distribution` or `recordSet` entries.
 
 #### Schema/Header Detection
 
@@ -373,7 +247,7 @@ Review the standard output from the `mlcroissant` command and perform the follow
  - **On warnings**
    - Warnings (`W`) about missing recommended fields (`datePublished`, `version`, etc.) should be ignored.
  - **Content validation** 
-    - After the structural validator passes, re-fetch the source page with the crawler selected by `js_crawling_required` for each of these fields and compare the Croissant value character-by-character against the live page text:
+     - After the structural validator passes, re-crawl the source page with the Step 4.1 `js_enabled_crawl` command (using a fresh crawl directory and `metadata-links.json`) for each of these fields and compare the Croissant value character-by-character against the live page text:
      - `citeAs` 
        - re-fetch the citations, FAQ, or about pages to confirm the full author list, exact title, journal, volume, pages, and year match what is on the page
      - `license`
@@ -518,12 +392,12 @@ After adding any `GeoCoordinates` field:
 
 ## Step 8: Cleanup
 
-Remove only temporary downloads, extracted files, and generated scripts from the current run's temporary directory. Do not remove `croissant.json`, `links.json`, `schema_evidence.json`, `persistent_fields.json`, or files in other runs.
+Remove only temporary downloads, extracted files, and generated scripts from the current run's temporary directory. Do not remove `croissant.json`, `download-links.json`, `metadata-links.json`, `schema_evidence.json`, `persistent_fields.json`, or files in other runs.
 
 ## Step 9: Summarize
 
 Write a summary of the agent's work to `outputs/{name}/{run}/summary.txt`.
-Include the generated artifact paths for `croissant.json`, `links.json`, `schema_evidence.json`, and `persistent_fields.json`.
+Include the generated artifact paths for `croissant.json`, `metadata-links.json`, `download-links.json`, `schema_evidence.json`, and `persistent_fields.json`.
 The summary must include a dedicated `Performance Metrics` section with:
 
 - run start timestamp
@@ -539,4 +413,4 @@ The summary must include a dedicated `Performance Metrics` section with:
   - files created, modified, and deleted for that step
   - any relevant step-specific counts such as downloaded file count, bytes downloaded, validator runs, or fix cycles
 - the same metrics for Steps 4.1, 4.2, and 4.3, plus their Step 4 totals
-- a final artifact list with the generated paths for `croissant.json`, `links.json`, `schema_evidence.json`, `persistent_fields.json`, and `summary.txt`
+- a final artifact list with the generated paths for `croissant.json`, `metadata-links.json`, `download-links.json`, `schema_evidence.json`, `persistent_fields.json`, and `summary.txt`
