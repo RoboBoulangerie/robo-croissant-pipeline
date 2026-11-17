@@ -8,10 +8,10 @@ Run commands from the repository root. You will need:
 
 - An agent harness configured with a working model/provider: [OpenCode](https://opencode.ai/docs/), [Pi](https://pi.dev), or [Claude Code](https://docs.claude.com/en/docs/claude-code). See [Choosing a harness](#choosing-a-harness).
 - [Nushell](https://www.nushell.sh/) (`nu`) for the pipeline scripts and SQLite storage.
-- [Rust and Cargo](https://rustup.rs/) for the `parse_headers` schema parser.
-- `curl` for saving downloadable files; a local Chromium installation for sources with `js_crawling_required = true`.
+- [Rust and Cargo](https://rustup.rs/) for the `parse_headers` schema parser and `js_enabled_crawl` page crawler.
+- `curl` for saving downloadable files; a local Chromium installation for page crawling.
 - Python 3 and [uv](https://docs.astral.sh/uv/) for the Croissant validator and the optional quality checks.
-- `curl` for crawling (harnesses without a web-fetch tool use it), `jq` for the agent's JSON checks; `trang` if processing XML schemas.
+- `jq` for the agent's JSON checks; `trang` if processing XML schemas.
 
 For OpenCode, `opencode.sample.json` is a configuration template. Copy it to `opencode.json` and set a model and credentials for your provider. The local config file is gitignored.
 
@@ -27,7 +27,7 @@ The agent's preflight checks for `.venv/bin/mlcroissant`. The Python quality val
 
 `knowledge-bases.toml` contains the source inventory. Its `name` values select a source (case-sensitive); `enabled = true` determines which sources the batch script and database builder process. A source site may require access or be unavailable even when enabled. The agent requires a TOML file path and an entry name; provide each via `RCP_KB_INPUT` and `RCP_KB_NAME` respectively, or in the prompt. Prompt values override environment values independently.
 
-Each source's `js_crawling_required` flag selects the page crawler: `false` (or absent) uses WebFetch; `true` uses `cargo run --quiet --bin js_enabled_crawl -- --url '<page-url>'` to read rendered HTML and links. Add `--extension-regex '\.(csv|zip)$'` to include only links with matching file extensions when needed. Both modes download discovered data files separately, one at a time.
+The agent crawls each configured URL array with `cargo run --quiet --bin js_enabled_crawl -- --url '<url-1>' '<url-2>' --temp-dir '<new-crawl-dir-under-current-run-tmp-dir>' --depth <depth> --output-path '<new-crawl-dir-under-current-run-tmp-dir>/metadata-links.json'` (use `download-links.json` for download-page crawls). Supply every URL in the array after `--url`; one URL also works. `<depth>` comes from the selected entry in `RCP_KB_INPUT`; absent means `0` (seed pages only). The crawler follows same-origin links from each root up to that many levels, creates its output directory, and writes files named like `page-0-index.html` or `page-1-thisSite.html`, plus the specified JSON file: an array of `{ "requested_url", "html_file", "links" }` records. `html_file` names the saved HTML file in that directory; stdout is empty. Use a fresh directory for each invocation. Add `--extension-regex '\.(csv|zip)$'` to filter links recorded in the JSON file without restricting traversal. Crawl output is separate from the current run's download inventory at `outputs/<name>/<run>/links.json`. Discovered data files are downloaded separately with `curl`, one at a time.
 
 Generate metadata for one source:
 
@@ -52,7 +52,7 @@ The agent prompts live in `agents/` as plain Markdown. `bin/run_agent.nu <agent>
 | `pi` | `pi -p --no-session --append-system-prompt <prompt> <task>` | `/login` inside `pi`, or a custom provider (e.g. Azure) in `~/.pi/agent/models.json`; select it with `--model provider/id`. |
 | `claude` | `claude -p --append-system-prompt <prompt> --permission-mode bypassPermissions <task>` | `claude` login or `ANTHROPIC_API_KEY`. |
 
-For `pi` and `claude`, the launcher strips the YAML frontmatter from `agents/<agent>.md` and passes the rest inline to append to the harness's system prompt. Both run without permission prompts (Pi has none; Claude Code needs `bypassPermissions` to work non-interactively), so the agent can run arbitrary shell commands and downloads: run it in a container or sandbox you are comfortable with. The prompts only assume shell, file read, and file write tools; when no web-fetch tool exists the agent uses `curl`.
+For `pi` and `claude`, the launcher strips the YAML frontmatter from `agents/<agent>.md` and passes the rest inline to append to the harness's system prompt. Both run without permission prompts (Pi has none; Claude Code needs `bypassPermissions` to work non-interactively), so the agent can run arbitrary shell commands and downloads: run it in a container or sandbox you are comfortable with. The metadata generator uses `js_enabled_crawl` for pages and `curl` for downloadable assets.
 
 To support another harness, add a case to the `match $harness` blocks in `bin/run_agent.nu`.
 
