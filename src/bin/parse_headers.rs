@@ -271,6 +271,8 @@ fn polars_datatype(datatype: &DataType) -> String {
         DataType::Duration(_) => "DURATION".into(),
         DataType::Time => "TIME".into(),
         DataType::Null => "NULL".into(),
+        // List columns name their element type, so the croissant can mark the field `isArray`.
+        DataType::List(inner) => format!("LIST[{}]", polars_datatype(inner)),
         datatype => datatype.pretty_format().to_ascii_uppercase(),
     }
 }
@@ -521,6 +523,25 @@ mod tests {
 
         ParquetWriter::new(File::create(&path)?).finish(&mut data)?;
         assert_eq!(parse_headers(&path)?, fixed_columns(&[("name", "TEXT"), ("age", "INTEGER")]));
+
+        fs::remove_file(path)?;
+        Ok(())
+    }
+
+    #[test]
+    fn names_parquet_list_columns_with_their_element_type() -> Result<(), Box<dyn Error>> {
+        let path = env::temp_dir().join(format!("parse_headers-lists-{}.parquet", process::id()));
+        let mut data = df!(
+            "id" => ["x"],
+            "tags" => [Series::new("".into(), ["a", "b"])],
+            "scores" => [Series::new("".into(), [1i64, 2])],
+        )?;
+
+        ParquetWriter::new(File::create(&path)?).finish(&mut data)?;
+        assert_eq!(
+            parse_headers(&path)?,
+            fixed_columns(&[("id", "TEXT"), ("tags", "LIST[TEXT]"), ("scores", "LIST[INTEGER]")])
+        );
 
         fs::remove_file(path)?;
         Ok(())
