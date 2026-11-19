@@ -88,7 +88,9 @@ The database has `knowledge_bases` (metadata), `kb_links` (values, evidence, con
 To export one metadata document from the database, run this in Nushell:
 
 ```nu
-open robo_croissant.db | get knowledge_bases | where name == '<KB.name>' | get croissant_metadata | to json | save -f output.json
+open robo_croissant.db | get knowledge_bases | where name == '<KB.name>' | get croissant_metadata.0 | to json | save -f output.json
 ```
+
+The `.0` takes the one matching row's document. Without it, `where` leaves a one-row table and the file is a JSON list around the dataset (`[{...}]`), which Croissant tools can't read.
 
 Some [previously published Croissant files](https://roboboulangerie.github.io/robo-croissant-pipeline/) are also available on GitHub Pages.
